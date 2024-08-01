@@ -9,3 +9,38 @@
 </ul>
 <h1>Built With</h1>
 <p>Flutter Framework <img src="https://img.icons8.com/color/48/flutter.png"/></p>
+<h1>Get Started</h1>
+<ul>
+  <li>Clone the project</li>
+    
+  ```bash
+  git clone git@github.com:joelwillSeek/aspireme_flutter.git
+  ```
+
+  
+
+  <li>Npm</li>
+    
+  ```bash
+    flutter pub get
+  ```
+  
+  
+
+
+  <li>Run development</li>
+
+    ```bash
+      flutter run
+   
+    ```
+
+<li>Run build</li>
+
+  ```bash
+    flutter build
+  ```
+
+<li>Get the app <a href="#">Comming Soon</a></li>
+</ul>
+

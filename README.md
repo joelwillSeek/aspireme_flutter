@@ -20,18 +20,18 @@
   <li>Npm</li>
     
   ```sh
-    flutter pub get
+  flutter pub get
   ```
 
   <li>Run development</li>
 
    ```bash
- flutter run
+  flutter run
 ```
 <li>Run build</li>
 
   ```sh
-    flutter build
+  flutter build
   ```
 
 <li>Get the app <a href="#">Comming Soon</a></li>

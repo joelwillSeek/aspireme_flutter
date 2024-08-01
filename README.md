@@ -28,9 +28,11 @@ I always had this thing where I believed that if I made studying or just working
     <p> To help the user to remember the app will automatically and randomly pick the notes that need to be memorized based on if you were correct last time and how long it has been.</p> 
   </li>
   <li> <h5>  Then if the flashcard is answered then increase the duration </h5><br>
-  <p> In a research I found that one of the ways to remember is to use a thing called spaced repetition which means to repeat something in an increasingly spaced timeline if I answer a question today then I will ask myself the next week then if I do answer again then after a one month in will ask myself</p>
+  <p> In research I found that one of the ways to remember is to use a thing called spaced repetition which means to repeat something in an increasingly spaced timeline if I answer a question today then I will ask myself the next week then if I do answer again then after a one month in will ask myself</p>
   </li>
-  <li> When creating notes upload them to Google Drive with your account</li>
+  <li><h5>When creating notes upload them to Google Drive with your account</h5><br>
+  <p>To be able to use you notes at anytime and at any devices</p>
+  </li>
 </ul>
 <h1>Built With</h1>
 <p>Flutter Framework <img src="https://img.icons8.com/color/48/flutter.png"/></p>

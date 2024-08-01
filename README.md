@@ -13,31 +13,26 @@
 <ul>
   <li>Clone the project</li>
     
-  ```bash
+  ```sh
   git clone git@github.com:joelwillSeek/aspireme_flutter.git
-  ```
-
-  
+  ```  
 
   <li>Npm</li>
     
-  ```bash
+  ```sh
     flutter pub get
   ```
-  
-  
-
 
   <li>Run development</li>
 
-    ```bash
+    ```sh
       flutter run
    
     ```
 
 <li>Run build</li>
 
-  ```bash
+  ```sh
     flutter build
   ```
 

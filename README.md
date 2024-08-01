@@ -25,11 +25,9 @@
 
   <li>Run development</li>
 
-    ```sh
-      flutter run
-   
-    ```
-
+   ```bash
+ flutter run
+```
 <li>Run build</li>
 
   ```sh

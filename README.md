@@ -119,7 +119,7 @@ yes
     </td>
 
    <td>
-    No, but is paid in Ios
+    No, but it is paid in Ios
     </td>
     <td>
     No
@@ -173,7 +173,12 @@ yes
 </table>
 
 <h1>Built With</h1>
+<p>Figma <img width="48" height="48" src="https://img.icons8.com/color/48/figma--v1.png" alt="figma--v1"/></p>
 <p>Flutter Framework <img src="https://img.icons8.com/color/48/flutter.png"/></p>
+
+<h1>Ui Design</h1>
+<p><a href="https://www.figma.com/design/hnq4RjX8Nnf69Gq6q35fQw/aspireme?node-id=0-1&m=dev&t=jIxcO3IPAjxrZLPP-1">Design Link</a></p>
+
 <h1>Get Started</h1>
 <ul>
   <li>Clone the project</li>

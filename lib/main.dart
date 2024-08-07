@@ -1,9 +1,13 @@
-import 'package:aspireme_flutter/CommonllyUsed/FloatingBottomNav.dart';
+import 'package:aspireme_flutter/CommonllyUsedComponents/CustomTopAppBar.dart';
+import 'package:aspireme_flutter/CommonllyUsedComponents/FloatingBottomNav.dart';
+import 'package:aspireme_flutter/Pages/FolderListPage.dart';
+import 'package:aspireme_flutter/Pages/HomePage.dart';
+import 'package:aspireme_flutter/Providers/PageControllerProvider.dart';
 import 'package:aspireme_flutter/Providers/Theme.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
-import 'package:pulsator/pulsator.dart';
 
 void main() {
   runApp(
@@ -12,81 +16,52 @@ void main() {
         ChangeNotifierProvider(
           create: (context) => ThemeProvider(),
         ),
+        ChangeNotifierProvider(create: (context) => Pagecontrollerprovider())
       ],
       child: const MainApp(),
     ),
   );
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends StatefulWidget {
   const MainApp({super.key});
 
   @override
+  State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        home: Container(
-      decoration:
-          BoxDecoration(color: context.read<ThemeProvider>().getPrimaryColor),
-      child: Column(
-        children: [
-          customHomeAppbar(context),
-          flashcardButton(context),
-          FloatingBottomNav()
-        ],
-      ),
-    ));
+      home: Scaffold(
+          appBar: null,
+          body: Stack(
+            children: [
+              PageView(
+                controller:
+                    context.read<Pagecontrollerprovider>().getPageController,
+                onPageChanged: whenPageSwiped,
+                children: const [Homepage(), Folderlistpage()],
+              ),
+              const Align(
+                alignment: Alignment.topCenter,
+                child: Customtopappbar(),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: FloatingBottomNav(),
+              )
+            ],
+          )),
+    );
   }
 
-  Widget customHomeAppbar(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 50.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Expanded(
-              child: IconButton(
-                onPressed: null,
-                icon: Image.asset(
-                  "asset/button/back.png",
-                  scale: context.read<ThemeProvider>().getIconScale,
-                ),
-              ),
-            ),
-            Expanded(
-              child: Text(
-                "Home",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    decoration: TextDecoration.none,
-                    fontSize: context.read<ThemeProvider>().getHeadingFontSize,
-                    color: context.read<ThemeProvider>().getAccentColor),
-              ),
-            ),
-            Expanded(
-                child: IconButton(
-              onPressed: null,
-              icon: Image.asset(
-                "asset/button/settings.png",
-                scale: context.read<ThemeProvider>().getIconScale,
-              ),
-            ))
-          ],
-        ));
-  }
+  void whenPageSwiped(int index) {
+    setState(() {
+      final pageControllerProvider = context.read<Pagecontrollerprovider>();
 
-  flashcardButton(BuildContext context) {
-    return Expanded(
-        child: Center(
-            child: Pulsator(
-      style: PulseStyle(color: context.read<ThemeProvider>().getAccentColor),
-      count: 2,
-      duration: const Duration(seconds: 4),
-      repeat: 0,
-      startFromScratch: true,
-      autoStart: true,
-      fit: PulseFit.contain,
-      child: Image.asset("asset/button/task_hover.png"),
-    )));
+      pageControllerProvider.setPageIndex = index;
+    });
   }
 }

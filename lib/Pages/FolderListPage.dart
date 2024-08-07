@@ -19,7 +19,7 @@ class Folderlistpage extends StatelessWidget {
               child: Container(
                 color: context.read<ThemeProvider>().getAccentColor,
                 height: 3.0,
-                margin: EdgeInsets.only(top: 140.0),
+                margin: const EdgeInsets.only(top: 140.0),
               ),
             ),
             Expanded(
@@ -36,7 +36,7 @@ class Folderlistpage extends StatelessWidget {
                                 iconSize: 10.0,
                                 icon:
                                     Image.asset("asset/Icons/folder_icon.png")),
-                            SizedBox(
+                            const SizedBox(
                                 width: 100.0,
                                 height: 40.0,
                                 child: Text(
@@ -48,7 +48,7 @@ class Folderlistpage extends StatelessWidget {
                                 )),
                           ],
                         ))),
-            Placeholder(
+            const Placeholder(
               color: Colors.transparent,
               fallbackHeight: 80.0,
             )

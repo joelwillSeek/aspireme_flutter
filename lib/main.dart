@@ -2,20 +2,18 @@ import 'package:aspireme_flutter/CommonllyUsedComponents/CustomTopAppBar.dart';
 import 'package:aspireme_flutter/CommonllyUsedComponents/FloatingBottomNav.dart';
 import 'package:aspireme_flutter/Pages/FolderListPage.dart';
 import 'package:aspireme_flutter/Pages/HomePage.dart';
+import 'package:aspireme_flutter/Pages/NotesEditingPage.dart';
+import 'package:aspireme_flutter/Pages/ViewIndividualFolder.dart';
 import 'package:aspireme_flutter/Providers/PageControllerProvider.dart';
 import 'package:aspireme_flutter/Providers/Theme.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 void main() {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (context) => ThemeProvider(),
-        ),
+        ChangeNotifierProvider(create: (context) => ThemeProvider()),
         ChangeNotifierProvider(create: (context) => Pagecontrollerprovider())
       ],
       child: const MainApp(),
@@ -34,27 +32,32 @@ class _MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-          appBar: null,
-          body: Stack(
+        theme: ThemeData(
+            colorScheme: ColorScheme(
+                brightness: Brightness.light,
+                primary: const Color.fromARGB(255, 255, 240, 124),
+                onPrimary: Colors.white,
+                secondary: const Color.fromARGB(255, 93, 115, 126),
+                onSecondary: Colors.white,
+                error: const Color.fromARGB(255, 251, 110, 110),
+                onError: Colors.white,
+                surface: const Color.fromARGB(255, 30, 29, 29),
+                onSurface: Theme.of(context).colorScheme.primary)),
+        home: Scaffold(
+          appBar: const PreferredSize(
+              preferredSize: Size.fromHeight(120), child: Customtopappbar()),
+          body: PageView(
+            controller:
+                context.read<Pagecontrollerprovider>().getPageController,
+            onPageChanged: whenPageSwiped,
             children: [
-              PageView(
-                controller:
-                    context.read<Pagecontrollerprovider>().getPageController,
-                onPageChanged: whenPageSwiped,
-                children: const [Homepage(), Folderlistpage()],
-              ),
-              const Align(
-                alignment: Alignment.topCenter,
-                child: Customtopappbar(),
-              ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: FloatingBottomNav(),
-              )
+              const Homepage(),
+              const Folderlistpage(),
+              Viewindividualfolder()
             ],
-          )),
-    );
+          ),
+          bottomNavigationBar: const FloatingBottomNav(),
+        ));
   }
 
   void whenPageSwiped(int index) {

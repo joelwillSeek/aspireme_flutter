@@ -1,11 +1,10 @@
 import 'package:aspireme_flutter/Providers/PageControllerProvider.dart';
-import 'package:aspireme_flutter/Providers/Theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class FloatingBottomNav extends StatefulWidget {
-  FloatingBottomNav({super.key});
+  const FloatingBottomNav({super.key});
 
   @override
   State<FloatingBottomNav> createState() => _FloatingBottomNavState();
@@ -31,11 +30,11 @@ class _FloatingBottomNavState extends State<FloatingBottomNav> {
       padding: const EdgeInsets.all(0),
       margin: const EdgeInsets.symmetric(horizontal: 25, vertical: 20),
       decoration: BoxDecoration(
-          color: context.read<ThemeProvider>().getSecondaryColor,
+          color: Theme.of(context).colorScheme.secondary,
           borderRadius: const BorderRadius.all(Radius.circular(500.0)),
           boxShadow: [
             BoxShadow(
-                color: context.read<ThemeProvider>().getAccentColorWithOpacity,
+                color: Theme.of(context).colorScheme.surface,
                 offset: const Offset(0, 0),
                 blurRadius: 20.0)
           ]),

@@ -1,4 +1,5 @@
 import 'package:aspireme_flutter/CommonllyUsedComponents/CustomTopAppBar.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -10,27 +11,78 @@ class Noteseditingpage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
+      appBar: const PreferredSize(
         preferredSize: Size.fromHeight(120),
         child: Customtopappbar(),
       ),
       body: Container(
-          margin: EdgeInsets.all(20),
+          margin: const EdgeInsets.all(20),
           child: Column(
-            children: [titleInput(), discriptionInput()],
+            children: [
+              cardForEditing(context),
+              confirmOrCancelButtons(context)
+            ],
           )),
     );
   }
 
-  Widget titleInput() {
-    return TextField(
-      decoration: InputDecoration(labelText: this.title),
+  Widget confirmOrCancelButtons(BuildContext context) {
+    return Row(
+      children: [
+        TextButton(
+            onPressed: null,
+            style: ButtonStyle(
+                foregroundColor: WidgetStateProperty.all(
+                    Theme.of(context).colorScheme.onTertiary),
+                backgroundColor: WidgetStateProperty.all(
+                    Theme.of(context).colorScheme.tertiary)),
+            child: const Text("Save")),
+        TextButton(
+            style: ButtonStyle(
+                foregroundColor: WidgetStateProperty.all(
+                    Theme.of(context).colorScheme.onError),
+                backgroundColor: WidgetStateProperty.all(
+                    Theme.of(context).colorScheme.error)),
+            onPressed: null,
+            child: const Text("Cancel")),
+      ],
     );
   }
 
-  Widget discriptionInput() {
-    return TextField(
-      decoration: InputDecoration(labelText: this.discription),
+  Widget cardForEditing(BuildContext context) {
+    return Card(
+      color: Theme.of(context).colorScheme.secondary,
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Container(
+              alignment: Alignment.center,
+              child: Center(
+                child: TextField(
+                  textAlignVertical: TextAlignVertical.center,
+                  style: TextStyle(
+                      background: Paint()
+                        ..color = const Color.fromARGB(255, 200, 200, 200)),
+                  textAlign: TextAlign.center,
+                  decoration: InputDecoration(
+                      floatingLabelAlignment: FloatingLabelAlignment.center,
+                      border: InputBorder.none,
+                      labelText: this.title,
+                      labelStyle: TextStyle(
+                          color: Theme.of(context).colorScheme.onSecondary)),
+                ),
+              )),
+          TextField(
+            keyboardType: TextInputType.multiline,
+            decoration: InputDecoration(
+              labelText: this.discription,
+              border: InputBorder.none,
+              labelStyle:
+                  TextStyle(color: Theme.of(context).colorScheme.onSecondary),
+            ),
+          )
+        ],
+      ),
     );
   }
 }

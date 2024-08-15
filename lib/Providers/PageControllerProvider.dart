@@ -14,6 +14,7 @@ class Pagecontrollerprovider extends ChangeNotifier {
 
   set setPageIndex(int value) {
     pageIndex = value;
+
     notifyListeners();
   }
 

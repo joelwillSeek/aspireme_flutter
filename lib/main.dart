@@ -4,6 +4,7 @@ import 'package:aspireme_flutter/Pages/FolderListPage.dart';
 import 'package:aspireme_flutter/Pages/HomePage.dart';
 import 'package:aspireme_flutter/Pages/NotesEditingPage.dart';
 import 'package:aspireme_flutter/Pages/ViewIndividualFolder.dart';
+import 'package:aspireme_flutter/Providers/FolderProvider.dart';
 import 'package:aspireme_flutter/Providers/PageControllerProvider.dart';
 import 'package:aspireme_flutter/Providers/Theme.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,8 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
-        ChangeNotifierProvider(create: (context) => Pagecontrollerprovider())
+        ChangeNotifierProvider(create: (context) => Pagecontrollerprovider()),
+        ChangeNotifierProvider(create: (context) => Folderprovider())
       ],
       child: const MainApp(),
     ),
@@ -34,6 +36,8 @@ class _MainAppState extends State<MainApp> {
     return MaterialApp(
         theme: ThemeData(
             colorScheme: ColorScheme(
+                tertiary: Colors.green,
+                onTertiary: Colors.white,
                 brightness: Brightness.light,
                 primary: const Color.fromARGB(255, 255, 240, 124),
                 onPrimary: Colors.white,
@@ -52,7 +56,7 @@ class _MainAppState extends State<MainApp> {
             onPageChanged: whenPageSwiped,
             children: [
               const Homepage(),
-              const Folderlistpage(),
+              Folderlistpage(),
               Viewindividualfolder()
             ],
           ),

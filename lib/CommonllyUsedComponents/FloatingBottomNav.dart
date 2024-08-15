@@ -1,3 +1,5 @@
+import 'package:aspireme_flutter/BackEnd/Models/Folder.dart';
+import 'package:aspireme_flutter/Providers/FolderProvider.dart';
 import 'package:aspireme_flutter/Providers/PageControllerProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -47,13 +49,14 @@ class _FloatingBottomNavState extends State<FloatingBottomNav> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: List.generate(
           navIcons.length,
-          (index) => context.read<Pagecontrollerprovider>().getPageIndex == 0 &&
-                  index == 1
-              ? const Placeholder(
-                  fallbackWidth: 100,
-                  color: Colors.transparent,
-                )
-              : individualNavigationItems(index)),
+          (index) =>
+              Provider.of<Pagecontrollerprovider>(context).getPageIndex == 0 &&
+                      index == 1
+                  ? const Placeholder(
+                      fallbackWidth: 100,
+                      color: Colors.transparent,
+                    )
+                  : individualNavigationItems(index)),
     );
   }
 
@@ -81,9 +84,65 @@ class _FloatingBottomNavState extends State<FloatingBottomNav> {
         ));
   }
 
+  Widget showCreateFolderDialog(BuildContext context) {
+    TextEditingController folderNameInputText = TextEditingController();
+
+    return SimpleDialog(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: folderNameInputText,
+                decoration: const InputDecoration(
+                    hintText: "Folder Name",
+                    hintStyle: TextStyle(color: Colors.white)),
+              ),
+            ),
+            Column(
+              children: [
+                TextButton(
+                    onPressed: () {
+                      if (folderNameInputText.text.isEmpty) {
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                                content: Text(
+                          "Please Enter A Name For Your Folder",
+                          style: TextStyle(color: Colors.white),
+                        )));
+                      } else {
+                        context.read<Folderprovider>().setAllFolders =
+                            Folder(name: folderNameInputText.text.trim());
+                      }
+                    },
+                    style: const ButtonStyle(
+                        foregroundColor: WidgetStatePropertyAll(Colors.white)),
+                    child: const Text("Yes")),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  style: const ButtonStyle(
+                      foregroundColor: WidgetStatePropertyAll(Colors.white)),
+                  child: const Text("No"),
+                )
+              ],
+            )
+          ],
+        )
+      ],
+    );
+  }
+
   void navButtonClicked(int index) {
     final itemIndex = index;
     final getPageControllerProvider = context.read<Pagecontrollerprovider>();
+
+    if (index == 1) {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) => showCreateFolderDialog(context));
+    }
 
     setState(() {
       getPageControllerProvider.setPageIndex = itemIndex;

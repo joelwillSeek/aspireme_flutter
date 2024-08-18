@@ -1,18 +1,31 @@
 class Note {
-  final String title, discription, dateTime;
+  final String title, description, dateTime;
   final int? id;
+  int? parentFolderID = 0;
 
-  const Note(
+  //0 means not in folder
+  final int? folderId;
+
+  Note(
       {required this.title,
-      required this.discription,
+      required this.description,
+      this.parentFolderID,
       required this.dateTime,
-      this.id});
+      this.id,
+      required this.folderId});
 
-  factory Note.fromJsonToQuestionsWithNotes(Map<String, dynamic> json) => Note(
+  factory Note.FromJsonToNote(Map<String, dynamic> json) => Note(
       title: json["title"],
-      discription: json["discription"],
-      dateTime: json["dateTime"]);
+      description: json["description"],
+      dateTime: json["dateTime"],
+      folderId: json["folderId"],
+      parentFolderID: json["parentFolderID"]);
 
-  Map<String, dynamic> FromQuestionWithNotesToJson() =>
-      {"title": this.title, "discription": discription, "dateTime": dateTime};
+  Map<String, dynamic> FromNoteToJson() => {
+        "title": title,
+        "description": description,
+        "dateTime": dateTime,
+        "folderId": folderId,
+        "parentFolderID": parentFolderID
+      };
 }

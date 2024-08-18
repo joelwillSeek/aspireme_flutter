@@ -1,83 +1,51 @@
-import 'package:aspireme_flutter/CommonllyUsedComponents/Notes.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+// import 'package:aspireme_flutter/BackEnd/Models/Note.dart';
+// import 'package:aspireme_flutter/CommonllyUsedComponents/NotesWidget.dart';
+// import 'package:aspireme_flutter/Providers/FolderAndNoteProvider.dart';
+// import 'package:flutter/material.dart';
+// import 'package:provider/provider.dart';
 
-class TestNote {
-  String title;
-  String Discription;
-  DateTime dateTime = DateTime.now();
+// /**
+//  * Instead of having an add button on nav bar have a floating button
+//  */
 
-  TestNote({this.title = "Test", this.Discription = "Test"});
-}
+// class Viewindividualfolder extends StatelessWidget {
+//   Viewindividualfolder({super.key});
 
-class Viewindividualfolder extends StatelessWidget {
-  Viewindividualfolder({super.key});
-
-  List<TestNote> items = [
-    TestNote(
-        title: "testing things",
-        Discription:
-            """Ipsum has been the industry's standard dummy text ever since 
-            the 1500s, when an unknown printer took a galley of type and scrambled it to make a 
-            type specimen book. It has survived not only five centuries, but also the leap into electronic 
-            typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of 
-            Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software 
-            like Aldus PageMaker including versions of Lorem Ipsum"""),
-    TestNote(
-        title: "testing things",
-        Discription:
-            """Ipsum has been the industry's standard dummy text ever since 
-            the 1500s, when an unknown printer took a galley of type and scrambled it to make a 
-            type specimen book. It has survived not only five centuries, but also the leap into electronic 
-            typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of 
-            Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software 
-            like Aldus PageMaker including versions of Lorem Ipsum"""),
-    TestNote(
-        title: "testing things",
-        Discription:
-            """Ipsum has been the industry's standard dummy text ever since 
-            the 1500s, when an unknown printer took a galley of type and scrambled it to make a 
-            type specimen book. It has survived not only five centuries, but also the leap into electronic 
-            typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of 
-            Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software 
-            like Aldus PageMaker including versions of Lorem Ipsum"""),
-    TestNote(
-        title: "testing things",
-        Discription:
-            """Ipsum has been the industry's standard dummy text ever since 
-            the 1500s, when an unknown printer took a galley of type and scrambled it to make a 
-            type specimen book. It has survived not only five centuries, but also the leap into electronic 
-            typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of 
-            Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software 
-            like Aldus PageMaker including versions of Lorem Ipsum"""),
-    TestNote(
-        title: "testing things",
-        Discription:
-            """Ipsum has been the industry's standard dummy text ever since 
-            the 1500s, when an unknown printer took a galley of type and scrambled it to make a 
-            type specimen book. It has survived not only five centuries, but also the leap into electronic 
-            typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of 
-            Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software 
-            like Aldus PageMaker including versions of Lorem Ipsum"""),
-    TestNote(
-        title: "testing things",
-        Discription:
-            """Ipsum has been the industry's standard dummy text ever since 
-            the 1500s, when an unknown printer took a galley of type and scrambled it to make a 
-            type specimen book. It has survived not only five centuries, but also the leap into electronic 
-            typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of 
-            Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software 
-            like Aldus PageMaker including versions of Lorem Ipsum""")
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        color: Theme.of(context).colorScheme.surface,
-        child: ListView.builder(
-            itemCount: items.length,
-            itemBuilder: (context, index) => Notes(
-                title: items[index].title,
-                discription: items[index].Discription)));
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//         color: Theme.of(context).colorScheme.surface,
+//         child: FutureBuilder<List<Note>>(
+//           future: Provider.of<FolderAndNoteProvider>(context)
+//               .getNotesOfFolder(context), // Ensure this is a Future
+//           builder: (BuildContext context, AsyncSnapshot<List<Note>> snapShot) {
+//             if (snapShot.connectionState == ConnectionState.waiting) {
+//               return const Center(child: CircularProgressIndicator());
+//             } else if (snapShot.hasError) {
+//               return Center(
+//                   child: Text(
+//                 'Error: ${snapShot.error}',
+//                 style: const TextStyle(color: Colors.red),
+//               ));
+//             } else if (!snapShot.hasData || snapShot.data!.isEmpty) {
+//               return const Center(
+//                   child: Text(
+//                 'No Notes available',
+//                 style: TextStyle(color: Colors.white),
+//               ));
+//             } else {
+//               final notes = snapShot.data!;
+//               return GridView.builder(
+//                 itemCount: notes.length,
+//                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+//                   crossAxisCount: 1,
+//                 ),
+//                 itemBuilder: (BuildContext context, int index) {
+//                   return NotesWidget(note: notes[index]);
+//                 },
+//               );
+//             }
+//           },
+//         ));
+//   }
+// }

@@ -1,22 +1,23 @@
+import 'package:aspireme_flutter/BackEnd/Models/Note.dart';
 import 'package:aspireme_flutter/Pages/NotesEditingPage.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class Notes extends StatelessWidget {
-  final String title;
-  final String discription;
-  final DateTime dateTime = DateTime.now();
-  Notes({this.title = "", this.discription = "", super.key});
+class NotesWidget extends StatelessWidget {
+  final Note note;
+  const NotesWidget({required this.note, super.key});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => Noteseditingpage(
-                  title: this.title,
-                  discription: this.discription,
-                )));
+        // Navigator.of(context).push(MaterialPageRoute(
+        //     builder: (context) => Noteseditingpage(
+        //           title: note.title,
+        //           discription: note.description,
+        //         ))
+
+        //         );
       },
       child: Card(
         color: Theme.of(context).colorScheme.secondary,
@@ -43,9 +44,9 @@ class Notes extends StatelessWidget {
   }
 
   Widget discriptionComponent(BuildContext context) {
-    String toViewDiscribtion = discription;
-    if (discription.length > 50) {
-      int howMuchLetterToView = (discription.length * 0.20).round();
+    String toViewDiscribtion = note.description;
+    if (toViewDiscribtion.length > 50) {
+      int howMuchLetterToView = (toViewDiscribtion.length * 0.20).round();
       toViewDiscribtion = toViewDiscribtion.substring(0, howMuchLetterToView);
       toViewDiscribtion += "...";
     }
@@ -61,14 +62,14 @@ class Notes extends StatelessWidget {
   }
 
   Widget titleAndDate(BuildContext context) {
-    String dateTimeString = DateFormat("yyyy-mm-dd - kk:mm").format(dateTime);
+    String dateTimeString = note.dateTime;
     return Container(
         margin: EdgeInsets.all(20.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              title,
+              note.title,
               style:
                   TextStyle(color: Theme.of(context).colorScheme.onSecondary),
             ),

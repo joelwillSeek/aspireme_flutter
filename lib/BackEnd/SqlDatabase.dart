@@ -8,14 +8,16 @@ class Sqldatabase {
   static int version = 1;
   static String noteTableName = "Notes";
   static String folderTableName = "folders";
+  static String folderTableQuery =
+      "create table $folderTableName(id integer primary key autoincrement,name text)";
+  static String noteTableQuery =
+      "create table $noteTableName(id integer primary key autoincrement,title text,description text,dateTime text,folderId integer)";
 
   static Future<Database> getDatabase() async {
     return openDatabase(join(await getDatabasesPath(), databaseName),
         version: version, onCreate: (innerDatabase, version) {
-      innerDatabase.execute(
-          "create table $folderTableName(id integer primary key autoincrement,name text)");
-      innerDatabase.execute(
-          "create table $noteTableName(id integer primary key autoincrement,title text,description text,dateTime text,folderId integer)");
+      innerDatabase.execute(folderTableName);
+      innerDatabase.execute(noteTableName);
     });
   }
 
@@ -31,51 +33,48 @@ class Sqldatabase {
   static Future<List<Folder>> getAllFolders() async {
     final database = await getDatabase();
 
-    final list_Of_Folders_In_Map_Format =
+    final listOfFoldersInMapFormat =
         await database.rawQuery("select * from $folderTableName");
 
-    return List.generate(
-        list_Of_Folders_In_Map_Format.length,
-        (index) =>
-            Folder.FromJsonToFolder(list_Of_Folders_In_Map_Format[index]));
+    final listOfFoldersInListFormat = List.generate(
+        listOfFoldersInMapFormat.length,
+        (index) => Folder.FromJsonToFolder(listOfFoldersInMapFormat[index]));
+
+    for (var list in listOfFoldersInListFormat) {
+      print(list.FromFolderToJson());
+    }
+
+    return listOfFoldersInListFormat;
   }
 
-  // Future<int> insertAQuestionWithNotes(Note question) async {
-  //   final database = await getDatabase();
+  static Future<List<Note>> getNotesForAFolder(int IdOfFolder) async {
+    final database = await getDatabase();
 
-  //   return await database.insert(
-  //       questionWithNotesTableName, question.FromQuestionWithNotesToJson(),
-  //       conflictAlgorithm: ConflictAlgorithm.replace);
-  // }
+    final listOfNotesInMapsFormat = await database
+        .rawQuery("select * from $noteTableName where folderId = $IdOfFolder");
 
-  // Future<int> updateAQuestionWithNotes(Note question) async {
-  //   final database = await getDatabase();
+    final listOfNotesInNoteFormat = List.generate(
+        listOfNotesInMapsFormat.length,
+        (index) => Note.FromJsonToNote(listOfNotesInMapsFormat[index]));
 
-  //   return await database.update(
-  //       questionWithNotesTableName, question.FromQuestionWithNotesToJson(),
-  //       where: "id = ?",
-  //       whereArgs: [question.id],
-  //       conflictAlgorithm: ConflictAlgorithm.replace);
-  // }
+    return listOfNotesInNoteFormat;
+  }
 
-  // Future<int> deleteAQuestionWithNotes(Note question) async {
-  //   final database = await getDatabase();
+  static Future<int> addNoteToFolder(Note newNote) async {
+    final database = await getDatabase();
 
-  //   return await database.delete(questionWithNotesTableName,
-  //       where: "id = ?", whereArgs: [question.id]);
-  // }
+    print("created Note");
 
-  // Future<List<Note>?> getAllQuestionWithNotes() async {
-  //   final database = await getDatabase();
+    return await database.insert(noteTableName, newNote.FromNoteToJson());
+  }
 
-  //   final allQuestionWithNotesInMapForm =
-  //       await database.query(questionWithNotesTableName);
+  static Future resetDatabase() async {
+    final Database = await getDatabase();
 
-  //   if (allQuestionWithNotesInMapForm.isEmpty) return null;
+    await Database.delete(folderTableName);
+    await Database.delete(noteTableName);
 
-  //   return List.generate(
-  //       allQuestionWithNotesInMapForm.length,
-  //       (index) => Note.fromJsonToQuestionsWithNotes(
-  //           allQuestionWithNotesInMapForm[index]));
-  // }
+    await Database.execute(noteTableQuery);
+    await Database.execute(folderTableQuery);
+  }
 }

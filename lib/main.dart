@@ -1,10 +1,11 @@
+import 'package:aspireme_flutter/BackEnd/SqlDatabase.dart';
 import 'package:aspireme_flutter/CommonllyUsedComponents/CustomTopAppBar.dart';
 import 'package:aspireme_flutter/CommonllyUsedComponents/FloatingBottomNav.dart';
-import 'package:aspireme_flutter/Pages/FolderListPage.dart';
+import 'package:aspireme_flutter/Pages/FolderAndNoteListPage.dart';
 import 'package:aspireme_flutter/Pages/HomePage.dart';
 import 'package:aspireme_flutter/Pages/NotesEditingPage.dart';
 import 'package:aspireme_flutter/Pages/ViewIndividualFolder.dart';
-import 'package:aspireme_flutter/Providers/FolderProvider.dart';
+import 'package:aspireme_flutter/Providers/FolderAndNoteProvider.dart';
 import 'package:aspireme_flutter/Providers/PageControllerProvider.dart';
 import 'package:aspireme_flutter/Providers/Theme.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,7 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
         ChangeNotifierProvider(create: (context) => Pagecontrollerprovider()),
-        ChangeNotifierProvider(create: (context) => Folderprovider())
+        ChangeNotifierProvider(create: (context) => FolderAndNoteProvider()),
       ],
       child: const MainApp(),
     ),
@@ -56,8 +57,8 @@ class _MainAppState extends State<MainApp> {
             onPageChanged: whenPageSwiped,
             children: [
               const Homepage(),
-              Folderlistpage(),
-              Viewindividualfolder()
+              FolderAndNoteListPage(),
+              // Viewindividualfolder(),
             ],
           ),
           bottomNavigationBar: const FloatingBottomNav(),

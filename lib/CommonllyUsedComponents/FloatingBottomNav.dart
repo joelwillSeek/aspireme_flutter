@@ -1,7 +1,12 @@
+import 'dart:ffi';
+
 import 'package:aspireme_flutter/BackEnd/Models/Folder.dart';
-import 'package:aspireme_flutter/Providers/FolderProvider.dart';
+import 'package:aspireme_flutter/BackEnd/Models/Note.dart';
+import 'package:aspireme_flutter/BackEnd/SqlDatabase.dart';
+import 'package:aspireme_flutter/Providers/FolderAndNoteProvider.dart';
 import 'package:aspireme_flutter/Providers/PageControllerProvider.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
@@ -56,11 +61,11 @@ class _FloatingBottomNavState extends State<FloatingBottomNav> {
                       fallbackWidth: 100,
                       color: Colors.transparent,
                     )
-                  : individualNavigationItems(index)),
+                  : individualNavigationItems(index, context)),
     );
   }
 
-  Widget individualNavigationItems(int index) {
+  Widget individualNavigationItems(int index, BuildContext context) {
     String chooseImage() {
       final pageControllerProvidor = context.read<Pagecontrollerprovider>();
       if (pageControllerProvidor.getPageIndex == 0 && index == 0) {
@@ -78,53 +83,80 @@ class _FloatingBottomNavState extends State<FloatingBottomNav> {
         child: IconButton(
           padding: const EdgeInsets.all(0),
           onPressed: () {
-            navButtonClicked(index);
+            navButtonClicked(index, context);
           },
           icon: Image.asset(chooseImage()),
         ));
   }
 
-  Widget showCreateFolderDialog(BuildContext context) {
+  Widget createFolderTab(BuildContext context) {
     TextEditingController folderNameInputText = TextEditingController();
 
-    return SimpleDialog(
+    void yesClicked() {
+      if (folderNameInputText.text.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text(
+          "Please Enter A Name For Your Folder",
+          style: TextStyle(color: Colors.white),
+        )));
+      } else {
+        final folderAndNoteProvider = context.read<FolderAndNoteProvider>();
+        folderAndNoteProvider.setAllFolders = Folder(
+            name: folderNameInputText.text.trim(),
+            parentFolderID: folderAndNoteProvider.getCurrentlySelectedFolder);
+      }
+
+      Navigator.pop(context);
+    }
+
+    return Column(
       children: [
-        Row(
+        Column(
           children: [
-            Expanded(
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: 20),
               child: TextField(
                 controller: folderNameInputText,
                 decoration: const InputDecoration(
+                    border: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white)),
+                    enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white)),
                     hintText: "Folder Name",
                     hintStyle: TextStyle(color: Colors.white)),
               ),
             ),
-            Column(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                TextButton(
+                Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 30, vertical: 10),
+                    child: TextButton(
+                        onPressed: yesClicked,
+                        style: ButtonStyle(
+                            backgroundColor: WidgetStatePropertyAll(
+                                Theme.of(context).colorScheme.tertiary)),
+                        child: Text("Done",
+                            style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onTertiary)))),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                  child: TextButton(
                     onPressed: () {
-                      if (folderNameInputText.text.isEmpty) {
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(const SnackBar(
-                                content: Text(
-                          "Please Enter A Name For Your Folder",
-                          style: TextStyle(color: Colors.white),
-                        )));
-                      } else {
-                        context.read<Folderprovider>().setAllFolders =
-                            Folder(name: folderNameInputText.text.trim());
-                      }
+                      Navigator.pop(context);
                     },
-                    style: const ButtonStyle(
-                        foregroundColor: WidgetStatePropertyAll(Colors.white)),
-                    child: const Text("Yes")),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  style: const ButtonStyle(
-                      foregroundColor: WidgetStatePropertyAll(Colors.white)),
-                  child: const Text("No"),
+                    style: ButtonStyle(
+                        backgroundColor: WidgetStatePropertyAll(
+                            Theme.of(context).colorScheme.error)),
+                    child: Text(
+                      "Cancel",
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.onError),
+                    ),
+                  ),
                 )
               ],
             )
@@ -134,19 +166,147 @@ class _FloatingBottomNavState extends State<FloatingBottomNav> {
     );
   }
 
-  void navButtonClicked(int index) {
-    final itemIndex = index;
-    final getPageControllerProvider = context.read<Pagecontrollerprovider>();
+  Widget createNoteTab(BuildContext context) {
+    Map<String, TextEditingController> textEditingController = {
+      "titleController": TextEditingController(),
+      "descriptionController": TextEditingController()
+    };
 
-    if (index == 1) {
+    void doneClicked() {
+      bool dontCreateNote = false;
+
+      textEditingController.forEach((index, value) =>
+          value == null ? dontCreateNote = true : dontCreateNote = false);
+
+      if (!dontCreateNote) {
+        context.read<FolderAndNoteProvider>().addNoteToFolder = Note(
+            folderId: context
+                .read<FolderAndNoteProvider>()
+                .getCurrentlySelectedFolder,
+            title: textEditingController["titleController"]!.text,
+            description: textEditingController["descriptionController"]!.text,
+            dateTime: DateFormat("dd/mm/yyyy").format(DateTime.now()));
+      }
+
+      Navigator.pop(context);
+    }
+
+    return Column(
+      children: [
+        Text(
+          "Created Notes",
+          style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
+          textAlign: TextAlign.center,
+        ),
+        Expanded(
+          child: TextField(
+            controller: textEditingController["titleController"],
+            decoration: const InputDecoration(
+                border: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white)),
+                enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white)),
+                hintText: "Why do I like Cars?",
+                hintStyle: TextStyle(color: Colors.white)),
+          ),
+        ),
+        Expanded(
+          child: TextField(
+            controller: textEditingController["descriptionController"],
+            keyboardType: TextInputType.multiline,
+            decoration: const InputDecoration(
+                border: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white)),
+                enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white)),
+                hintText: "I like Cars because ...",
+                hintStyle: TextStyle(color: Colors.white)),
+          ),
+        ),
+        Row(
+          children: [
+            Expanded(
+                child: TextButton(
+                    style: ButtonStyle(
+                        backgroundColor: WidgetStatePropertyAll(
+                            Theme.of(context).colorScheme.tertiary)),
+                    onPressed: doneClicked,
+                    child: Text(
+                      "Done",
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.onTertiary),
+                    ))),
+            Expanded(
+                child: TextButton(
+                    style: ButtonStyle(
+                        backgroundColor: WidgetStatePropertyAll(
+                            Theme.of(context).colorScheme.error)),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.onError),
+                        "Cancel"))),
+          ],
+        )
+      ],
+    );
+  }
+
+  Widget createFolderOrNoteDialog(BuildContext context) {
+    return Dialog(
+      child: SizedBox(
+          height: 400,
+          child: Container(
+            padding: EdgeInsets.all(20),
+            child: DefaultTabController(
+                length: 2,
+                child: Column(children: [
+                  TabBar(
+                    dividerColor: Theme.of(context).colorScheme.onPrimary,
+                    indicatorColor: Theme.of(context).colorScheme.primary,
+                    labelColor: Theme.of(context).colorScheme.primary,
+                    unselectedLabelColor:
+                        Theme.of(context).colorScheme.onPrimary,
+                    tabs: const [
+                      Tab(
+                        text: "Folder",
+                      ),
+                      Tab(
+                        text: "Note",
+                      )
+                    ],
+                  ),
+                  Expanded(
+                      child: TabBarView(children: [
+                    createFolderTab(context),
+                    createNoteTab(context)
+                  ]))
+                ])),
+          )),
+    );
+  }
+
+  void navButtonClicked(int index_Of_nav_Item, BuildContext context) {
+    final itemIndex = index_Of_nav_Item;
+    final pageControllerProvider = context.read<Pagecontrollerprovider>();
+    /**
+     * Todo: Don't want this hard coded index fix it 
+     */
+    if (index_Of_nav_Item == 1 &&
+        pageControllerProvider.getCurrentPageName ==
+            pageControllerProvider.getExitingPages[1]) {
       showDialog(
           context: context,
-          builder: (BuildContext context) => showCreateFolderDialog(context));
+          builder: (BuildContext context) => createFolderOrNoteDialog(context));
+
+      return;
     }
 
     setState(() {
-      getPageControllerProvider.setPageIndex = itemIndex;
-      getPageControllerProvider.changePage(itemIndex, context);
+      pageControllerProvider.setPageIndex = itemIndex;
+      pageControllerProvider.changePage(itemIndex, context);
     });
   }
 }

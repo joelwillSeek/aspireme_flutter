@@ -1,4 +1,4 @@
-import 'package:aspireme_flutter/CommonllyUsedComponents/CustomTopAppBar.dart';
+import 'package:aspireme_flutter/Pages/Components/CustomTopAppBar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';

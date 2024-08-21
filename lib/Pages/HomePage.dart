@@ -1,3 +1,4 @@
+import 'package:aspireme_flutter/Pages/Components/FlashCard.dart';
 import 'package:flutter/material.dart';
 import 'package:pulsator/pulsator.dart';
 
@@ -18,61 +19,7 @@ class Homepage extends StatelessWidget {
 
   void flashcard(BuildContext context) {
     showDialog(
-      context: context,
-      builder: (BuildContext context) => SimpleDialog(
-        shadowColor: const Color.fromARGB(255, 0, 0, 0),
-        alignment: Alignment.center,
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        children: [
-          Container(
-            alignment: Alignment.topRight,
-            padding: const EdgeInsets.all(20),
-            child: IconButton(
-                alignment: Alignment.topRight,
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                icon: Image.asset(
-                  "asset/button/cancel.png",
-                  scale: 4,
-                  alignment: Alignment.centerRight,
-                )),
-          ),
-          const Align(
-            alignment: Alignment.center,
-            child: Expanded(
-                child: Text(
-              "Title",
-              style: TextStyle(color: Colors.white, fontSize: 50.0),
-              textAlign: TextAlign.center,
-            )),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                IconButton(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    onPressed: null,
-                    icon: Image.asset(
-                      "asset/button/cancel_hover.png",
-                      scale: 3,
-                    )),
-                IconButton(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    onPressed: null,
-                    icon: Image.asset(
-                      "asset/button/done_hover.png",
-                      scale: 3,
-                    ))
-              ],
-            ),
-          )
-        ],
-      ),
-    );
+        context: context, builder: (BuildContext context) => FlashCard());
   }
 
   flashcardButton(BuildContext context) {

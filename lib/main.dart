@@ -1,11 +1,12 @@
 import 'package:aspireme_flutter/BackEnd/SqlDatabase.dart';
-import 'package:aspireme_flutter/CommonllyUsedComponents/CustomTopAppBar.dart';
-import 'package:aspireme_flutter/CommonllyUsedComponents/FloatingBottomNav.dart';
+import 'package:aspireme_flutter/Pages/Components/CustomTopAppBar.dart';
+import 'package:aspireme_flutter/Pages/Components/FloatingBottomNav.dart';
 import 'package:aspireme_flutter/Pages/FolderAndNoteListPage.dart';
 import 'package:aspireme_flutter/Pages/HomePage.dart';
 import 'package:aspireme_flutter/Pages/NotesEditingPage.dart';
 import 'package:aspireme_flutter/Pages/ViewIndividualFolder.dart';
-import 'package:aspireme_flutter/Providers/FolderAndNoteProvider.dart';
+import 'package:aspireme_flutter/Providers/FlashCardProvider.dart';
+import 'package:aspireme_flutter/Providers/FolderAndNoteMangerProvider.dart';
 import 'package:aspireme_flutter/Providers/PageControllerProvider.dart';
 import 'package:aspireme_flutter/Providers/Theme.dart';
 import 'package:flutter/material.dart';
@@ -16,8 +17,10 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
+        ChangeNotifierProvider(create: (context) => FlashCardProvider()),
         ChangeNotifierProvider(create: (context) => Pagecontrollerprovider()),
-        ChangeNotifierProvider(create: (context) => FolderAndNoteProvider()),
+        ChangeNotifierProvider(
+            create: (context) => FolderAndNoteManagerProvider()),
       ],
       child: const MainApp(),
     ),
@@ -58,6 +61,7 @@ class _MainAppState extends State<MainApp> {
             children: [
               const Homepage(),
               FolderAndNoteListPage(),
+
               // Viewindividualfolder(),
             ],
           ),

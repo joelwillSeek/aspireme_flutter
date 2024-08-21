@@ -3,7 +3,8 @@ import 'dart:ffi';
 import 'package:aspireme_flutter/BackEnd/Models/Folder.dart';
 import 'package:aspireme_flutter/BackEnd/Models/Note.dart';
 import 'package:aspireme_flutter/BackEnd/SqlDatabase.dart';
-import 'package:aspireme_flutter/Providers/FolderAndNoteProvider.dart';
+import 'package:aspireme_flutter/Providers/FolderAndNoteMangerProvider.dart';
+//import 'package:aspireme_flutter/Providers/FolderAndNoteProvider.dart';
 import 'package:aspireme_flutter/Providers/PageControllerProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -100,10 +101,10 @@ class _FloatingBottomNavState extends State<FloatingBottomNav> {
           style: TextStyle(color: Colors.white),
         )));
       } else {
-        final folderAndNoteProvider = context.read<FolderAndNoteProvider>();
-        folderAndNoteProvider.setAllFolders = Folder(
-            name: folderNameInputText.text.trim(),
-            parentFolderID: folderAndNoteProvider.getCurrentlySelectedFolder);
+        final folderAndNoteProvider =
+            context.read<FolderAndNoteManagerProvider>();
+        folderAndNoteProvider.addFolder =
+            Folder(name: folderNameInputText.text.trim());
       }
 
       Navigator.pop(context);
@@ -175,14 +176,8 @@ class _FloatingBottomNavState extends State<FloatingBottomNav> {
     void doneClicked() {
       bool dontCreateNote = false;
 
-      textEditingController.forEach((index, value) =>
-          value == null ? dontCreateNote = true : dontCreateNote = false);
-
       if (!dontCreateNote) {
-        context.read<FolderAndNoteProvider>().addNoteToFolder = Note(
-            folderId: context
-                .read<FolderAndNoteProvider>()
-                .getCurrentlySelectedFolder,
+        context.read<FolderAndNoteManagerProvider>().addNotes = Note(
             title: textEditingController["titleController"]!.text,
             description: textEditingController["descriptionController"]!.text,
             dateTime: DateFormat("dd/mm/yyyy").format(DateTime.now()));

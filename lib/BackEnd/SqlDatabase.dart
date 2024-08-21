@@ -8,10 +8,11 @@ class Sqldatabase {
   static int version = 1;
   static String noteTableName = "Notes";
   static String folderTableName = "folders";
+  static String parentFolderIDKeyName = "parentFolderID";
   static String folderTableQuery =
-      "create table $folderTableName(id integer primary key autoincrement,name text)";
+      "create table $folderTableName(id integer primary key autoincrement,name text,$parentFolderIDKeyName integer)";
   static String noteTableQuery =
-      "create table $noteTableName(id integer primary key autoincrement,title text,description text,dateTime text,folderId integer)";
+      "create table $noteTableName(id integer primary key autoincrement,title text,description text,dateTime text,$parentFolderIDKeyName integer)";
 
   static Future<Database> getDatabase() async {
     return openDatabase(join(await getDatabasesPath(), databaseName),
@@ -21,52 +22,48 @@ class Sqldatabase {
     });
   }
 
-  static Future<int> createAFolder(Folder folder) async {
-    final database = await getDatabase();
+  // static Future<int> createAFolder(Folder folder) async {
+  //   final database = await getDatabase();
 
-    final folderCreated =
-        await database.insert(folderTableName, folder.FromFolderToJson());
+  //   final folderCreated =
+  //       await database.insert(folderTableName, folder.FromFolderToJson());
 
-    return folderCreated;
-  }
+  //   return folderCreated;
+  // }
 
-  static Future<List<Folder>> getAllFolders() async {
-    final database = await getDatabase();
+  // static Future<List<Folder>> getAllFolders(int parentFolderId) async {
+  //   final database = await getDatabase();
 
-    final listOfFoldersInMapFormat =
-        await database.rawQuery("select * from $folderTableName");
+  //   final listOfFoldersInMapFormat = await database.rawQuery(
+  //       "select * from $folderTableName where $parentFolderIDKeyName = $parentFolderId");
 
-    final listOfFoldersInListFormat = List.generate(
-        listOfFoldersInMapFormat.length,
-        (index) => Folder.FromJsonToFolder(listOfFoldersInMapFormat[index]));
+  //   final listOfFoldersInListFormat = List.generate(
+  //       listOfFoldersInMapFormat.length,
+  //       (index) => Folder.FromJsonToFolder(listOfFoldersInMapFormat[index]));
 
-    for (var list in listOfFoldersInListFormat) {
-      print(list.FromFolderToJson());
-    }
+  //   return listOfFoldersInListFormat;
+  // }
 
-    return listOfFoldersInListFormat;
-  }
+  // static Future<List<Note>> getNotesForAFolder(int IdOfFolder) async {
+  //   final database = await getDatabase();
 
-  static Future<List<Note>> getNotesForAFolder(int IdOfFolder) async {
-    final database = await getDatabase();
+  //   final listOfNotesInMapsFormat = await database
+  //       .rawQuery("select * from $noteTableName where folderId = $IdOfFolder");
 
-    final listOfNotesInMapsFormat = await database
-        .rawQuery("select * from $noteTableName where folderId = $IdOfFolder");
+  //   final listOfNotesInNoteFormat = List.generate(
+  //       listOfNotesInMapsFormat.length,
+  //       (index) => Note.FromJsonToNote(listOfNotesInMapsFormat[index]));
 
-    final listOfNotesInNoteFormat = List.generate(
-        listOfNotesInMapsFormat.length,
-        (index) => Note.FromJsonToNote(listOfNotesInMapsFormat[index]));
+  //   return listOfNotesInNoteFormat;
+  // }
 
-    return listOfNotesInNoteFormat;
-  }
+  // static Future<int> addNoteToFolder(Note newNote) async {
+  //   final database = await getDatabase();
 
-  static Future<int> addNoteToFolder(Note newNote) async {
-    final database = await getDatabase();
+  //   print("created Note");
 
-    print("created Note");
-
-    return await database.insert(noteTableName, newNote.FromNoteToJson());
-  }
+  //   return await database.insert(noteTableName, newNote.FromNoteToJson());
+  // }
 
   static Future resetDatabase() async {
     final Database = await getDatabase();

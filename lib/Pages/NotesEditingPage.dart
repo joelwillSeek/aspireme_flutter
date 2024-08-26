@@ -1,7 +1,5 @@
 import 'package:aspireme_flutter/Pages/Components/CustomTopAppBar.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class Noteseditingpage extends StatelessWidget {
   String title;
@@ -67,7 +65,7 @@ class Noteseditingpage extends StatelessWidget {
                   decoration: InputDecoration(
                       floatingLabelAlignment: FloatingLabelAlignment.center,
                       border: InputBorder.none,
-                      labelText: this.title,
+                      labelText: title,
                       labelStyle: TextStyle(
                           color: Theme.of(context).colorScheme.onSecondary)),
                 ),
@@ -75,7 +73,7 @@ class Noteseditingpage extends StatelessWidget {
           TextField(
             keyboardType: TextInputType.multiline,
             decoration: InputDecoration(
-              labelText: this.discription,
+              labelText: discription,
               border: InputBorder.none,
               labelStyle:
                   TextStyle(color: Theme.of(context).colorScheme.onSecondary),

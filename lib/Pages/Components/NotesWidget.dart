@@ -2,7 +2,6 @@ import 'package:aspireme_flutter/BackEnd/Models/Note.dart';
 import 'package:aspireme_flutter/Pages/NotesEditingPage.dart';
 import 'package:aspireme_flutter/Providers/FolderAndNoteMangerProvider.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class NotesWidget extends StatelessWidget {
@@ -65,7 +64,7 @@ class NotesWidget extends StatelessWidget {
       },
       child: Card(
         color: Theme.of(context).colorScheme.secondary,
-        margin: EdgeInsets.all(20),
+        margin: const EdgeInsets.all(20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -77,7 +76,7 @@ class NotesWidget extends StatelessWidget {
               child: Container(
                 color: Theme.of(context).colorScheme.primary,
                 height: 3.0,
-                margin: EdgeInsets.symmetric(vertical: 10),
+                margin: const EdgeInsets.symmetric(vertical: 10),
               ),
             ),
             discriptionComponent(context),
@@ -96,7 +95,7 @@ class NotesWidget extends StatelessWidget {
     }
 
     return Container(
-      margin: EdgeInsets.all(20.0),
+      margin: const EdgeInsets.all(20.0),
       child: Text(
         textAlign: TextAlign.left,
         toViewDiscribtion,
@@ -108,7 +107,7 @@ class NotesWidget extends StatelessWidget {
   Widget titleAndDate(BuildContext context) {
     String dateTimeString = note.dateTime;
     return Container(
-        margin: EdgeInsets.all(20.0),
+        margin: const EdgeInsets.all(20.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

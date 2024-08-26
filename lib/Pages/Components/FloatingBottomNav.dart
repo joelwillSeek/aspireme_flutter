@@ -1,8 +1,5 @@
-import 'dart:ffi';
-
 import 'package:aspireme_flutter/BackEnd/Models/Folder.dart';
 import 'package:aspireme_flutter/BackEnd/Models/Note.dart';
-import 'package:aspireme_flutter/BackEnd/SqlDatabase.dart';
 import 'package:aspireme_flutter/Providers/FolderAndNoteMangerProvider.dart';
 //import 'package:aspireme_flutter/Providers/FolderAndNoteProvider.dart';
 import 'package:aspireme_flutter/Providers/PageControllerProvider.dart';
@@ -103,8 +100,7 @@ class _FloatingBottomNavState extends State<FloatingBottomNav> {
       } else {
         final folderAndNoteProvider =
             context.read<FolderAndNoteManagerProvider>();
-        folderAndNoteProvider.addFolder =
-            Folder(name: folderNameInputText.text.trim());
+        folderAndNoteProvider.addFolder(folderNameInputText.text);
       }
 
       Navigator.pop(context);
@@ -144,7 +140,8 @@ class _FloatingBottomNavState extends State<FloatingBottomNav> {
                                     .colorScheme
                                     .onTertiary)))),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                   child: TextButton(
                     onPressed: () {
                       Navigator.pop(context);
@@ -177,10 +174,9 @@ class _FloatingBottomNavState extends State<FloatingBottomNav> {
       bool dontCreateNote = false;
 
       if (!dontCreateNote) {
-        context.read<FolderAndNoteManagerProvider>().addNotes = Note(
-            title: textEditingController["titleController"]!.text,
-            description: textEditingController["descriptionController"]!.text,
-            dateTime: DateFormat("dd/mm/yyyy").format(DateTime.now()));
+        context.read<FolderAndNoteManagerProvider>().addNotes(
+            textEditingController["titleController"]!.text,
+            textEditingController["descriptionController"]!.text);
       }
 
       Navigator.pop(context);
@@ -254,7 +250,7 @@ class _FloatingBottomNavState extends State<FloatingBottomNav> {
       child: SizedBox(
           height: 400,
           child: Container(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             child: DefaultTabController(
                 length: 2,
                 child: Column(children: [
@@ -283,13 +279,13 @@ class _FloatingBottomNavState extends State<FloatingBottomNav> {
     );
   }
 
-  void navButtonClicked(int index_Of_nav_Item, BuildContext context) {
-    final itemIndex = index_Of_nav_Item;
+  void navButtonClicked(int indexOfNavItem, BuildContext context) {
+    final itemIndex = indexOfNavItem;
     final pageControllerProvider = context.read<Pagecontrollerprovider>();
     /**
      * Todo: Don't want this hard coded index fix it 
      */
-    if (index_Of_nav_Item == 1 &&
+    if (indexOfNavItem == 1 &&
         pageControllerProvider.getCurrentPageName ==
             pageControllerProvider.getExitingPages[1]) {
       showDialog(

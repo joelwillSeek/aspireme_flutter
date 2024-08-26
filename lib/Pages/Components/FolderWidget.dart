@@ -2,14 +2,12 @@ import 'package:aspireme_flutter/BackEnd/Models/Folder.dart';
 import 'package:aspireme_flutter/Providers/FolderAndNoteMangerProvider.dart';
 //import 'package:aspireme_flutter/Providers/FolderAndNoteProvider.dart';
 import 'package:aspireme_flutter/Providers/PageControllerProvider.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 class FolderWidget extends StatelessWidget {
   final Folder folder;
-  FolderWidget({required this.folder, super.key});
+  const FolderWidget({required this.folder, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -65,10 +63,11 @@ class FolderWidget extends StatelessWidget {
 
     return GestureDetector(
       onLongPress: longPressClicked,
+      onTap: folderClicked,
       child: Column(
         children: [
           IconButton(
-              onPressed: folderClicked,
+              onPressed: null,
               iconSize: 10.0,
               icon: Image.asset("asset/Icons/folder_icon.png")),
           SizedBox(

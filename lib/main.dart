@@ -1,10 +1,7 @@
-import 'package:aspireme_flutter/BackEnd/SqlDatabase.dart';
 import 'package:aspireme_flutter/Pages/Components/CustomTopAppBar.dart';
 import 'package:aspireme_flutter/Pages/Components/FloatingBottomNav.dart';
 import 'package:aspireme_flutter/Pages/FolderAndNoteListPage.dart';
 import 'package:aspireme_flutter/Pages/HomePage.dart';
-import 'package:aspireme_flutter/Pages/NotesEditingPage.dart';
-import 'package:aspireme_flutter/Pages/ViewIndividualFolder.dart';
 import 'package:aspireme_flutter/Providers/FlashCardProvider.dart';
 import 'package:aspireme_flutter/Providers/FolderAndNoteMangerProvider.dart';
 import 'package:aspireme_flutter/Providers/PageControllerProvider.dart';
@@ -34,23 +31,54 @@ class MainApp extends StatefulWidget {
   State<MainApp> createState() => _MainAppState();
 }
 
-class _MainAppState extends State<MainApp> {
+class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
+  ColorScheme colorScheme() {
+    return ColorScheme(
+        tertiary: Colors.green,
+        onTertiary: Colors.white,
+        brightness: Brightness.light,
+        primary: const Color.fromARGB(255, 255, 240, 124),
+        onPrimary: Colors.white,
+        secondary: const Color.fromARGB(255, 93, 115, 126),
+        onSecondary: Colors.white,
+        error: const Color.fromARGB(255, 251, 110, 110),
+        onError: Colors.white,
+        surface: const Color.fromARGB(255, 30, 29, 29),
+        onSurface: Theme.of(context).colorScheme.primary);
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // TODO: implement didChangeAppLifecycleState
+    super.didChangeAppLifecycleState(state);
+
+    // print("change life");
+    // Provider.of<FolderAndNoteManagerProvider>(context)
+    //     .makeSureRootFolderIsRoot();
+
+    Provider.of<FolderAndNoteManagerProvider>(context, listen: false)
+        .resetStructure();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        theme: ThemeData(
-            colorScheme: ColorScheme(
-                tertiary: Colors.green,
-                onTertiary: Colors.white,
-                brightness: Brightness.light,
-                primary: const Color.fromARGB(255, 255, 240, 124),
-                onPrimary: Colors.white,
-                secondary: const Color.fromARGB(255, 93, 115, 126),
-                onSecondary: Colors.white,
-                error: const Color.fromARGB(255, 251, 110, 110),
-                onError: Colors.white,
-                surface: const Color.fromARGB(255, 30, 29, 29),
-                onSurface: Theme.of(context).colorScheme.primary)),
+        theme: ThemeData(colorScheme: colorScheme()),
         home: Scaffold(
           appBar: const PreferredSize(
               preferredSize: Size.fromHeight(120), child: Customtopappbar()),
@@ -58,11 +86,9 @@ class _MainAppState extends State<MainApp> {
             controller:
                 context.read<Pagecontrollerprovider>().getPageController,
             onPageChanged: whenPageSwiped,
-            children: [
-              const Homepage(),
+            children: const [
+              Homepage(),
               FolderAndNoteListPage(),
-
-              // Viewindividualfolder(),
             ],
           ),
           bottomNavigationBar: const FloatingBottomNav(),

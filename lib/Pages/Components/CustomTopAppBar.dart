@@ -1,3 +1,4 @@
+import 'package:aspireme_flutter/BackEnd/SqlDatabase.dart';
 import 'package:aspireme_flutter/Providers/PageControllerProvider.dart';
 import 'package:aspireme_flutter/Providers/Theme.dart';
 import 'package:flutter/material.dart';
@@ -45,7 +46,13 @@ class _CustomtopappbarState extends State<Customtopappbar> {
                 ),
                 Expanded(
                     child: IconButton(
-                  onPressed: null,
+                  onPressed: () async {
+                    print("Folder table");
+                    await Sqldatabase.getFoldersWithCustomQuery();
+                    print("Note table");
+                    await Sqldatabase.getNotesWithCustomQuery();
+                    //await Sqldatabase.resetDatabase();
+                  },
                   icon: Image.asset(
                     "asset/button/settings.png",
                     scale: context.read<ThemeProvider>().getIconScale,

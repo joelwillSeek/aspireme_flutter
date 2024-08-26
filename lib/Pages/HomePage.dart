@@ -19,7 +19,7 @@ class Homepage extends StatelessWidget {
 
   void flashcard(BuildContext context) {
     showDialog(
-        context: context, builder: (BuildContext context) => FlashCard());
+        context: context, builder: (BuildContext context) => const FlashCard());
   }
 
   flashcardButton(BuildContext context) {

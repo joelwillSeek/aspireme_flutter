@@ -1,12 +1,10 @@
-import 'package:aspireme_flutter/BackEnd/FlashCardAlgorithm.dart';
 import 'package:aspireme_flutter/BackEnd/Models/Note.dart';
 import 'package:aspireme_flutter/Providers/FlashCardProvider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 class FlashCard extends StatefulWidget {
-  FlashCard({super.key});
+  const FlashCard({super.key});
 
   @override
   State<FlashCard> createState() => _FlashCardState();
@@ -14,11 +12,11 @@ class FlashCard extends StatefulWidget {
 
 class _FlashCardState extends State<FlashCard> {
   bool showDescription = false;
+  Note? noteToSee;
 
   @override
   Widget build(BuildContext context) {
-    Note noteToSee =
-        Provider.of<FlashCardProvider>(context).getNoteToShow(context);
+    noteToSee = context.read<FlashCardProvider>().getNoteToShow(context);
     return SimpleDialog(
       shadowColor: const Color.fromARGB(255, 0, 0, 0),
       alignment: Alignment.center,
@@ -26,62 +24,83 @@ class _FlashCardState extends State<FlashCard> {
       children: [
         closeButton(),
         noteTitleOrDiscription(noteToSee),
-        rememberedOrNotButtons()
+        rememberedOrNotButtons(noteToSee)
       ],
     );
   }
 
-  Widget rememberedOrNotButtons() {
-    void remebered() {
-      setState(() {
-        showDescription = true;
-      });
+  Widget rememberedOrNotButtons(Note? note) {
+    Widget yesOrNoButtons(Note notNullNote) {
+      void didntRemember() {
+        final flashCardManager = context.read<FlashCardProvider>();
+        flashCardManager.addToWrong = notNullNote;
+        noteToSee = flashCardManager.getNoteToShow(context);
+      }
+
+      void didRemember() {
+        final flashCardManager = context.read<FlashCardProvider>();
+
+        noteToSee = flashCardManager.getNoteToShow(context);
+      }
+
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          IconButton(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              onPressed: didntRemember,
+              icon: Image.asset(
+                "asset/button/cancel_hover.png",
+                scale: 3,
+              )),
+          IconButton(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              onPressed: didRemember,
+              icon: Image.asset(
+                "asset/button/done_hover.png",
+                scale: 3,
+              ))
+        ],
+      );
     }
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20.0),
-      child: showDescription
-          ? Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                IconButton(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    onPressed: null,
-                    icon: Image.asset(
-                      "asset/button/cancel_hover.png",
-                      scale: 3,
-                    )),
-                IconButton(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    onPressed: null,
-                    icon: Image.asset(
-                      "asset/button/done_hover.png",
-                      scale: 3,
-                    ))
-              ],
-            )
-          : Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                TextButton(
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStatePropertyAll(
-                        Theme.of(context).colorScheme.primary),
-                    padding: WidgetStatePropertyAll(EdgeInsets.all(20.0)),
-                  ),
-                  onPressed: () {
-                    remebered();
-                  },
-                  child: const Text(
-                    "See",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ],
+    Widget seeMoreButton() {
+      void remembered() {
+        setState(() {
+          showDescription = true;
+        });
+      }
+
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          TextButton(
+            style: ButtonStyle(
+              backgroundColor:
+                  WidgetStatePropertyAll(Theme.of(context).colorScheme.primary),
+              padding: const WidgetStatePropertyAll(
+                  EdgeInsets.symmetric(horizontal: 60.0, vertical: 10.0)),
             ),
-    );
+            onPressed: remembered,
+            child: const Text(
+              "See",
+              style: TextStyle(color: Colors.black),
+            ),
+          ),
+        ],
+      );
+    }
+
+    return note == null
+        ? const Placeholder(
+            color: Colors.transparent,
+            fallbackHeight: 80.0,
+          )
+        : Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20.0),
+            child: showDescription ? yesOrNoButtons(note) : seeMoreButton());
   }
 
   Widget closeButton() {
@@ -101,7 +120,14 @@ class _FlashCardState extends State<FlashCard> {
     );
   }
 
-  Widget noteTitleOrDiscription(Note note) {
+  Widget noteTitleOrDiscription(Note? note) {
+    if (note == null) {
+      return const Align(
+        alignment: Alignment.center,
+        child: Text("No Notes Created"),
+      );
+    }
+
     Widget title() {
       return Expanded(
           child: Text(
@@ -118,7 +144,6 @@ class _FlashCardState extends State<FlashCard> {
         style: const TextStyle(color: Colors.white, fontSize: 50.0),
         textAlign: TextAlign.center,
       ));
-      ;
     }
 
     return Align(

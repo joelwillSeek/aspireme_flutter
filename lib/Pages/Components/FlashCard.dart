@@ -16,14 +16,18 @@ class _FlashCardState extends State<FlashCard> {
 
   @override
   Widget build(BuildContext context) {
-    noteToSee = context.read<FlashCardProvider>().getNoteToShow(context);
+    Future.microtask(() {
+      noteToSee = Provider.of<FlashCardProvider>(context, listen: false)
+          .getNoteToShow();
+    });
+
     return SimpleDialog(
       shadowColor: const Color.fromARGB(255, 0, 0, 0),
       alignment: Alignment.center,
       backgroundColor: Theme.of(context).colorScheme.surface,
       children: [
         closeButton(),
-        noteTitleOrDiscription(noteToSee),
+        noteTitleOrDescription(noteToSee),
         rememberedOrNotButtons(noteToSee)
       ],
     );
@@ -33,14 +37,13 @@ class _FlashCardState extends State<FlashCard> {
     Widget yesOrNoButtons(Note notNullNote) {
       void didntRemember() {
         final flashCardManager = context.read<FlashCardProvider>();
-        flashCardManager.addToWrong = notNullNote;
-        noteToSee = flashCardManager.getNoteToShow(context);
+        flashCardManager.addToWrong = note!;
       }
 
       void didRemember() {
         final flashCardManager = context.read<FlashCardProvider>();
 
-        noteToSee = flashCardManager.getNoteToShow(context);
+        flashCardManager.setCorrectNote = note!;
       }
 
       return Row(
@@ -120,7 +123,7 @@ class _FlashCardState extends State<FlashCard> {
     );
   }
 
-  Widget noteTitleOrDiscription(Note? note) {
+  Widget noteTitleOrDescription(Note? note) {
     if (note == null) {
       return const Align(
         alignment: Alignment.center,

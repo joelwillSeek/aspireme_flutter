@@ -1,12 +1,12 @@
+import 'package:aspireme_flutter/Pages/Components/DocumentWidget.dart';
 import 'package:aspireme_flutter/Pages/Components/FolderWidget.dart';
-import 'package:aspireme_flutter/Pages/Components/NotesWidget.dart';
-import 'package:aspireme_flutter/Providers/FolderAndNoteMangerProvider.dart';
+import 'package:aspireme_flutter/Providers/DirectoryStrucutreManagerProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-class FolderAndNoteListPage extends StatelessWidget {
-  const FolderAndNoteListPage({super.key});
+class FolderAndDocumentListPage extends StatelessWidget {
+  const FolderAndDocumentListPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,17 +17,17 @@ class FolderAndNoteListPage extends StatelessWidget {
               BoxDecoration(color: Theme.of(context).colorScheme.surface),
           child: FutureBuilder(
             future: Future.wait([
-              Provider.of<FolderAndNoteManagerProvider>(context)
+              Provider.of<DirectoryStructureManagerProvider>(context)
                   .getCurrentlySelectedSubFolders,
-              Provider.of<FolderAndNoteManagerProvider>(context)
-                  .getCurrentlySelectedSubNotes
+              Provider.of<DirectoryStructureManagerProvider>(context)
+                  .getCurrentlySelectedSubDocuments
             ]),
-            builder: noteAndFolderFutureBuilder,
+            builder: documentAndFolderFutureBuilder,
           ),
         ));
   }
 
-  Widget noteAndFolderFutureBuilder(
+  Widget documentAndFolderFutureBuilder(
       BuildContext context, AsyncSnapshot<List?> snapShot) {
     if (snapShot.connectionState == ConnectionState.waiting) {
       return const Center(child: CircularProgressIndicator());
@@ -44,25 +44,25 @@ class FolderAndNoteListPage extends StatelessWidget {
     if (!snapShot.hasData || snapShot.data!.isEmpty) {
       return const Center(
           child: Text(
-        'No Folders Or Notes Available',
+        'No Folders Or Documents Are Available',
         style: TextStyle(color: Colors.white),
       ));
     }
 
     final subFolders = snapShot.data![0];
-    final subNotes = snapShot.data![1];
-    return gridViewOfFolderAndNote(context, subFolders, subNotes);
+    final subDocuments = snapShot.data![1];
+    return gridViewOfFolderAndDocument(context, subFolders, subDocuments);
   }
 
-  Widget gridViewOfFolderAndNote(
-      BuildContext context, List subFolders, List subNotes) {
-    Widget folderNoteGrid() {
+  Widget gridViewOfFolderAndDocument(
+      BuildContext context, List subFolders, List subDocuments) {
+    Widget folderDocumentGrid() {
       final items = <Widget>[];
 
       items.addAll(subFolders
           .map((element) => GridTile(child: FolderWidget(folder: element))));
-      items.addAll(subNotes
-          .map((element) => GridTile(child: NotesWidget(note: element))));
+      items.addAll(subDocuments.map((element) =>
+          GridTile(child: DocumentWidget(documentModel: element))));
 
       return GridView.count(
         crossAxisCount: 3,
@@ -73,9 +73,8 @@ class FolderAndNoteListPage extends StatelessWidget {
     return PopScope(
         onPopInvoked: (didPop) async {
           if (didPop) return;
-          print("pr");
           final closedTheFolder = await context
-              .read<FolderAndNoteManagerProvider>()
+              .read<DirectoryStructureManagerProvider>()
               .closedFolder(context);
 
           if (!closedTheFolder) {
@@ -83,6 +82,6 @@ class FolderAndNoteListPage extends StatelessWidget {
           }
         },
         canPop: false,
-        child: folderNoteGrid());
+        child: folderDocumentGrid());
   }
 }

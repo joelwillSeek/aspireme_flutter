@@ -1,38 +1,37 @@
 import 'package:aspireme_flutter/BackEnd/Models/Note.dart';
-import 'package:aspireme_flutter/Providers/FolderAndNoteMangerProvider.dart';
+import 'package:aspireme_flutter/BackEnd/SqlDatabase.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class FlashCardProvider extends ChangeNotifier {
-  final List<Note?> _wrongNotes = [];
+  List<Note?> _wrongNotes = [];
 
-  Note? getNoteToShow(BuildContext context) {
-    final managerRef = context.read<FolderAndNoteManagerProvider>();
+  Future<void> getAllWrongNotes() async {
+    _wrongNotes.clear();
+    final receivedWrongNotes = await Sqldatabse.getWrongCard();
 
-    // final rand = Random();
+    print("called");
 
-    if (_wrongNotes.isEmpty &&
-        managerRef.getCurrentlyBeingViewSubNotes!.isNotEmpty) {
-      // final noteID = rand.nextInt(managerRef.amountOfNotes);
-      // get randomly but for now just get the notes in root
+    if (receivedWrongNotes != null) _wrongNotes = receivedWrongNotes;
+  }
 
-      _wrongNotes.add(managerRef.getCurrentlyBeingViewSubNotes!.last);
-
-      return _wrongNotes.removeAt(0);
-    }
-
-    if (_wrongNotes.isEmpty &&
-        managerRef.getCurrentlyBeingViewSubNotes!.isEmpty) {
+  Note? getNoteToShow() {
+    if (_wrongNotes.isEmpty) {
       return null;
     }
+    //have a condition where after seeing all the wrong notes we can say either that it or see more other notes
+    return _wrongNotes.removeLast();
+  }
 
-    final removedNote = _wrongNotes.removeAt(0);
+  set setCorrectNote(Note note) {
+    note.isWrongAnswer = false;
 
-    return removedNote;
+    Sqldatabse.updateNote(note);
+    notifyListeners();
   }
 
   set addToWrong(Note wrongNote) {
-    _wrongNotes.add(wrongNote);
+    wrongNote.isWrongAnswer = true;
+    Sqldatabse.updateNote(wrongNote);
 
     notifyListeners();
   }

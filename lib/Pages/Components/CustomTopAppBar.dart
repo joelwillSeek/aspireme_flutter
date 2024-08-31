@@ -48,9 +48,11 @@ class _CustomtopappbarState extends State<Customtopappbar> {
                     child: IconButton(
                   onPressed: () async {
                     print("Folder table");
-                    await Sqldatabase.getFoldersWithCustomQuery();
+                    await Sqldatabse.getFoldersWithCustomQuery();
                     print("Note table");
-                    await Sqldatabase.getNotesWithCustomQuery();
+                    await Sqldatabse.getNotesWithCustomQuery();
+                    debugPrint("Document table");
+                    await Sqldatabse.getDocumentsWithCustomQuery();
                     //await Sqldatabase.resetDatabase();
                   },
                   icon: Image.asset(

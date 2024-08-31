@@ -17,18 +17,19 @@ class Homepage extends StatelessWidget {
     );
   }
 
-  void flashcard(BuildContext context) {
-    showDialog(
-        context: context, builder: (BuildContext context) => const FlashCard());
-  }
-
   flashcardButton(BuildContext context) {
+    void flashcard(BuildContext context) {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) => const FlashCard());
+    }
+
     return Expanded(
       child: Center(
           child: Pulsator(
-              style: PulseStyle(color: Theme.of(context).colorScheme.surface),
-              count: 2,
-              duration: const Duration(seconds: 4),
+              style: PulseStyle(color: Theme.of(context).colorScheme.primary),
+              count: 1,
+              duration: const Duration(seconds: 2),
               repeat: 0,
               startFromScratch: true,
               autoStart: true,

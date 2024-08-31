@@ -1,13 +1,14 @@
-import 'package:aspireme_flutter/BackEnd/Models/Folder.dart';
+import 'package:aspireme_flutter/BackEnd/Models/DocumentModel.dart';
+import 'package:aspireme_flutter/Pages/DocumentEditingPage.dart';
 import 'package:aspireme_flutter/Providers/DirectoryStrucutreManagerProvider.dart';
-//import 'package:aspireme_flutter/Providers/FolderAndNoteProvider.dart';
-import 'package:aspireme_flutter/Providers/PageControllerProvider.dart';
+import 'package:aspireme_flutter/Providers/DocumentEditingPageProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class FolderWidget extends StatelessWidget {
-  final Folder folder;
-  const FolderWidget({required this.folder, super.key});
+class DocumentWidget extends StatelessWidget {
+  final DocumentModel documentModel;
+
+  const DocumentWidget({required this.documentModel, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +38,7 @@ class FolderWidget extends StatelessWidget {
               onTap: () {
                 context
                     .read<DirectoryStructureManagerProvider>()
-                    .deleteFolder(folder);
+                    .deleteDocument(documentModel);
               },
               value: 'Option 1',
               child: Container(
@@ -56,31 +57,30 @@ class FolderWidget extends StatelessWidget {
           ]);
     }
 
-    void folderClicked() {
-      context.read<DirectoryStructureManagerProvider>().openFolder = folder;
-      context.read<Pagecontrollerprovider>().changePage(2, context);
-    }
-
     return GestureDetector(
       onLongPress: longPressClicked,
-      onTap: folderClicked,
-      child: Column(
-        children: [
-          IconButton(
-              onPressed: null,
-              iconSize: 10.0,
-              icon: Image.asset("asset/Icons/folder_icon.png")),
-          SizedBox(
-              width: 100.0,
-              height: 40.0,
-              child: Text(
-                folder.name ?? "Empty",
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white),
-                softWrap: false,
-              )),
-        ],
+      onTap: () {
+        context.read<DocumentEditingPageProvider>().setBeingViewedDocument =
+            documentModel;
+
+        Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => DocumentEditingPage()));
+      },
+      child: Card(
+        color: Theme.of(context).colorScheme.secondary,
+        margin: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset("asset/Icons/document_icon.png"),
+            Text(
+              documentModel.getName,
+              textAlign: TextAlign.center,
+            )
+          ],
+        ),
       ),
     );
   }

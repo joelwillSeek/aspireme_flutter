@@ -1,30 +1,45 @@
 import 'dart:convert';
 
-import 'package:aspireme_flutter/BackEnd/Models/Note.dart';
-import 'package:aspireme_flutter/BackEnd/SqlDatabase.dart';
+import 'package:aspireme_flutter/BackEnd/Models/DocumentModel.dart';
 
 class Folder {
   int? id;
   String? name;
   //parentID null means root folder
-  int? parentId;
+  int? _parentId;
 
-  List<Folder?> subFolders = [];
-  set addSubFolder(Folder? value) => subFolders.add(value);
-  List<Folder?> get getSubFolders => subFolders;
+  List<Folder?> _subFolders = [];
 
-  List<Note?> subNotes = [];
-  List<Note?> get getSubNotes => subNotes;
-  set addSubNote(Note? newNote) => subNotes.add(newNote);
+  List<DocumentModel?> _subDocuments = [];
 
   Folder({
     required this.name,
     this.id,
-    required this.parentId,
+    required int? parentId,
     List<Folder?>? subFoldersValue,
-    List<Note?>? subNotesValue,
-  })  : subFolders = subFoldersValue ?? [],
-        subNotes = subNotesValue ?? [];
+    List<DocumentModel?>? subDocumentModel,
+  })  : _parentId = parentId,
+        _subFolders = subFoldersValue ?? [],
+        _subDocuments = subDocumentModel ?? [];
+
+  //getters
+  List<Folder?> get getSubFolders => _subFolders;
+  List<DocumentModel?> get getSubDocuments => _subDocuments;
+  int? get getParentId => _parentId;
+
+  //setter
+  set addSubDocuments(DocumentModel? newDocument) =>
+      _subDocuments.add(newDocument);
+
+  set removeASubDocument(DocumentModel value) => _subDocuments.isEmpty
+      ? null
+      : _subDocuments.removeWhere((element) => element!.getId == value.getId);
+
+  set addSubFolder(Folder? value) => _subFolders.add(value);
+
+  set removeASubFolder(Folder value) => _subFolders.isEmpty
+      ? null
+      : _subFolders.removeWhere((element) => element!.id == value.id);
 
   factory Folder.fromJsonToFolder(Map<String, dynamic> json) {
     final newFolder = Folder(
@@ -32,23 +47,22 @@ class Folder {
         id: json["id"],
         parentId: json["parentId"],
         subFoldersValue: json["subFoldersId"],
-        subNotesValue: json["subNotesId"]);
+        subDocumentModel: json["subDocumentId"]);
 
     return newFolder;
   }
 
   Map<String, dynamic> fromFolderToJson(
       {bool assignId = true, bool imARootFolder = false}) {
-    final foldersIdsInString = _folderOrNoteIdToJson(subFolders);
-    final notesIdsInString = _folderOrNoteIdToJson(subNotes);
+    final foldersIdsInString = _folderOrDocumentIdToJson(_subFolders);
+    final documentsIdsInString = _folderOrDocumentIdToJson(_subDocuments);
 
     if (imARootFolder) {
-      print("go home $foldersIdsInString");
       return {
         "name": "root",
         "parentId": null,
         "subFoldersId": foldersIdsInString,
-        "subNotesId": notesIdsInString,
+        "subDocumentId": documentsIdsInString,
       };
     }
 
@@ -57,27 +71,31 @@ class Folder {
         "id": id,
         "name": name,
         "subFoldersId": foldersIdsInString,
-        "subNotesId": notesIdsInString,
-        "parentId": parentId
+        "subDocumentId": documentsIdsInString,
+        "parentId": _parentId
       };
     }
 
     return {
       "name": name,
       "subFoldersId": foldersIdsInString,
-      "subNotesId": notesIdsInString,
-      "parentId": parentId
+      "subDocumentId": documentsIdsInString,
+      "parentId": _parentId
     };
   }
 
-  String _folderOrNoteIdToJson(List wantToBeConverted) {
+  String _folderOrDocumentIdToJson(List wantToBeConverted) {
     final ids = [];
 
     for (var item in wantToBeConverted) {
-      ids.add(item?.id);
+      if (item is DocumentModel) {
+        ids.add(item.getId);
+      } else if (item is Folder) {
+        ids.add(item.id);
+      } else {
+        throw Exception("$item is other data type in folderToJson convertion");
+      }
     }
-
-    print("aleast one $ids");
 
     return jsonEncode(ids);
   }

@@ -1,9 +1,10 @@
 import 'package:aspireme_flutter/Pages/Components/CustomTopAppBar.dart';
 import 'package:aspireme_flutter/Pages/Components/FloatingBottomNav.dart';
-import 'package:aspireme_flutter/Pages/FolderAndNoteListPage.dart';
+import 'package:aspireme_flutter/Pages/FolderAndDocumentListPage.dart';
 import 'package:aspireme_flutter/Pages/HomePage.dart';
+import 'package:aspireme_flutter/Providers/DocumentEditingPageProvider.dart';
 import 'package:aspireme_flutter/Providers/FlashCardProvider.dart';
-import 'package:aspireme_flutter/Providers/FolderAndNoteMangerProvider.dart';
+import 'package:aspireme_flutter/Providers/DirectoryStrucutreManagerProvider.dart';
 import 'package:aspireme_flutter/Providers/PageControllerProvider.dart';
 import 'package:aspireme_flutter/Providers/Theme.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,9 @@ void main() {
         ChangeNotifierProvider(create: (context) => FlashCardProvider()),
         ChangeNotifierProvider(create: (context) => Pagecontrollerprovider()),
         ChangeNotifierProvider(
-            create: (context) => FolderAndNoteManagerProvider()),
+            create: (context) => DocumentEditingPageProvider()),
+        ChangeNotifierProvider(
+            create: (context) => DirectoryStructureManagerProvider()),
       ],
       child: const MainApp(),
     ),
@@ -57,21 +60,19 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    // TODO: implement didChangeAppLifecycleState
     super.didChangeAppLifecycleState(state);
 
     // print("change life");
     // Provider.of<FolderAndNoteManagerProvider>(context)
     //     .makeSureRootFolderIsRoot();
 
-    Provider.of<FolderAndNoteManagerProvider>(context, listen: false)
+    Provider.of<DirectoryStructureManagerProvider>(context, listen: false)
         .resetStructure();
   }
 
@@ -88,7 +89,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
             onPageChanged: whenPageSwiped,
             children: const [
               Homepage(),
-              FolderAndNoteListPage(),
+              FolderAndDocumentListPage(),
             ],
           ),
           bottomNavigationBar: const FloatingBottomNav(),

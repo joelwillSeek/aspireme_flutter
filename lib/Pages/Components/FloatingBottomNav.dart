@@ -1,10 +1,7 @@
-import 'package:aspireme_flutter/BackEnd/Models/Folder.dart';
-import 'package:aspireme_flutter/BackEnd/Models/Note.dart';
-import 'package:aspireme_flutter/Providers/FolderAndNoteMangerProvider.dart';
+import 'package:aspireme_flutter/Providers/DirectoryStrucutreManagerProvider.dart';
 //import 'package:aspireme_flutter/Providers/FolderAndNoteProvider.dart';
 import 'package:aspireme_flutter/Providers/PageControllerProvider.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
@@ -99,7 +96,7 @@ class _FloatingBottomNavState extends State<FloatingBottomNav> {
         )));
       } else {
         final folderAndNoteProvider =
-            context.read<FolderAndNoteManagerProvider>();
+            context.read<DirectoryStructureManagerProvider>();
         folderAndNoteProvider.addFolder(folderNameInputText.text);
       }
 
@@ -164,53 +161,33 @@ class _FloatingBottomNavState extends State<FloatingBottomNav> {
     );
   }
 
-  Widget createNoteTab(BuildContext context) {
-    Map<String, TextEditingController> textEditingController = {
-      "titleController": TextEditingController(),
-      "descriptionController": TextEditingController()
-    };
+  Widget createDocumentTab(BuildContext context) {
+    TextEditingController textEditingController = TextEditingController();
 
     void doneClicked() {
-      bool dontCreateNote = false;
+      if (textEditingController.text.length > 1) {
+        context
+            .read<DirectoryStructureManagerProvider>()
+            .addDocument(textEditingController.text);
 
-      if (!dontCreateNote) {
-        context.read<FolderAndNoteManagerProvider>().addNotes(
-            textEditingController["titleController"]!.text,
-            textEditingController["descriptionController"]!.text);
+        Navigator.pop(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Make sure you enter at least one letter")));
       }
-
-      Navigator.pop(context);
     }
 
     return Column(
       children: [
-        Text(
-          "Created Notes",
-          style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
-          textAlign: TextAlign.center,
-        ),
         Expanded(
           child: TextField(
-            controller: textEditingController["titleController"],
+            controller: textEditingController,
             decoration: const InputDecoration(
                 border: UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.white)),
                 enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.white)),
-                hintText: "Why do I like Cars?",
-                hintStyle: TextStyle(color: Colors.white)),
-          ),
-        ),
-        Expanded(
-          child: TextField(
-            controller: textEditingController["descriptionController"],
-            keyboardType: TextInputType.multiline,
-            decoration: const InputDecoration(
-                border: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white)),
-                enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white)),
-                hintText: "I like Cars because ...",
+                hintText: "Chemistry...",
                 hintStyle: TextStyle(color: Colors.white)),
           ),
         ),
@@ -245,7 +222,7 @@ class _FloatingBottomNavState extends State<FloatingBottomNav> {
     );
   }
 
-  Widget createFolderOrNoteDialog(BuildContext context) {
+  Widget createFolderOrDocumentDialog(BuildContext context) {
     return Dialog(
       child: SizedBox(
           height: 400,
@@ -265,14 +242,14 @@ class _FloatingBottomNavState extends State<FloatingBottomNav> {
                         text: "Folder",
                       ),
                       Tab(
-                        text: "Note",
+                        text: "Document",
                       )
                     ],
                   ),
                   Expanded(
                       child: TabBarView(children: [
                     createFolderTab(context),
-                    createNoteTab(context)
+                    createDocumentTab(context)
                   ]))
                 ])),
           )),
@@ -290,7 +267,8 @@ class _FloatingBottomNavState extends State<FloatingBottomNav> {
             pageControllerProvider.getExitingPages[1]) {
       showDialog(
           context: context,
-          builder: (BuildContext context) => createFolderOrNoteDialog(context));
+          builder: (BuildContext context) =>
+              createFolderOrDocumentDialog(context));
 
       return;
     }

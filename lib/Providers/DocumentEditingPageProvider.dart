@@ -1,6 +1,6 @@
 import 'package:aspireme_flutter/BackEnd/Models/DocumentModel.dart';
 import 'package:aspireme_flutter/BackEnd/Models/Note.dart';
-import 'package:aspireme_flutter/BackEnd/SqlDatabase.dart';
+import 'package:aspireme_flutter/BackEnd/SqlNoteFunctions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 
@@ -60,7 +60,8 @@ class DocumentEditingPageProvider extends ChangeNotifier {
 
     try {
       print("add note $title");
-      final addNoteWIthId = await Sqldatabse.createANote(addNoteWithOutId);
+      final addNoteWIthId =
+          await Sqlnotefunctions.createANote(addNoteWithOutId);
 
       _listOfNotes.add(addNoteWIthId);
       _listOfNotes.add(emptyNote);

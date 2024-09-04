@@ -6,7 +6,7 @@ import 'package:aspireme_flutter/Providers/DocumentEditingPageProvider.dart';
 import 'package:aspireme_flutter/Providers/FlashCardProvider.dart';
 import 'package:aspireme_flutter/Providers/DirectoryStrucutreManagerProvider.dart';
 import 'package:aspireme_flutter/Providers/PageControllerProvider.dart';
-import 'package:aspireme_flutter/Providers/Theme.dart';
+import 'package:aspireme_flutter/Providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -50,6 +50,21 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         onSurface: Theme.of(context).colorScheme.primary);
   }
 
+  ColorScheme darkColorScheme() {
+    return ColorScheme(
+        tertiary: Colors.green,
+        onTertiary: Colors.white,
+        brightness: Brightness.light,
+        primary: const Color.fromARGB(255, 255, 240, 124),
+        onPrimary: Colors.white,
+        secondary: const Color.fromARGB(255, 93, 115, 126),
+        onSecondary: Colors.white,
+        error: const Color.fromARGB(255, 251, 110, 110),
+        onError: Colors.white,
+        surface: Color.fromARGB(255, 255, 255, 255),
+        onSurface: Theme.of(context).colorScheme.primary);
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -80,6 +95,8 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return MaterialApp(
         theme: ThemeData(colorScheme: colorScheme()),
+        darkTheme: ThemeData(colorScheme: darkColorScheme()),
+        themeMode: Provider.of<ThemeProvider>(context).getThemeMode,
         home: Scaffold(
           appBar: const PreferredSize(
               preferredSize: Size.fromHeight(120), child: Customtopappbar()),

@@ -1,7 +1,9 @@
 import 'package:aspireme_flutter/BackEnd/Models/DocumentModel.dart';
 import 'package:aspireme_flutter/BackEnd/Models/Folder.dart';
 import 'package:aspireme_flutter/BackEnd/Models/Note.dart';
-import 'package:aspireme_flutter/BackEnd/SqlDatabase.dart';
+import 'package:aspireme_flutter/BackEnd/SqlDocumentFunciton.dart';
+import 'package:aspireme_flutter/BackEnd/SqlFolderFunction.dart';
+import 'package:aspireme_flutter/BackEnd/SqlNoteFunctions.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -33,7 +35,7 @@ class DirectoryStructureManagerProvider extends ChangeNotifier {
     final newFolderNoId =
         Folder(name: name, parentId: getCurrentlyBeingViewedFolder.id);
 
-    final newFolderWithID = await Sqldatabse.createAFolder(
+    final newFolderWithID = await Sqlfolderfunction.createAFolder(
       newFolderNoId,
     );
 
@@ -77,8 +79,6 @@ class DirectoryStructureManagerProvider extends ChangeNotifier {
 
     final listOfSubDocuments = _stackOfOpenFolders.last.getSubDocuments;
 
-    print("gay $listOfSubDocuments");
-
     return listOfSubDocuments;
   }
 
@@ -99,7 +99,7 @@ class DirectoryStructureManagerProvider extends ChangeNotifier {
 
     concurrentInsertionOfRootLock = true;
     try {
-      final rootFolder = await Sqldatabse.getRootFolder();
+      final rootFolder = await Sqlfolderfunction.getRootFolder();
 
       if (rootFolder != null) {
         _stackOfOpenFolders.insert(0, rootFolder);
@@ -119,7 +119,7 @@ class DirectoryStructureManagerProvider extends ChangeNotifier {
   Future<void> deleteFolder(Folder deleteFolder) async {
     try {
       await makeSureRootFolderIsRoot();
-      await Sqldatabse.removeFolder(deleteFolder);
+      await Sqlfolderfunction.removeFolder(deleteFolder);
 
       _stackOfOpenFolders.last.getSubFolders.remove(deleteFolder);
     } catch (e) {
@@ -140,7 +140,7 @@ class DirectoryStructureManagerProvider extends ChangeNotifier {
       final newFolderNoId = DocumentModel(
           name: name, parentId: getCurrentlyBeingViewedFolder.id!);
 
-      final newDocumentWithID = await Sqldatabse.createDocument(
+      final newDocumentWithID = await Sqldocumentfunciton.createDocument(
         newFolderNoId,
       );
 
@@ -155,7 +155,7 @@ class DirectoryStructureManagerProvider extends ChangeNotifier {
   Future<void> deleteDocument(DocumentModel deleteDocument) async {
     try {
       await makeSureRootFolderIsRoot();
-      await Sqldatabse.removeDocument(deleteDocument);
+      await Sqldocumentfunciton.removeDocument(deleteDocument);
 
       _stackOfOpenFolders.last.getSubDocuments.remove(deleteDocument);
     } catch (e) {
@@ -170,7 +170,7 @@ class DirectoryStructureManagerProvider extends ChangeNotifier {
       Note deleteNote, DocumentModel documentBeingSeeing) async {
     try {
       await makeSureRootFolderIsRoot();
-      await Sqldatabse.removeNote(deleteNote);
+      await Sqlnotefunctions.removeNote(deleteNote);
       documentBeingSeeing.getSubNotesId.remove(deleteNote);
     } catch (e) {
       print("Delete Note Error: $e");
@@ -189,7 +189,7 @@ class DirectoryStructureManagerProvider extends ChangeNotifier {
           dateTime: DateFormat("dd/mm/yy").format(DateTime.now()),
           parentId: getCurrentlyBeingViewedFolder.id!);
 
-      final newNoteWithId = await Sqldatabse.createANote(newNoteNoId);
+      final newNoteWithId = await Sqlnotefunctions.createANote(newNoteNoId);
 
       documentBeingBViewed.addSubNote = newNoteWithId;
     } catch (e) {

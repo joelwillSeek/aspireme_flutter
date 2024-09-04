@@ -3,22 +3,13 @@ import 'package:aspireme_flutter/Providers/FlashCardProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class FlashCard extends StatefulWidget {
+class FlashCard extends StatelessWidget {
   const FlashCard({super.key});
 
   @override
-  State<FlashCard> createState() => _FlashCardState();
-}
-
-class _FlashCardState extends State<FlashCard> {
-  bool showDescription = false;
-  Note? noteToSee;
-
-  @override
   Widget build(BuildContext context) {
-    Future.microtask(() {
-      noteToSee = Provider.of<FlashCardProvider>(context, listen: false)
-          .getNoteToShow();
+    Future.microtask(() async {
+      await context.read<FlashCardProvider>().getAllWrongNotes(context);
     });
 
     return SimpleDialog(
@@ -26,24 +17,25 @@ class _FlashCardState extends State<FlashCard> {
       alignment: Alignment.center,
       backgroundColor: Theme.of(context).colorScheme.surface,
       children: [
-        closeButton(),
-        noteTitleOrDescription(noteToSee),
-        rememberedOrNotButtons(noteToSee)
+        closeButton(context),
+        noteTitleOrDescription(context),
+        rememberedOrNotButtons(context)
       ],
     );
   }
 
-  Widget rememberedOrNotButtons(Note? note) {
+  Widget rememberedOrNotButtons(BuildContext context) {
+    Note? note = Provider.of<FlashCardProvider>(context).getNoteToShow();
     Widget yesOrNoButtons(Note notNullNote) {
       void didntRemember() {
         final flashCardManager = context.read<FlashCardProvider>();
-        flashCardManager.addToWrong = note!;
+        flashCardManager.addToWrong(note!);
       }
 
       void didRemember() {
         final flashCardManager = context.read<FlashCardProvider>();
 
-        flashCardManager.setCorrectNote = note!;
+        flashCardManager.setCorrectNote(note!);
       }
 
       return Row(
@@ -70,9 +62,8 @@ class _FlashCardState extends State<FlashCard> {
 
     Widget seeMoreButton() {
       void remembered() {
-        setState(() {
-          showDescription = true;
-        });
+        Provider.of<FlashCardProvider>(context, listen: false)
+            .setShowDescription = true;
       }
 
       return Row(
@@ -103,10 +94,12 @@ class _FlashCardState extends State<FlashCard> {
           )
         : Padding(
             padding: const EdgeInsets.symmetric(vertical: 20.0),
-            child: showDescription ? yesOrNoButtons(note) : seeMoreButton());
+            child: Provider.of<FlashCardProvider>(context).getShowDescription
+                ? yesOrNoButtons(note)
+                : seeMoreButton());
   }
 
-  Widget closeButton() {
+  Widget closeButton(BuildContext context) {
     return Container(
       alignment: Alignment.topRight,
       padding: const EdgeInsets.all(20),
@@ -123,7 +116,8 @@ class _FlashCardState extends State<FlashCard> {
     );
   }
 
-  Widget noteTitleOrDescription(Note? note) {
+  Widget noteTitleOrDescription(BuildContext context) {
+    Note? note = Provider.of<FlashCardProvider>(context).getNoteToShow();
     if (note == null) {
       return const Align(
         alignment: Alignment.center,
@@ -151,6 +145,8 @@ class _FlashCardState extends State<FlashCard> {
 
     return Align(
         alignment: Alignment.center,
-        child: showDescription ? description() : title());
+        child: Provider.of<FlashCardProvider>(context).getShowDescription
+            ? description()
+            : title());
   }
 }

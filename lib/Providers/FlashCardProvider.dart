@@ -1,37 +1,79 @@
 import 'package:aspireme_flutter/BackEnd/Models/Note.dart';
-import 'package:aspireme_flutter/BackEnd/SqlDatabase.dart';
+import 'package:aspireme_flutter/BackEnd/SqlFlashCardFunction.dart';
+import 'package:aspireme_flutter/BackEnd/SqlNoteFunctions.dart';
 import 'package:flutter/material.dart';
 
 class FlashCardProvider extends ChangeNotifier {
   List<Note?> _wrongNotes = [];
+  final List<Note?> _seeinNotes = [];
 
-  Future<void> getAllWrongNotes() async {
+  bool showDescription = false;
+
+  set setShowDescription(bool value) {
+    showDescription = value;
+    notifyListeners();
+  }
+
+  get getShowDescription => showDescription;
+
+  Future<void> getAllWrongNotes(BuildContext context) async {
+    if (_wrongNotes.isNotEmpty) return;
     _wrongNotes.clear();
-    final receivedWrongNotes = await Sqldatabse.getWrongCard();
 
-    print("called");
+    final receivedWrongNotes = await Sqlflashcardfunction.getWrongCard();
 
-    if (receivedWrongNotes != null) _wrongNotes = receivedWrongNotes;
+    if (receivedWrongNotes != null) {
+      _wrongNotes = receivedWrongNotes;
+
+      print("wornt $_wrongNotes");
+
+      return;
+    }
+
+    if (context.mounted) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("No notes found")));
+    }
   }
 
   Note? getNoteToShow() {
     if (_wrongNotes.isEmpty) {
       return null;
     }
+
+    print("got you ${_wrongNotes.last?.title}");
+
     //have a condition where after seeing all the wrong notes we can say either that it or see more other notes
-    return _wrongNotes.removeLast();
+    return _wrongNotes.last;
   }
 
-  set setCorrectNote(Note note) {
+  void setCorrectNote(Note note) async {
     note.isWrongAnswer = false;
 
-    Sqldatabse.updateNote(note);
+    await Sqlnotefunctions.updateNote(note);
+
+    final theLastOne = _wrongNotes.removeLast();
+
+    if (_wrongNotes.isNotEmpty) {
+      _seeinNotes.add(theLastOne);
+    }
+
+    showDescription = false;
+
     notifyListeners();
   }
 
-  set addToWrong(Note wrongNote) {
+  void addToWrong(Note wrongNote) async {
     wrongNote.isWrongAnswer = true;
-    Sqldatabse.updateNote(wrongNote);
+    await Sqlnotefunctions.updateNote(wrongNote);
+
+    final theLastOne = _wrongNotes.removeLast();
+
+    if (_wrongNotes.isNotEmpty) {
+      _seeinNotes.add(theLastOne);
+    }
+
+    showDescription = false;
 
     notifyListeners();
   }

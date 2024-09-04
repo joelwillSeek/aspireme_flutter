@@ -1,11 +1,12 @@
-import 'package:aspireme_flutter/BackEnd/SqlDatabase.dart';
+import 'package:aspireme_flutter/Pages/settings_page.dart';
 import 'package:aspireme_flutter/Providers/PageControllerProvider.dart';
-import 'package:aspireme_flutter/Providers/Theme.dart';
+import 'package:aspireme_flutter/Providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class Customtopappbar extends StatefulWidget {
-  const Customtopappbar({super.key});
+  final bool showSettingsButton;
+  const Customtopappbar({this.showSettingsButton = true, super.key});
 
   @override
   State<Customtopappbar> createState() => _CustomtopappbarState();
@@ -33,8 +34,10 @@ class _CustomtopappbarState extends State<Customtopappbar> {
                 ),
                 Expanded(
                   child: Text(
-                    Provider.of<Pagecontrollerprovider>(context)
-                        .getCurrentPageName,
+                    widget.showSettingsButton
+                        ? Provider.of<Pagecontrollerprovider>(context)
+                            .getCurrentPageName
+                        : "Setting",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
@@ -45,21 +48,28 @@ class _CustomtopappbarState extends State<Customtopappbar> {
                   ),
                 ),
                 Expanded(
-                    child: IconButton(
-                  onPressed: () async {
-                    print("Folder table");
-                    await Sqldatabse.getFoldersWithCustomQuery();
-                    print("Note table");
-                    await Sqldatabse.getNotesWithCustomQuery();
-                    debugPrint("Document table");
-                    await Sqldatabse.getDocumentsWithCustomQuery();
-                    //await Sqldatabase.resetDatabase();
-                  },
-                  icon: Image.asset(
-                    "asset/button/settings.png",
-                    scale: context.read<ThemeProvider>().getIconScale,
-                  ),
-                ))
+                    child: widget.showSettingsButton
+                        ? IconButton(
+                            onPressed: () async {
+                              // print("Folder table");
+                              // await Sqldatabse.getFoldersWithCustomQuery();
+                              // print("Note table");
+                              // await Sqldatabse.getNotesWithCustomQuery();
+                              // debugPrint("Document table");
+                              // await Sqldatabse.getDocumentsWithCustomQuery();
+                              //await Sqldatabase.resetDatabase();
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => const SettingsPage()));
+                            },
+                            icon: Image.asset(
+                              "asset/button/settings.png",
+                              scale: context.read<ThemeProvider>().getIconScale,
+                            ),
+                          )
+                        : const Placeholder(
+                            fallbackHeight: 90,
+                            color: Colors.transparent,
+                          ))
               ],
             )),
         Align(

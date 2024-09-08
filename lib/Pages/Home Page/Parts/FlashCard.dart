@@ -25,10 +25,12 @@ class FlashCard extends StatelessWidget {
   }
 
   Widget rememberedOrNotButtons(BuildContext context) {
+    //added a null check to the function that calls this
     Note? note = Provider.of<FlashCardProvider>(context).getNoteToShow();
     Widget yesOrNoButtons(Note notNullNote) {
       void didntRemember() {
         final flashCardManager = context.read<FlashCardProvider>();
+
         flashCardManager.addToWrong(note!);
       }
 
@@ -118,17 +120,11 @@ class FlashCard extends StatelessWidget {
 
   Widget noteTitleOrDescription(BuildContext context) {
     Note? note = Provider.of<FlashCardProvider>(context).getNoteToShow();
-    if (note == null) {
-      return const Align(
-        alignment: Alignment.center,
-        child: Text("No Notes Created"),
-      );
-    }
 
     Widget title() {
       return Expanded(
           child: Text(
-        note.title,
+        note == null ? "No notes found" : note.title,
         style: const TextStyle(color: Colors.white, fontSize: 50.0),
         textAlign: TextAlign.center,
       ));
@@ -137,7 +133,7 @@ class FlashCard extends StatelessWidget {
     Widget description() {
       return Expanded(
           child: Text(
-        note.description,
+        note!.description,
         style: const TextStyle(color: Colors.white, fontSize: 50.0),
         textAlign: TextAlign.center,
       ));

@@ -1,9 +1,9 @@
 import 'package:aspireme_flutter/BackEnd/Models/DocumentModel.dart';
 import 'package:aspireme_flutter/BackEnd/Models/Folder.dart';
 import 'package:aspireme_flutter/BackEnd/Models/Note.dart';
-import 'package:aspireme_flutter/BackEnd/SqlDocumentFunciton.dart';
-import 'package:aspireme_flutter/BackEnd/SqlFolderFunction.dart';
-import 'package:aspireme_flutter/BackEnd/SqlNoteFunctions.dart';
+import 'package:aspireme_flutter/BackEnd/Database/SqlDocumentFunciton.dart';
+import 'package:aspireme_flutter/BackEnd/Database/SqlFolderFunction.dart';
+import 'package:aspireme_flutter/BackEnd/Database/SqlNoteFunctions.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -27,7 +27,7 @@ class DirectoryStructureManagerProvider extends ChangeNotifier {
   }
 
 //Folder functions
-  void addFolder(
+  Future addFolder(
     String name,
   ) async {
     await makeSureRootFolderIsRoot();
@@ -197,19 +197,18 @@ class DirectoryStructureManagerProvider extends ChangeNotifier {
     }
   }
 
-  //   notifyListeners();
-  // }
+  Future updateNote(String question, String answer, int parentId) async {
+    try {
+      await makeSureRootFolderIsRoot();
 
-  // List<Note?>? get getCurrentlyBeingViewSubNotes =>
-  //     _stackOfOpenFolders.last.getSubNotes;
-
-// Future<List> get getCurrentlySelectedSubNotes async {
-//     await makeSureRootFolderIsRoot();
-
-//     final listOfSubNotes = _stackOfOpenFolders.last.getSubNotes;
-
-//     print("list note $listOfSubNotes");
-
-//     return listOfSubNotes ?? [];
-//   }
+      final updatedNote = Note(
+          title: question,
+          description: answer,
+          dateTime: DateFormat("dd/mm/yy").format(DateTime.now()),
+          parentId: parentId);
+      await Sqlnotefunctions.updateNote(updatedNote);
+    } catch (e) {
+      debugPrint("Update Note Function Error : $e");
+    }
+  }
 }

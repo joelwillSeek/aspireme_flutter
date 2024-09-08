@@ -1,3 +1,4 @@
+import 'package:aspireme_flutter/Pages/Globally%20Used/LoadingWidget.dart';
 import 'package:aspireme_flutter/Providers/DirectoryStrucutreManagerProvider.dart';
 //import 'package:aspireme_flutter/Providers/FolderAndNoteProvider.dart';
 import 'package:aspireme_flutter/Providers/PageControllerProvider.dart';
@@ -87,7 +88,7 @@ class _FloatingBottomNavState extends State<FloatingBottomNav> {
   Widget createFolderTab(BuildContext context) {
     TextEditingController folderNameInputText = TextEditingController();
 
-    void yesClicked() {
+    Future<void> yesClicked() async {
       if (folderNameInputText.text.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text(
@@ -97,10 +98,19 @@ class _FloatingBottomNavState extends State<FloatingBottomNav> {
       } else {
         final folderAndNoteProvider =
             context.read<DirectoryStructureManagerProvider>();
-        folderAndNoteProvider.addFolder(folderNameInputText.text);
+        showDialog(
+            barrierDismissible: false,
+            context: context,
+            builder: (context) => const LoadingWidget());
+        await folderAndNoteProvider.addFolder(folderNameInputText.text);
+        if (context.mounted) {
+          Navigator.pop(context);
+        }
       }
 
-      Navigator.pop(context);
+      if (context.mounted) {
+        Navigator.pop(context);
+      }
     }
 
     return Column(
@@ -164,13 +174,22 @@ class _FloatingBottomNavState extends State<FloatingBottomNav> {
   Widget createDocumentTab(BuildContext context) {
     TextEditingController textEditingController = TextEditingController();
 
-    void doneClicked() {
+    Future<void> doneClicked() async {
       if (textEditingController.text.length > 1) {
-        context
+        showDialog(
+            barrierDismissible: false,
+            context: context,
+            builder: (context) => const LoadingWidget());
+
+        await context
             .read<DirectoryStructureManagerProvider>()
             .addDocument(textEditingController.text);
 
-        Navigator.pop(context);
+        if (context.mounted) {
+          Navigator.pop(context);
+
+          Navigator.pop(context);
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text("Make sure you enter at least one letter")));

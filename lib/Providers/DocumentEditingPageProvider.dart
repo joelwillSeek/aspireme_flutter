@@ -1,6 +1,6 @@
 import 'package:aspireme_flutter/BackEnd/Models/DocumentModel.dart';
 import 'package:aspireme_flutter/BackEnd/Models/Note.dart';
-import 'package:aspireme_flutter/BackEnd/SqlNoteFunctions.dart';
+import 'package:aspireme_flutter/BackEnd/Database/SqlNoteFunctions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 

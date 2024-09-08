@@ -1,3 +1,4 @@
 {
-  "cmake.sourceDirectory": "/media/joel/LinuxValubleData/Active_Project/aspireme_flutter/linux"
+  "cmake.sourceDirectory": "/media/joel/LinuxValubleData/Active_Project/aspireme_flutter/linux",
+  "java.compile.nullAnalysis.mode": "automatic"
 }

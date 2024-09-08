@@ -1,5 +1,5 @@
-import 'package:aspireme_flutter/BackEnd/SqlDatabase.dart';
-import 'package:aspireme_flutter/Pages/Components/CustomTopAppBar.dart';
+import 'package:aspireme_flutter/BackEnd/Database/SqlDatabase.dart';
+import 'package:aspireme_flutter/Pages/Globally%20Used/CustomTopAppBar.dart';
 import 'package:aspireme_flutter/Providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

@@ -1,8 +1,8 @@
-import 'package:aspireme_flutter/Pages/Components/DocumentWidget.dart';
-import 'package:aspireme_flutter/Pages/Components/FolderWidget.dart';
+import 'package:aspireme_flutter/Pages/Folder%20And%20Document%20View/Parts/DocumentWidget.dart';
+import 'package:aspireme_flutter/Pages/Folder%20And%20Document%20View/Parts/FolderWidget.dart';
 import 'package:aspireme_flutter/Providers/DirectoryStrucutreManagerProvider.dart';
+import 'package:aspireme_flutter/Providers/PageControllerProvider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class FolderAndDocumentListPage extends StatelessWidget {
@@ -51,25 +51,35 @@ class FolderAndDocumentListPage extends StatelessWidget {
 
     final subFolders = snapShot.data![0];
     final subDocuments = snapShot.data![1];
-    return gridViewOfFolderAndDocument(context, subFolders, subDocuments);
+    return GridViewOfFolderAndDocument(
+      subDocuments: subDocuments,
+      subFolders: subFolders,
+    );
+  }
+}
+
+class GridViewOfFolderAndDocument extends StatelessWidget {
+  final List subFolders;
+  final List subDocuments;
+  const GridViewOfFolderAndDocument(
+      {required this.subDocuments, required this.subFolders, super.key});
+
+  Widget folderDocumentGrid() {
+    final items = <Widget>[];
+
+    items.addAll(subFolders
+        .map((element) => GridTile(child: FolderWidget(folder: element))));
+    items.addAll(subDocuments.map(
+        (element) => GridTile(child: DocumentWidget(documentModel: element))));
+
+    return GridView.count(
+      crossAxisCount: 3,
+      children: items,
+    );
   }
 
-  Widget gridViewOfFolderAndDocument(
-      BuildContext context, List subFolders, List subDocuments) {
-    Widget folderDocumentGrid() {
-      final items = <Widget>[];
-
-      items.addAll(subFolders
-          .map((element) => GridTile(child: FolderWidget(folder: element))));
-      items.addAll(subDocuments.map((element) =>
-          GridTile(child: DocumentWidget(documentModel: element))));
-
-      return GridView.count(
-        crossAxisCount: 3,
-        children: items,
-      );
-    }
-
+  @override
+  Widget build(BuildContext context) {
     return PopScope(
         onPopInvoked: (didPop) async {
           if (didPop) return;
@@ -77,8 +87,8 @@ class FolderAndDocumentListPage extends StatelessWidget {
               .read<DirectoryStructureManagerProvider>()
               .closedFolder(context);
 
-          if (!closedTheFolder) {
-            SystemNavigator.pop();
+          if (!closedTheFolder && context.mounted) {
+            context.read<Pagecontrollerprovider>().changePage(0, context);
           }
         },
         canPop: false,

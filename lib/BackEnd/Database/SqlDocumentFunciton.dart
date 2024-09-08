@@ -5,9 +5,9 @@ import 'dart:convert';
 import 'package:aspireme_flutter/BackEnd/Models/DocumentModel.dart';
 import 'package:aspireme_flutter/BackEnd/Models/Folder.dart';
 import 'package:aspireme_flutter/BackEnd/Models/Note.dart';
-import 'package:aspireme_flutter/BackEnd/SqlDatabase.dart';
-import 'package:aspireme_flutter/BackEnd/SqlFolderFunction.dart';
-import 'package:aspireme_flutter/BackEnd/SqlNoteFunctions.dart';
+import 'package:aspireme_flutter/BackEnd/Database/SqlDatabase.dart';
+import 'package:aspireme_flutter/BackEnd/Database/SqlFolderFunction.dart';
+import 'package:aspireme_flutter/BackEnd/Database/SqlNoteFunctions.dart';
 import 'package:flutter/material.dart';
 
 class Sqldocumentfunciton {

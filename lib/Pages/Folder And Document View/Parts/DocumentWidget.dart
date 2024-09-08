@@ -1,5 +1,5 @@
 import 'package:aspireme_flutter/BackEnd/Models/DocumentModel.dart';
-import 'package:aspireme_flutter/Pages/DocumentEditingPage.dart';
+import 'package:aspireme_flutter/Pages/Document%20Editing%20View/DocumentEditingPage.dart';
 import 'package:aspireme_flutter/Providers/DirectoryStrucutreManagerProvider.dart';
 import 'package:aspireme_flutter/Providers/DocumentEditingPageProvider.dart';
 import 'package:flutter/material.dart';

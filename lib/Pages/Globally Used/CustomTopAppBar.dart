@@ -1,4 +1,4 @@
-import 'package:aspireme_flutter/Pages/settings_page.dart';
+import 'package:aspireme_flutter/Pages/Settings/settings_page.dart';
 import 'package:aspireme_flutter/Providers/PageControllerProvider.dart';
 import 'package:aspireme_flutter/Providers/theme_provider.dart';
 import 'package:flutter/material.dart';

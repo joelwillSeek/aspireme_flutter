@@ -1,7 +1,7 @@
-import 'package:aspireme_flutter/Pages/Components/CustomTopAppBar.dart';
-import 'package:aspireme_flutter/Pages/Components/FloatingBottomNav.dart';
-import 'package:aspireme_flutter/Pages/FolderAndDocumentListPage.dart';
-import 'package:aspireme_flutter/Pages/HomePage.dart';
+import 'package:aspireme_flutter/Pages/Globally%20Used/CustomTopAppBar.dart';
+import 'package:aspireme_flutter/Pages/Globally%20Used/FloatingBottomNav.dart';
+import 'package:aspireme_flutter/Pages/Folder%20And%20Document%20View/FolderAndDocumentListPage.dart';
+import 'package:aspireme_flutter/Pages/Home%20Page/HomePage.dart';
 import 'package:aspireme_flutter/Providers/DocumentEditingPageProvider.dart';
 import 'package:aspireme_flutter/Providers/FlashCardProvider.dart';
 import 'package:aspireme_flutter/Providers/DirectoryStrucutreManagerProvider.dart';
@@ -61,13 +61,12 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         onSecondary: Colors.white,
         error: const Color.fromARGB(255, 251, 110, 110),
         onError: Colors.white,
-        surface: Color.fromARGB(255, 255, 255, 255),
+        surface: const Color.fromARGB(255, 255, 255, 255),
         onSurface: Theme.of(context).colorScheme.primary);
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     WidgetsBinding.instance.addObserver(this);
@@ -83,10 +82,6 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
 
-    // print("change life");
-    // Provider.of<FolderAndNoteManagerProvider>(context)
-    //     .makeSureRootFolderIsRoot();
-
     Provider.of<DirectoryStructureManagerProvider>(context, listen: false)
         .resetStructure();
   }
@@ -94,23 +89,23 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        theme: ThemeData(colorScheme: colorScheme()),
-        darkTheme: ThemeData(colorScheme: darkColorScheme()),
-        themeMode: Provider.of<ThemeProvider>(context).getThemeMode,
-        home: Scaffold(
-          appBar: const PreferredSize(
-              preferredSize: Size.fromHeight(120), child: Customtopappbar()),
-          body: PageView(
-            controller:
-                context.read<Pagecontrollerprovider>().getPageController,
-            onPageChanged: whenPageSwiped,
-            children: const [
-              Homepage(),
-              FolderAndDocumentListPage(),
-            ],
-          ),
-          bottomNavigationBar: const FloatingBottomNav(),
-        ));
+      theme: ThemeData(colorScheme: colorScheme()),
+      darkTheme: ThemeData(colorScheme: darkColorScheme()),
+      themeMode: Provider.of<ThemeProvider>(context).getThemeMode,
+      home: Scaffold(
+        appBar: const PreferredSize(
+            preferredSize: Size.fromHeight(120), child: Customtopappbar()),
+        body: PageView(
+          controller: context.read<Pagecontrollerprovider>().getPageController,
+          onPageChanged: whenPageSwiped,
+          children: const [
+            Homepage(),
+            FolderAndDocumentListPage(),
+          ],
+        ),
+        bottomNavigationBar: const FloatingBottomNav(),
+      ),
+    );
   }
 
   void whenPageSwiped(int index) {

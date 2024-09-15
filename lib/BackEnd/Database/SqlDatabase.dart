@@ -1,5 +1,8 @@
-
+import 'package:aspireme_flutter/BackEnd/Database/SqlFolderFunction.dart';
+import 'package:aspireme_flutter/Providers/DirectoryStrucutreManagerProvider.dart';
+import 'package:flutter/material.dart';
 import 'package:path/path.dart';
+import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 class Sqldatabse {
@@ -10,7 +13,6 @@ class Sqldatabse {
   static String nameNoteTable = "Notes";
   static String nameFolderTable = "Folders";
   static String nameDocumentTable = "Documents";
-  static String nameFlashCardTable = "FlashCards";
 
   //query
   static String queryDocumentTable =
@@ -29,11 +31,21 @@ class Sqldatabse {
     });
   }
 
-  static Future resetDatabase() async {
-    final Database = await getDatabase();
+  static Future resetDatabase(BuildContext context) async {
+    final database = await getDatabase();
 
-    await Database.delete(nameFolderTable);
-    await Database.delete(nameNoteTable);
+    await database.execute("drop table if exists $nameFolderTable");
+    await database.execute("drop table if exists $nameNoteTable");
+    await database.execute("drop table if exists $nameDocumentTable");
+    //create the table
+    await database.execute(queryFolderTable);
+    await database.execute(queryNoteTable);
+    await database.execute(queryDocumentTable);
+
+    Sqlfolderfunction.getRootFolder();
+    if (context.mounted) {
+      context.read<DirectoryStructureManagerProvider>().clearListFolderOpen();
+    }
   }
 
   static Future<void> getFoldersWithCustomQuery() async {

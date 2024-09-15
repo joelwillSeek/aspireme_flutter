@@ -1,5 +1,5 @@
 class Note {
-  final String title, description, dateTime;
+  String title, description, dateTime;
   int? id;
   final int parentId;
   //0 for false and 1 for true

@@ -1,3 +1,4 @@
+import 'package:aspireme_flutter/BackEnd/Models/Folder.dart';
 import 'package:aspireme_flutter/Pages/Folder%20And%20Document%20View/Parts/DocumentWidget.dart';
 import 'package:aspireme_flutter/Pages/Folder%20And%20Document%20View/Parts/FolderWidget.dart';
 import 'package:aspireme_flutter/Providers/DirectoryStrucutreManagerProvider.dart';
@@ -5,26 +6,50 @@ import 'package:aspireme_flutter/Providers/PageControllerProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class FolderAndDocumentListPage extends StatelessWidget {
+class FolderAndDocumentListPage extends StatefulWidget {
   const FolderAndDocumentListPage({super.key});
 
   @override
+  State<FolderAndDocumentListPage> createState() =>
+      _FolderAndDocumentListPageState();
+}
+
+class _FolderAndDocumentListPageState extends State<FolderAndDocumentListPage> {
+  String? currentDropDownValue = "alpha";
+
+  @override
   Widget build(BuildContext context) {
-    return Align(
-        alignment: Alignment.center,
-        child: Container(
-          decoration:
-              BoxDecoration(color: Theme.of(context).colorScheme.surface),
-          child: FutureBuilder(
-            future: Future.wait([
-              Provider.of<DirectoryStructureManagerProvider>(context)
-                  .getCurrentlySelectedSubFolders,
-              Provider.of<DirectoryStructureManagerProvider>(context)
-                  .getCurrentlySelectedSubDocuments
-            ]),
-            builder: documentAndFolderFutureBuilder,
-          ),
-        ));
+    return ListView(scrollDirection: Axis.vertical, children: [
+      Align(
+          alignment: Alignment.topRight,
+          child: DropdownButton(
+              value: currentDropDownValue,
+              items: const [
+                DropdownMenuItem(
+                  value: "alpha",
+                  child: Text("a...z"),
+                ),
+                DropdownMenuItem(
+                  value: "type",
+                  child: Text("Type"),
+                )
+              ],
+              onChanged: (newValue) {
+                setState(() {
+                  currentDropDownValue = newValue;
+                });
+              })),
+      Align(
+          child: Container(
+              decoration:
+                  BoxDecoration(color: Theme.of(context).colorScheme.surface),
+              child: Expanded(
+                child: FutureBuilder<List<dynamic>?>(
+                  future: whichToGet(),
+                  builder: documentAndFolderFutureBuilder,
+                ),
+              )))
+    ]);
   }
 
   Widget documentAndFolderFutureBuilder(
@@ -49,34 +74,48 @@ class FolderAndDocumentListPage extends StatelessWidget {
       ));
     }
 
-    final subFolders = snapShot.data![0];
-    final subDocuments = snapShot.data![1];
-    return GridViewOfFolderAndDocument(
-      subDocuments: subDocuments,
-      subFolders: subFolders,
+    final mixedTypes = snapShot.data;
+    // final subDocuments = snapShot.data![1];
+    return SizedBox(
+      height: MediaQuery.of(context).size.height,
+      child: GridViewOfFolderAndDocument(
+        mixedTypes: mixedTypes ?? [],
+      ),
     );
+  }
+
+  Future<List?> whichToGet() async {
+    if (currentDropDownValue == "alpha") {
+      return Provider.of<DirectoryStructureManagerProvider>(context)
+          .getBothFoldersAndDocumentsByAlphabetial;
+    } else if (currentDropDownValue == "type") {
+      return Provider.of<DirectoryStructureManagerProvider>(context)
+          .getBothFoldersAndDocumentsByType;
+    }
+    return null;
   }
 }
 
 class GridViewOfFolderAndDocument extends StatelessWidget {
-  final List subFolders;
-  final List subDocuments;
-  const GridViewOfFolderAndDocument(
-      {required this.subDocuments, required this.subFolders, super.key});
+  final List mixedTypes;
+
+  const GridViewOfFolderAndDocument({required this.mixedTypes, super.key});
 
   Widget folderDocumentGrid() {
     final items = <Widget>[];
 
-    items.addAll(subFolders
-        .map((element) => GridTile(child: FolderWidget(folder: element))));
-    items.addAll(subDocuments.map(
-        (element) => GridTile(child: DocumentWidget(documentModel: element))));
+    items.addAll(mixedTypes.map(setGridTileToItems));
 
     return GridView.count(
+      scrollDirection: Axis.vertical,
       crossAxisCount: 3,
       children: items,
     );
   }
+
+  Widget setGridTileToItems(element) => element is Folder
+      ? GridTile(child: FolderWidget(folder: element))
+      : GridTile(child: DocumentWidget(documentModel: element));
 
   @override
   Widget build(BuildContext context) {

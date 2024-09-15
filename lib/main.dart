@@ -35,7 +35,7 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
-  ColorScheme colorScheme() {
+  ColorScheme darkColorScheme() {
     return ColorScheme(
         tertiary: Colors.green,
         onTertiary: Colors.white,
@@ -50,7 +50,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         onSurface: Theme.of(context).colorScheme.primary);
   }
 
-  ColorScheme darkColorScheme() {
+  ColorScheme colorScheme() {
     return ColorScheme(
         tertiary: Colors.green,
         onTertiary: Colors.white,
@@ -58,7 +58,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         primary: const Color.fromARGB(255, 255, 240, 124),
         onPrimary: Colors.white,
         secondary: const Color.fromARGB(255, 93, 115, 126),
-        onSecondary: Colors.white,
+        onSecondary: const Color.fromARGB(255, 0, 0, 0),
         error: const Color.fromARGB(255, 251, 110, 110),
         onError: Colors.white,
         surface: const Color.fromARGB(255, 255, 255, 255),
@@ -68,7 +68,6 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -91,7 +90,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
     return MaterialApp(
       theme: ThemeData(colorScheme: colorScheme()),
       darkTheme: ThemeData(colorScheme: darkColorScheme()),
-      themeMode: Provider.of<ThemeProvider>(context).getThemeMode,
+      themeMode: Provider.of<ThemeProvider>(context).currentTheme,
       home: Scaffold(
         appBar: const PreferredSize(
             preferredSize: Size.fromHeight(120), child: Customtopappbar()),

@@ -1,53 +1,46 @@
+import 'dart:async';
 import 'package:aspireme_flutter/BackEnd/Models/Note.dart';
 import 'package:aspireme_flutter/Pages/Globally%20Used/CustomTopAppBar.dart';
 import 'package:aspireme_flutter/Pages/Globally%20Used/LoadingWidget.dart';
-import 'package:aspireme_flutter/Providers/DirectoryStrucutreManagerProvider.dart';
 import 'package:aspireme_flutter/Providers/DocumentEditingPageProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class DocumentEditingPage extends StatelessWidget {
-  DocumentEditingPage({super.key});
+  const DocumentEditingPage({super.key});
 
-  final FocusNode focusNode = FocusNode();
+  Widget listBuilder(BuildContext context) {
+    List<Note?> listOfNotes =
+        Provider.of<DocumentEditingPageProvider>(context).getListOfNotes;
+
+    return ListView.builder(
+        itemCount: listOfNotes.length,
+        itemBuilder: (context, index) =>
+            NoteWidgetView(note: listOfNotes[index], index: index));
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: const PreferredSize(
           preferredSize: Size.fromHeight(120),
-          child: Customtopappbar(),
+          child: Customtopappbar(
+            documentEditingPage: true,
+          ),
         ),
         body: Container(
             decoration: const BoxDecoration(color: Colors.white),
             margin: const EdgeInsets.all(0),
-            child: ListView.builder(
-                itemCount: Provider.of<DocumentEditingPageProvider>(context)
-                    .getListLength,
-                itemBuilder: (context, index) => NoteWidgetView(
-                    focusNode: focusNode,
-                    note: Provider.of<DocumentEditingPageProvider>(context)
-                        .getListOfNotes[index]!,
-                    index: index,
-                    listLength:
-                        Provider.of<DocumentEditingPageProvider>(context)
-                            .getListLength))));
+            child: listBuilder(context)));
   }
 }
 
 class NoteWidgetView extends StatefulWidget {
   final Note? note;
   final int index;
-  final int listLength;
-  final FocusNode focusNode;
 
-  NoteWidgetView(
-      {required this.focusNode,
-      required this.index,
-      required this.note,
-      required this.listLength,
-      super.key});
+  const NoteWidgetView({required this.index, required this.note, super.key});
 
   @override
   State<NoteWidgetView> createState() => _NoteWidgetViewState();
@@ -57,105 +50,159 @@ class _NoteWidgetViewState extends State<NoteWidgetView> {
   TextEditingController questionEditingController = TextEditingController();
 
   TextEditingController answerEditingController = TextEditingController();
-  bool hasEnteredInput = false;
 
-  Widget noteCardWidget(
-      Note? note,
-      BuildContext context,
-      TextEditingController questionEditingController,
-      TextEditingController answerEditingController) {
+  FocusNode toAnswerFocuse = FocusNode();
+  bool saved = true;
+
+  Timer? enterKeyTimer;
+  bool waitingForSecondPress = false;
+  final int doubleTapThreshold = 300;
+
+  @override
+  void dispose() {
+    enterKeyTimer?.cancel();
+    questionEditingController.dispose();
+    answerEditingController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    //parent id 0 means its an empty note
+
     return Card(
       shadowColor: Colors.transparent,
       color: Colors.transparent,
       child: Column(
         children: [
-          Container(
-            alignment: Alignment.centerLeft,
-            child: const Text(
-              "Question",
-              style: TextStyle(color: Colors.black),
-              textAlign: TextAlign.left,
-            ),
+          Row(
+            children: [
+              labelForEditText("Question"),
+              Text(
+                saved ? "Saved" : "Not Saved",
+                style: TextStyle(color: saved ? Colors.green : Colors.red),
+              )
+            ],
           ),
-          TextField(
-            style: const TextStyle(backgroundColor: Colors.transparent),
-            keyboardType: TextInputType.text,
-            controller: questionEditingController,
-            decoration: InputDecoration(
-                border: InputBorder.none,
-                filled: true,
-                labelStyle: const TextStyle(color: Colors.black),
-                fillColor: Colors.transparent,
-                hintText: "How to ....",
-                label: Text(note?.title ?? "")),
-          ),
-          Container(
-            alignment: Alignment.centerLeft,
-            child: const Text(
-              "Answer",
-              style: TextStyle(color: Colors.black),
-              textAlign: TextAlign.left,
-            ),
-          ),
-          TextField(
-            controller: answerEditingController,
-            style: const TextStyle(backgroundColor: Colors.transparent),
-            keyboardType: TextInputType.multiline,
-            decoration: InputDecoration(
-                border: InputBorder.none,
-                labelStyle: const TextStyle(color: Colors.black),
-                filled: true,
-                fillColor: Colors.transparent,
-                hintText: "Step 1) ....",
-                label: Text(note?.description ?? '')),
-          ),
+          editableTextWidget(widget.note!.title, "How to ...."),
+          labelForEditText("Answer"),
+          editableTextWidget(widget.note!.description, "Step 1) ....",
+              answer: true),
         ],
       ),
     );
   }
 
-  Future<void> makeNewNote(BuildContext context) async {
+  Widget labelForEditText(String value) {
+    return Container(
+      alignment: Alignment.centerLeft,
+      child: Text(
+        value,
+        style: const TextStyle(color: Colors.black),
+        textAlign: TextAlign.left,
+      ),
+    );
+  }
+
+  Future<void> updateTheNote(int? noteId, {bool isQuestion = false}) async {
+    if (widget.note?.parentId == 0) {
+      await Provider.of<DocumentEditingPageProvider>(context, listen: false)
+          .addNote(questionEditingController.text, answerEditingController.text,
+              isQuestion);
+    } else {
+      await context.read<DocumentEditingPageProvider>().updateNote(
+          noteId,
+          questionEditingController.text,
+          answerEditingController.text,
+          widget.note?.parentId);
+
+      print("updateder pls");
+    }
+
+    setState(() {
+      saved = true;
+    });
+  }
+
+  Future<void> onAnswerSubmit(KeyEvent? event) async {
+    if (event == null) return;
+    if (event is! KeyDownEvent ||
+        event.logicalKey != LogicalKeyboardKey.enter) {
+      return;
+    }
+
+    if (waitingForSecondPress) {
+      waitingForSecondPress = false;
+
+      enterKeyTimer?.cancel();
+
+      answerEditingController.text = answerEditingController.text.trim();
+
+      showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (context) => const LoadingWidget());
+      await updateTheNote(widget.note?.id);
+
+      if (context.mounted) {
+        Navigator.of(context).pop();
+      }
+    } else {
+      waitingForSecondPress = true;
+      enterKeyTimer = Timer(Duration(milliseconds: doubleTapThreshold), () {
+        waitingForSecondPress = false;
+        enterKeyTimer?.cancel();
+      });
+    }
+  }
+
+  void onQuestionSubmit(value) async {
     showDialog(
         barrierDismissible: false,
         context: context,
         builder: (context) => const LoadingWidget());
-    await Provider.of<DocumentEditingPageProvider>(context, listen: false)
-        .addNote(questionEditingController.text, answerEditingController.text);
+
+    await updateTheNote(widget.note?.id);
 
     if (context.mounted) {
-      Navigator.pop(context);
-      FocusScope.of(context).requestFocus(widget.focusNode);
+      Navigator.of(context).pop();
     }
+    FocusScope.of(context).requestFocus(toAnswerFocuse);
   }
 
-  @override
-  Widget build(BuildContext context) {
-    widget.focusNode.addListener(() async {
-      if (widget.focusNode.hasFocus) {
-        hasEnteredInput = true;
-        print("foucss");
-      }
+  Widget editableTextWidget(String value, String hint, {bool answer = false}) {
+    if (answer && answerEditingController.text.trim().isEmpty) {
+      answerEditingController.text = value;
+    } else if (!answer && questionEditingController.text.trim().isEmpty) {
+      questionEditingController.text = value;
+    }
 
-      if (!hasEnteredInput) {
-        await context.read<DirectoryStructureManagerProvider>().updateNote(
-            questionEditingController.text,
-            answerEditingController.text,
-            widget.note!.parentId);
-        hasEnteredInput = false;
-      }
-    });
-    return widget.index >= widget.listLength - 1 || widget.note == null
-        ? KeyboardListener(
-            onKeyEvent: (event) {
-              if (event is KeyDownEvent &&
-                  event.logicalKey == LogicalKeyboardKey.enter) {
-                makeNewNote(context);
-              }
-            },
-            focusNode: widget.focusNode,
-            child: noteCardWidget(widget.note, context,
-                questionEditingController, answerEditingController))
-        : noteCardWidget(widget.note, context, questionEditingController,
-            answerEditingController);
+    ///for some resone the questtion text editer wont listen to enter
+    ///so i changed it to onsubmit
+    return KeyboardListener(
+        onKeyEvent: onAnswerSubmit,
+        focusNode: FocusNode(),
+        child: TextField(
+          onSubmitted: answer ? null : onQuestionSubmit,
+          maxLength: null,
+          maxLines: answer ? null : 1,
+          onChanged: (value) {
+            setState(() {
+              saved = false;
+            });
+          },
+          style:
+              const TextStyle(backgroundColor: Color.fromARGB(0, 41, 37, 37)),
+          controller:
+              answer ? answerEditingController : questionEditingController,
+          focusNode: answer ? toAnswerFocuse : null,
+          decoration: InputDecoration(
+            border: InputBorder.none,
+            filled: true,
+            labelStyle: const TextStyle(color: Colors.black),
+            fillColor: Colors.transparent,
+            hintText: hint,
+          ),
+        ));
   }
 }

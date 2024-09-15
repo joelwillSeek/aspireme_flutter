@@ -28,6 +28,9 @@ class Folder {
   int? get getParentId => _parentId;
 
   //setter
+
+  set setParentId(int? value) => _parentId = value;
+
   set addSubDocuments(DocumentModel? newDocument) =>
       _subDocuments.add(newDocument);
 

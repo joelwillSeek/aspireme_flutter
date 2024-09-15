@@ -1,3 +1,4 @@
+import 'package:aspireme_flutter/BackEnd/Models/DocumentModel.dart';
 import 'package:aspireme_flutter/BackEnd/Models/Folder.dart';
 import 'package:aspireme_flutter/Providers/DirectoryStrucutreManagerProvider.dart';
 //import 'package:aspireme_flutter/Providers/FolderAndNoteProvider.dart';
@@ -61,10 +62,8 @@ class FolderWidget extends StatelessWidget {
       context.read<Pagecontrollerprovider>().changePage(2, context);
     }
 
-    return GestureDetector(
-      onLongPress: longPressClicked,
-      onTap: folderClicked,
-      child: Column(
+    Widget folderWidget() {
+      return Column(
         children: [
           IconButton(
               onPressed: null,
@@ -81,7 +80,80 @@ class FolderWidget extends StatelessWidget {
                 softWrap: false,
               )),
         ],
-      ),
-    );
+      );
+    }
+
+    return Draggable(
+        data: folder,
+        childWhenDragging: const FolderWidgetDragging(
+          shadow: true,
+        ),
+        feedback: const FolderWidgetDragging(),
+        child: GestureDetector(
+            onLongPress: longPressClicked,
+            onTap: folderClicked,
+            child: DragTarget(
+                onAcceptWithDetails: (dataDetails) {
+                  onAcceptWithDetails(dataDetails.data, context);
+                },
+                builder: (context, candidateData, rejectionData) =>
+                    folderWidget())));
+  }
+
+  Future<void> onAcceptWithDetails(Object? data, BuildContext context) async {
+    try {
+      if (data == null) {
+        throw Exception("data passed when droped is null");
+      }
+
+      if (folder.id == null) {
+        throw Exception("folder id null in folderWidget dragTarget");
+      }
+
+      if (data is Folder) {
+        await context
+            .read<DirectoryStructureManagerProvider>()
+            .shiftFolderFromFolderToNewFolder(data, folder.id!);
+        return;
+      }
+
+      if (data is DocumentModel) {
+        await context
+            .read<DirectoryStructureManagerProvider>()
+            .ShiftDocumentFolderToFolder(data, folder.id!);
+        return;
+      }
+    } catch (e) {
+      debugPrint("Folder Widget drag target : $e");
+    }
+  }
+}
+
+class FolderWidgetDragging extends StatelessWidget {
+  final bool shadow;
+  const FolderWidgetDragging({this.shadow = false, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return shadow
+        ? Opacity(
+            opacity: 0.5,
+            child: Column(
+              children: [
+                IconButton(
+                    onPressed: null,
+                    iconSize: 10.0,
+                    icon: Image.asset("asset/Icons/folder_icon.png")),
+              ],
+            ),
+          )
+        : Column(
+            children: [
+              IconButton(
+                  onPressed: null,
+                  iconSize: 10.0,
+                  icon: Image.asset("asset/Icons/folder_icon.png")),
+            ],
+          );
   }
 }

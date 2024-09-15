@@ -15,6 +15,18 @@ class Sqlfolderfunction {
       Folder? rootFolder = await getFolder(1);
 
       if (rootFolder == null) {
+        final database = await Sqldatabse.getDatabase();
+
+        final doesRootExist = await database.query(Sqldatabse.nameFolderTable,
+            where: "name = ?", whereArgs: ["root"]);
+
+        print("passed");
+
+        if (doesRootExist.isNotEmpty) {
+          throw Exception(
+              "root exists but cant get the folder ${rootFolder?.fromFolderToJson()}, the data fetched ${doesRootExist.first}");
+        }
+
         Folder innerRootFolder = Folder(name: "root", parentId: null);
 
         return await createAFolder(innerRootFolder);
@@ -22,7 +34,7 @@ class Sqlfolderfunction {
         return rootFolder;
       }
     } catch (e) {
-      print("get root folder: $e");
+      debugPrint("get root folder: $e");
     }
 
     return null;
@@ -188,6 +200,64 @@ class Sqlfolderfunction {
       }
     } catch (e) {
       print("Remove Folder Sql Error: $e");
+    }
+  }
+
+  static Future<void> shiftFolderFromFolderToNewFolder(
+      Folder folder, int newParentFolderId) async {
+    try {
+      if (folder.id == null) {
+        throw Exception("folder.id");
+      }
+      await removeCurrentParentFolder(folder);
+      await addToNewParentFolder(newParentFolderId, folder);
+    } catch (e) {
+      debugPrint("shift a folder from folder to folder : $e");
+    }
+  }
+
+  static Future<void> removeCurrentParentFolder(Folder folder) async {
+    try {
+      if (folder.getParentId == null) {
+        throw Exception("Folder  paretn id is null");
+      }
+      final getParentFolder =
+          await Sqlfolderfunction.getFolder(folder.getParentId!);
+
+      if (getParentFolder == null) {
+        throw Exception("Parent Folder not found removeCurrentFolder");
+      } else if (getParentFolder.getSubFolders.isEmpty) {
+        throw Exception(
+            "child Folder doesnt exist of any kind removeCurrentFolder");
+      }
+      getParentFolder.getSubFolders
+          .removeWhere((innerFolder) => innerFolder!.id == folder.id);
+
+      await updateAFolder(getParentFolder);
+    } catch (e) {
+      debugPrint("SHift FolderFromFoldertoFodler : $e");
+    }
+  }
+
+  static Future<void> addToNewParentFolder(
+      int newParentFolderId, Folder folder) async {
+    try {
+      final getParentFolder =
+          await Sqlfolderfunction.getFolder(newParentFolderId);
+
+      if (getParentFolder == null) {
+        throw Exception("Parent Folder not found addToNewParentFolder");
+      }
+
+      folder.setParentId = newParentFolderId;
+
+      getParentFolder.addSubFolder = folder;
+
+      await updateAFolder(folder);
+
+      await updateAFolder(getParentFolder);
+    } catch (e) {
+      debugPrint("SHift DoucmentFoldertoFodler : $e");
     }
   }
 }

@@ -23,6 +23,7 @@ class Sqldocumentfunciton {
 
   static Future<DocumentModel?> createDocument(DocumentModel document) async {
     Future<void> addToParent(DocumentModel childDocument) async {
+      print("parent id ${childDocument.getParentId}");
       Folder? parentFolder =
           await Sqlfolderfunction.getFolder(childDocument.getParentId!);
 
@@ -133,7 +134,7 @@ class Sqldocumentfunciton {
     return null;
   }
 
-  static updateADocument(DocumentModel document) async {
+  static Future<void> updateADocument(DocumentModel document) async {
     try {
       final database = await Sqldatabse.getDatabase();
 
@@ -142,6 +143,58 @@ class Sqldocumentfunciton {
           where: "id = ?", whereArgs: [document.getId]);
     } catch (e) {
       debugPrint("update a document : $e");
+    }
+  }
+
+  static Future<void> shiftDocumentFoldertoFolder(
+      DocumentModel document, int newParentFolderId) async {
+    try {
+      await removeCurrentParentFolder(document);
+      await addToNewParentFolder(newParentFolderId, document);
+    } catch (e) {
+      debugPrint("shift a document from folder to folder : $e");
+    }
+  }
+
+  static Future<void> removeCurrentParentFolder(DocumentModel document) async {
+    try {
+      final getParentFolder =
+          await Sqlfolderfunction.getFolder(document.getParentId);
+
+      if (getParentFolder == null) {
+        throw Exception("Parent Folder not found removeCurrentFolder");
+      } else if (getParentFolder.getSubDocuments.isEmpty) {
+        throw Exception(
+            "child document doesnt exist of any kind removeCurrentFolder");
+      }
+      getParentFolder.getSubDocuments.removeWhere(
+          (documentInner) => documentInner!.getId == document.getId);
+
+      await Sqlfolderfunction.updateAFolder(getParentFolder);
+    } catch (e) {
+      debugPrint("SHift DoucmentFoldertoFodler : $e");
+    }
+  }
+
+  static Future<void> addToNewParentFolder(
+      int newParentFolderId, DocumentModel documentModel) async {
+    try {
+      final getParentFolder =
+          await Sqlfolderfunction.getFolder(newParentFolderId);
+
+      if (getParentFolder == null) {
+        throw Exception("Parent Folder not found addToNewParentFolder");
+      }
+
+      documentModel.setParentId = newParentFolderId;
+
+      getParentFolder.addSubDocuments = documentModel;
+
+      await updateADocument(documentModel);
+
+      await Sqlfolderfunction.updateAFolder(getParentFolder);
+    } catch (e) {
+      debugPrint("SHift DoucmentFoldertoFodler : $e");
     }
   }
 }

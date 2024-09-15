@@ -1,5 +1,6 @@
 import 'package:aspireme_flutter/BackEnd/Database/SqlDatabase.dart';
 import 'package:aspireme_flutter/Pages/Globally%20Used/CustomTopAppBar.dart';
+import 'package:aspireme_flutter/Pages/Globally%20Used/LoadingWidget.dart';
 import 'package:aspireme_flutter/Providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -21,7 +22,14 @@ class SettingsPage extends StatelessWidget {
           const CustomCheckbox(),
           ListTile(
             onTap: () async {
-              await Sqldatabse.resetDatabase();
+              showDialog(
+                  context: context,
+                  builder: (context) => const LoadingWidget());
+              await Sqldatabse.resetDatabase(context);
+
+              if (context.mounted) {
+                Navigator.pop(context);
+              }
             },
             title: const Text(
               "Delete All Data",
@@ -42,7 +50,23 @@ class CustomCheckbox extends StatefulWidget {
 }
 
 class _CustomCheckboxState extends State<CustomCheckbox> {
-  bool checker = true;
+  late bool checker;
+  bool initalized = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (initalized) return;
+    checker = context.read<ThemeProvider>().isDarkMode(context);
+    initalized = true;
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    initalized = false;
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,12 +80,11 @@ class _CustomCheckboxState extends State<CustomCheckbox> {
 
           final themeProvider =
               Provider.of<ThemeProvider>(context, listen: false);
-          if (!checker) {
-            themeProvider.setThemeMode = ThemeMode.dark;
+          if (checker) {
+            themeProvider.setThemeMode(ThemeMode.dark);
           } else {
-            themeProvider.setThemeMode = ThemeMode.light;
+            themeProvider.setThemeMode(ThemeMode.light);
           }
-          print("check $didChecked");
         });
   }
 }

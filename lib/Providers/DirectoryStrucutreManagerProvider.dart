@@ -74,12 +74,60 @@ class DirectoryStructureManagerProvider extends ChangeNotifier {
     return listOfSubFolders;
   }
 
+  Future<List<dynamic>?> get getBothFoldersAndDocumentsByAlphabetial async {
+    try {
+      final folders = await getCurrentlySelectedSubFolders;
+      final documents = await getCurrentlySelectedSubDocuments;
+
+      final both = [...folders, ...documents];
+
+      both.sort((a, b) {
+        String stringA = "";
+        String stringB = "";
+        if (a is Folder) {
+          stringA = a.name ?? "";
+        } else if (a is DocumentModel) {
+          stringA = a.getName ?? "";
+        }
+
+        if (b is Folder) {
+          stringB = b.name ?? "";
+        } else if (b is DocumentModel) {
+          stringB = b.getName ?? "";
+        }
+
+        return stringA.compareTo(stringB);
+      });
+
+      return both;
+    } catch (e) {
+      debugPrint("Director ystructure Manager Provider get both foldres : $e");
+    }
+    return null;
+  }
+
+  Future<List<dynamic>> get getBothFoldersAndDocumentsByType async {
+    final folders = await getCurrentlySelectedSubFolders;
+    final documents = await getCurrentlySelectedSubDocuments;
+
+    final both = [...folders, ...documents];
+
+    return both;
+  }
+
   Future<List> get getCurrentlySelectedSubDocuments async {
     await makeSureRootFolderIsRoot();
 
     final listOfSubDocuments = _stackOfOpenFolders.last.getSubDocuments;
 
     return listOfSubDocuments;
+  }
+
+  void clearListFolderOpen() async {
+    _stackOfOpenFolders.clear();
+
+    await makeSureRootFolderIsRoot();
+    notifyListeners();
   }
 
   Future<void> makeSureRootFolderIsRoot() async {
@@ -130,6 +178,38 @@ class DirectoryStructureManagerProvider extends ChangeNotifier {
   }
 
 //document functions
+
+  Future<void> ShiftDocumentFolderToFolder(
+      DocumentModel documentModel, int newParentId) async {
+    try {
+      await makeSureRootFolderIsRoot();
+
+      await Sqldocumentfunciton.shiftDocumentFoldertoFolder(
+          documentModel, newParentId);
+
+      clearListFolderOpen();
+    } catch (e) {
+      print("ShiftDocumentFoldertoFolder Document : $e");
+    }
+
+    notifyListeners();
+  }
+
+  Future<void> shiftFolderFromFolderToNewFolder(
+      Folder folder, int newParentFolderId) async {
+    try {
+      await makeSureRootFolderIsRoot();
+
+      await Sqlfolderfunction.shiftFolderFromFolderToNewFolder(
+          folder, newParentFolderId);
+
+      clearListFolderOpen();
+    } catch (e) {
+      print("shiftFolderFromFolderToNewFolder Folder : $e");
+    }
+
+    notifyListeners();
+  }
 
   Future<void> addDocument(
     String name,

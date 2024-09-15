@@ -1,3 +1,4 @@
+import 'package:aspireme_flutter/BackEnd/Database/SqlDatabase.dart';
 import 'package:aspireme_flutter/Pages/Settings/settings_page.dart';
 import 'package:aspireme_flutter/Providers/PageControllerProvider.dart';
 import 'package:aspireme_flutter/Providers/theme_provider.dart';
@@ -6,7 +7,11 @@ import 'package:provider/provider.dart';
 
 class Customtopappbar extends StatefulWidget {
   final bool showSettingsButton;
-  const Customtopappbar({this.showSettingsButton = true, super.key});
+  final bool documentEditingPage;
+  const Customtopappbar(
+      {this.showSettingsButton = true,
+      this.documentEditingPage = false,
+      super.key});
 
   @override
   State<Customtopappbar> createState() => _CustomtopappbarState();
@@ -25,19 +30,20 @@ class _CustomtopappbarState extends State<Customtopappbar> {
               children: [
                 Expanded(
                   child: IconButton(
-                    onPressed: null,
-                    icon: Image.asset(
-                      "asset/button/back.png",
-                      scale: context.read<ThemeProvider>().getIconScale,
-                    ),
-                  ),
+                      onPressed: null,
+                      icon: Image.asset(
+                        Provider.of<ThemeProvider>(context).isDarkMode(context)
+                            ? "asset/button/back.png"
+                            : "asset/button/back_black.png",
+                        scale: Provider.of<ThemeProvider>(context)
+                                .isDarkMode(context)
+                            ? context.read<ThemeProvider>().getIconScale
+                            : context.read<ThemeProvider>().getIconScale - 0.7,
+                      )),
                 ),
                 Expanded(
                   child: Text(
-                    widget.showSettingsButton
-                        ? Provider.of<Pagecontrollerprovider>(context)
-                            .getCurrentPageName
-                        : "Setting",
+                    whatToDisplayText(),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
@@ -51,21 +57,27 @@ class _CustomtopappbarState extends State<Customtopappbar> {
                     child: widget.showSettingsButton
                         ? IconButton(
                             onPressed: () async {
-                              // print("Folder table");
-                              // await Sqldatabse.getFoldersWithCustomQuery();
-                              // print("Note table");
-                              // await Sqldatabse.getNotesWithCustomQuery();
-                              // debugPrint("Document table");
-                              // await Sqldatabse.getDocumentsWithCustomQuery();
-                              //await Sqldatabase.resetDatabase();
+                              print("Folder table");
+                              await Sqldatabse.getFoldersWithCustomQuery();
+                              print("Note table");
+                              await Sqldatabse.getNotesWithCustomQuery();
+                              debugPrint("Document table");
+                              await Sqldatabse.getDocumentsWithCustomQuery();
+                              //await Sqldatabse.resetDatabase();
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) => const SettingsPage()));
                             },
                             icon: Image.asset(
-                              "asset/button/settings.png",
-                              scale: context.read<ThemeProvider>().getIconScale,
-                            ),
-                          )
+                              Provider.of<ThemeProvider>(context)
+                                      .isDarkMode(context)
+                                  ? "asset/button/settings.png"
+                                  : "asset/button/settings_black.png",
+                              scale: Provider.of<ThemeProvider>(context)
+                                      .isDarkMode(context)
+                                  ? context.read<ThemeProvider>().getIconScale
+                                  : context.read<ThemeProvider>().getIconScale -
+                                      0.7,
+                            ))
                         : const Placeholder(
                             fallbackHeight: 90,
                             color: Colors.transparent,
@@ -81,5 +93,14 @@ class _CustomtopappbarState extends State<Customtopappbar> {
         ),
       ],
     );
+  }
+
+  String whatToDisplayText() {
+    if (widget.documentEditingPage == true) return "Document";
+
+    if (widget.showSettingsButton) {
+      return "Setting";
+    }
+    return Provider.of<Pagecontrollerprovider>(context).getCurrentPageName;
   }
 }

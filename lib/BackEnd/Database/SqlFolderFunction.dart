@@ -260,4 +260,21 @@ class Sqlfolderfunction {
       debugPrint("SHift DoucmentFoldertoFodler : $e");
     }
   }
+
+  static Future<List<Folder>?> getAllFolders() async {
+    try {
+      final database = await Sqldatabse.getDatabase();
+
+      final allFoldersInJson = await database.query(Sqldatabse.nameFolderTable);
+
+      if (allFoldersInJson.isEmpty) return null;
+      final allFolders = allFoldersInJson
+          .map((element) => Folder.fromJsonToFolder(element))
+          .toList();
+      return allFolders;
+    } catch (e) {
+      debugPrint("Get all folders : $e");
+    }
+    return null;
+  }
 }

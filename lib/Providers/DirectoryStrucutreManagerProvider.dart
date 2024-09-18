@@ -44,6 +44,10 @@ class DirectoryStructureManagerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<List<Folder>?> getAllFolders() async {
+    return await Sqlfolderfunction.getAllFolders();
+  }
+
   set openFolder(Folder clickedFolder) {
     makeSureRootFolderIsRoot();
     _stackOfOpenFolders.add(clickedFolder);

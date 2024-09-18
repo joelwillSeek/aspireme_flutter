@@ -1,5 +1,7 @@
 import 'package:aspireme_flutter/BackEnd/Database/SqlDocumentFunciton.dart';
+import 'package:aspireme_flutter/BackEnd/Database/SqlFolderFunction.dart';
 import 'package:aspireme_flutter/BackEnd/Models/DocumentModel.dart';
+import 'package:aspireme_flutter/BackEnd/Models/Folder.dart';
 import 'package:aspireme_flutter/Pages/Document%20Editing%20View/DocumentEditingPage.dart';
 import 'package:aspireme_flutter/Pages/Globally%20Used/LoadingWidget.dart';
 import 'package:aspireme_flutter/Providers/DirectoryStrucutreManagerProvider.dart';
@@ -14,59 +16,13 @@ class DocumentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void longPressClicked() {
-      final RenderBox widgetBox = context.findRenderObject() as RenderBox;
-      final Offset widgetPosition = widgetBox.localToGlobal(Offset.zero);
-      final Size widgetSize = widgetBox.size;
-
-      final RenderBox overlay =
-          Overlay.of(context).context.findRenderObject() as RenderBox;
-
-      showDeleteMenu(context, widgetPosition, widgetSize, overlay);
-    }
-
-    void onTap() async {
-      try {
-        showDialog(
-            context: context, builder: (context) => const LoadingWidget());
-
-        final updatedDocument =
-            await Sqldocumentfunciton.getDocument(documentModel.getId);
-
-        context.read<DocumentEditingPageProvider>().setBeingViewedDocument =
-            updatedDocument!;
-      } catch (e) {
-        debugPrint("Docuent Widget seting document view : $e");
-      } finally {
-        if (context.mounted) {
-          Navigator.pop(context);
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => const DocumentEditingPage()));
-        }
-      }
-    }
-
-    Widget documentCard() {
-      return Card(
-        elevation: 0.0,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset("asset/Icons/document_icon.png"),
-            Text(
-              documentModel.getName,
-              textAlign: TextAlign.center,
-            )
-          ],
-        ),
-      );
-    }
-
     return GestureDetector(
-        onLongPress: longPressClicked,
-        onTap: onTap,
+        onLongPress: () {
+          longPressClicked(context);
+        },
+        onTap: () {
+          doucmentWidgetTapped(context);
+        },
         child: Draggable(
             data: documentModel,
             childWhenDragging: const DragedDocumentWidget(
@@ -76,32 +32,38 @@ class DocumentWidget extends StatelessWidget {
             child: documentCard()));
   }
 
+  void doucmentWidgetTapped(BuildContext context) async {
+    try {
+      showDialog(context: context, builder: (context) => const LoadingWidget());
+
+      final updatedDocument =
+          await Sqldocumentfunciton.getDocument(documentModel.getId);
+
+      if (context.mounted) {
+        context.read<DocumentEditingPageProvider>().setBeingViewedDocument =
+            updatedDocument!;
+      }
+    } catch (e) {
+      debugPrint("Docuent Widget seting document view : $e");
+    } finally {
+      if (context.mounted) {
+        Navigator.pop(context);
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => const DocumentEditingPage()));
+      }
+    }
+  }
+
   Future<String?> showDeleteMenu(BuildContext context, Offset widgetPosition,
       Size widgetSize, RenderBox overlay) {
     return showMenu(
         color: Theme.of(context).colorScheme.secondary,
         context: context,
-        position: RelativeRect.fromLTRB(
-          widgetPosition.dx +
-              widgetSize.width, // Slightly to the right of the widget
-          widgetPosition.dy, // Align vertically with the widget
-          overlay.size.width -
-              widgetPosition.dx -
-              widgetSize.width, // Remaining space on the right
-          overlay.size.height -
-              widgetPosition.dy, // Remaining space at the bottom
-        ),
+        position: calcuateItemPositon(widgetPosition, widgetSize, overlay),
         items: [
           PopupMenuItem(
             onTap: () async {
-              showDialog(
-                  context: context,
-                  builder: (context) => const LoadingWidget());
-              await context
-                  .read<DirectoryStructureManagerProvider>()
-                  .deleteDocument(documentModel);
-
-              if (context.mounted) Navigator.pop(context);
+              await deleteItemTapped(context);
             },
             value: 'Option 1',
             child: Container(
@@ -112,11 +74,134 @@ class DocumentWidget extends StatelessWidget {
               ),
               child: const Text(
                 'Delete',
-                style: TextStyle(fontSize: 16, color: Colors.white),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          PopupMenuItem(
+            onTap: () async {
+              await moveOptionTapped(context);
+            },
+            value: 'Option 1',
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(255, 0, 134, 243),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Text(
+                'Move',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
           ),
         ]);
+  }
+
+  Future<void> moveOptionTapped(BuildContext context) async {
+    final allFolders =
+        await context.read<DirectoryStructureManagerProvider>().getAllFolders();
+    List<Folder?>? shown = [];
+
+    if (context.mounted) {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return Dialog(
+              child: Column(
+                children: [
+                  SearchBar(
+                    hintText: "Search ...",
+                    onChanged: (query) {
+                      if (query.isEmpty) {
+                        shown = allFolders;
+                      } else {
+                        shown = allFolders
+                            ?.where((element) =>
+                                element.name?.toLowerCase() ==
+                                query.toLowerCase())
+                            .toList();
+                      }
+                    },
+                  ),
+                  SizedBox(
+                    height: 100.0,
+                    child: ListView.builder(
+                      itemCount: shown?.length,
+                      itemBuilder: (context, index) =>
+                          folderMoveIcon(shown, index),
+                    ),
+                  )
+                ],
+              ),
+            );
+          });
+    }
+  }
+
+  Row folderMoveIcon(List<Folder?>? shown, int index) {
+    return Row(
+      children: [
+        const Icon(Icons.folder),
+        Text(shown?[index]?.name ?? "Error"),
+        TextButton(
+            onPressed: () {
+              print("move");
+            },
+            child: const Text("move"))
+      ],
+    );
+  }
+
+  Future<void> deleteItemTapped(BuildContext context) async {
+    showDialog(context: context, builder: (context) => const LoadingWidget());
+    await context
+        .read<DirectoryStructureManagerProvider>()
+        .deleteDocument(documentModel);
+
+    if (context.mounted) Navigator.pop(context);
+  }
+
+  RelativeRect calcuateItemPositon(
+      Offset widgetPosition, Size widgetSize, RenderBox overlay) {
+    return RelativeRect.fromLTRB(
+      widgetPosition.dx +
+          widgetSize.width, // Slightly to the right of the widget
+      widgetPosition.dy, // Align vertically with the widget
+      overlay.size.width -
+          widgetPosition.dx -
+          widgetSize.width, // Remaining space on the right
+      overlay.size.height - widgetPosition.dy, // Remaining space at the bottom
+    );
+  }
+
+  Widget documentCard() {
+    return Card(
+      elevation: 0.0,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset("asset/Icons/document_icon.png"),
+          Text(
+            documentModel.getName,
+            textAlign: TextAlign.center,
+          )
+        ],
+      ),
+    );
+  }
+
+  void longPressClicked(BuildContext context) {
+    final RenderBox widgetBox = context.findRenderObject() as RenderBox;
+    final Offset widgetPosition = widgetBox.localToGlobal(Offset.zero);
+    final Size widgetSize = widgetBox.size;
+
+    final RenderBox overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox;
+
+    showDeleteMenu(context, widgetPosition, widgetSize, overlay);
   }
 }
 

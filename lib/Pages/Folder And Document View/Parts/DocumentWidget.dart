@@ -48,8 +48,7 @@ class DocumentWidget extends StatelessWidget {
 
     Widget documentCard() {
       return Card(
-        color: Theme.of(context).colorScheme.secondary,
-        margin: const EdgeInsets.all(20),
+        elevation: 0.0,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -125,24 +124,20 @@ class DragedDocumentWidget extends StatelessWidget {
   final bool staying;
   const DragedDocumentWidget({this.staying = false, super.key});
 
-  Widget shadowDocument() {
-    return Image.asset("asset/Icons/shadowdocumentandfolder.png");
-  }
-
-  Widget normalDocument() {
-    return Image.asset("asset/Icons/document_icon.png");
-  }
-
   @override
   Widget build(BuildContext context) {
+    return staying ? Opacity(opacity: 0.5, child: Thecard()) : Thecard();
+  }
+
+  Card Thecard() {
     return Card(
+      elevation: 0.0,
       color: Colors.transparent,
-      margin: const EdgeInsets.all(20),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
-        children: staying ? [shadowDocument()] : [normalDocument()],
+        children: [Image.asset("asset/Icons/document_icon.png")],
       ),
     );
   }

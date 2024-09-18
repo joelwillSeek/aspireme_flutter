@@ -10,46 +10,44 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: const PreferredSize(
-        preferredSize: Size.fromHeight(120),
-        child: Customtopappbar(
-          showSettingsButton: false,
+    return ListView(
+      children: [
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [Text("Dark Theme"), SwitchDarkMode()],
+          ),
         ),
-      ),
-      body: ListView(
-        children: [
-          const CustomCheckbox(),
-          ListTile(
-            onTap: () async {
-              showDialog(
-                  context: context,
-                  builder: (context) => const LoadingWidget());
-              await Sqldatabse.resetDatabase(context);
+        ListTile(
+          onTap: () async {
+            showDialog(
+                context: context, builder: (context) => const LoadingWidget());
+            await Sqldatabse.resetDatabase(context);
 
-              if (context.mounted) {
-                Navigator.pop(context);
-              }
-            },
-            title: const Text(
-              "Delete All Data",
-              style: TextStyle(color: Colors.red),
-            ),
-          )
-        ],
-      ),
+            if (context.mounted) {
+              Navigator.pop(context);
+            }
+          },
+          title: const Text(
+            "Delete All Data",
+            style: TextStyle(color: Colors.red),
+          ),
+        )
+      ],
     );
   }
 }
 
-class CustomCheckbox extends StatefulWidget {
-  const CustomCheckbox({super.key});
+class SwitchDarkMode extends StatefulWidget {
+  const SwitchDarkMode({super.key});
 
   @override
-  State<CustomCheckbox> createState() => _CustomCheckboxState();
+  State<SwitchDarkMode> createState() => _SwitchDarkModeState();
 }
 
-class _CustomCheckboxState extends State<CustomCheckbox> {
+class _SwitchDarkModeState extends State<SwitchDarkMode> {
   late bool checker;
   bool initalized = false;
 
@@ -63,19 +61,20 @@ class _CustomCheckboxState extends State<CustomCheckbox> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     initalized = false;
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return CheckboxListTile(
-        title: const Text("Dark Theme"),
+    return Switch(
+        activeColor: Theme.of(context).colorScheme.secondary,
+        thumbColor:
+            WidgetStatePropertyAll(Theme.of(context).colorScheme.onSecondary),
         value: checker,
         onChanged: (didChecked) {
           setState(() {
-            checker = didChecked ?? false;
+            checker = didChecked;
           });
 
           final themeProvider =

@@ -59,7 +59,7 @@ class FolderWidget extends StatelessWidget {
 
     void folderClicked() {
       context.read<DirectoryStructureManagerProvider>().openFolder = folder;
-      context.read<Pagecontrollerprovider>().changePage(2, context);
+      context.read<Pagecontrollerprovider>().changePage(1, context);
     }
 
     Widget folderWidget() {
@@ -76,7 +76,6 @@ class FolderWidget extends StatelessWidget {
                 folder.name ?? "Empty",
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white),
                 softWrap: false,
               )),
         ],

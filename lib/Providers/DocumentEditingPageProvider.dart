@@ -32,12 +32,14 @@ class DocumentEditingPageProvider extends ChangeNotifier {
 
   get getBeingViewedDocument => _beingViewed;
 
-  void setListOfNotes() {
+  void setListOfNotes({bool dontAddEmpty = false}) {
     //if (_listOfNotes.first?.parentId != 0) return;
 
     _listOfNotes = _beingViewed.getSubNotesId;
+    if (!dontAddEmpty) {
+      _listOfNotes.add(emptyNote);
+    }
 
-    _listOfNotes.add(emptyNote);
     notifyListeners();
     return;
   }
@@ -97,7 +99,7 @@ class DocumentEditingPageProvider extends ChangeNotifier {
       setBeingViewedDocument =
           (await Sqldocumentfunciton.getDocument(_beingViewed.getId))!;
 
-      setListOfNotes();
+      setListOfNotes(dontAddEmpty: true);
     } catch (e) {
       debugPrint("Document Editing Page Provider set updated notes: $e");
     }

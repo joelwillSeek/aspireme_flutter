@@ -19,37 +19,57 @@ class _FolderAndDocumentListPageState extends State<FolderAndDocumentListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(scrollDirection: Axis.vertical, children: [
-      Align(
-          alignment: Alignment.topRight,
-          child: DropdownButton(
-              value: currentDropDownValue,
-              items: const [
-                DropdownMenuItem(
-                  value: "alpha",
-                  child: Text("a...z"),
+    return PopScope(
+        onPopInvoked: (didPop) async {
+          if (didPop) return;
+          final closedTheFolder = await context
+              .read<DirectoryStructureManagerProvider>()
+              .closedFolder(context);
+
+          if (!closedTheFolder && context.mounted) {
+            context.read<Pagecontrollerprovider>().changePage(0, context);
+          }
+        },
+        canPop: false,
+        child: ListView(scrollDirection: Axis.vertical, children: [
+          Align(
+              alignment: Alignment.topRight,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text("Order Mode"),
+                    DropdownButton(
+                        value: currentDropDownValue,
+                        items: const [
+                          DropdownMenuItem(
+                            value: "alpha",
+                            child: Text("a...z"),
+                          ),
+                          DropdownMenuItem(
+                            value: "type",
+                            child: Text("Type"),
+                          )
+                        ],
+                        onChanged: (newValue) {
+                          setState(() {
+                            currentDropDownValue = newValue;
+                          });
+                        })
+                  ],
                 ),
-                DropdownMenuItem(
-                  value: "type",
-                  child: Text("Type"),
-                )
-              ],
-              onChanged: (newValue) {
-                setState(() {
-                  currentDropDownValue = newValue;
-                });
-              })),
-      Align(
-          child: Container(
-              decoration:
-                  BoxDecoration(color: Theme.of(context).colorScheme.surface),
-              child: Expanded(
-                child: FutureBuilder<List<dynamic>?>(
-                  future: whichToGet(),
-                  builder: documentAndFolderFutureBuilder,
-                ),
-              )))
-    ]);
+              )),
+          Align(
+              child: Container(
+            decoration:
+                BoxDecoration(color: Theme.of(context).colorScheme.surface),
+            child: FutureBuilder<List<dynamic>?>(
+              future: whichToGet(),
+              builder: documentAndFolderFutureBuilder,
+            ),
+          ))
+        ]));
   }
 
   Widget documentAndFolderFutureBuilder(
@@ -67,10 +87,10 @@ class _FolderAndDocumentListPageState extends State<FolderAndDocumentListPage> {
     }
 
     if (!snapShot.hasData || snapShot.data!.isEmpty) {
-      return const Center(
+      return Center(
           child: Text(
         'No Folders Or Documents Are Available',
-        style: TextStyle(color: Colors.white),
+        style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
       ));
     }
 
@@ -119,18 +139,6 @@ class GridViewOfFolderAndDocument extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-        onPopInvoked: (didPop) async {
-          if (didPop) return;
-          final closedTheFolder = await context
-              .read<DirectoryStructureManagerProvider>()
-              .closedFolder(context);
-
-          if (!closedTheFolder && context.mounted) {
-            context.read<Pagecontrollerprovider>().changePage(0, context);
-          }
-        },
-        canPop: false,
-        child: folderDocumentGrid());
+    return folderDocumentGrid();
   }
 }

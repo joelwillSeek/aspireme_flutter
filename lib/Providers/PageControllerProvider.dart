@@ -10,6 +10,7 @@ class Pagecontrollerprovider extends ChangeNotifier {
   PageController get getPageController => pageController;
 
   String get getCurrentPageName {
+    print("page indes $pageIndex");
     return _pagesNamesThatExist[pageIndex];
   }
 
@@ -29,5 +30,7 @@ class Pagecontrollerprovider extends ChangeNotifier {
   void changePage(int index, BuildContext context) {
     pageController.animateToPage(index,
         duration: const Duration(milliseconds: 300), curve: Curves.linear);
+
+    setPageIndex = index;
   }
 }

@@ -1,7 +1,10 @@
 import 'package:aspireme_flutter/Pages/Globally%20Used/CustomTopAppBar.dart';
 import 'package:aspireme_flutter/Pages/Globally%20Used/FloatingBottomNav.dart';
 import 'package:aspireme_flutter/Pages/Folder%20And%20Document%20View/FolderAndDocumentListPage.dart';
+import 'package:aspireme_flutter/Pages/Globally%20Used/LoadingWidget.dart';
 import 'package:aspireme_flutter/Pages/Home%20Page/HomePage.dart';
+import 'package:aspireme_flutter/Pages/Settings/settings_page.dart';
+import 'package:aspireme_flutter/Theme/Theme.dart';
 import 'package:aspireme_flutter/Providers/DocumentEditingPageProvider.dart';
 import 'package:aspireme_flutter/Providers/FlashCardProvider.dart';
 import 'package:aspireme_flutter/Providers/DirectoryStrucutreManagerProvider.dart';
@@ -35,36 +38,6 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
-  ColorScheme darkColorScheme() {
-    return ColorScheme(
-        tertiary: Colors.green,
-        onTertiary: Colors.white,
-        brightness: Brightness.light,
-        primary: const Color.fromARGB(255, 255, 240, 124),
-        onPrimary: Colors.white,
-        secondary: const Color.fromARGB(255, 93, 115, 126),
-        onSecondary: Colors.white,
-        error: const Color.fromARGB(255, 251, 110, 110),
-        onError: Colors.white,
-        surface: const Color.fromARGB(255, 30, 29, 29),
-        onSurface: Theme.of(context).colorScheme.primary);
-  }
-
-  ColorScheme colorScheme() {
-    return ColorScheme(
-        tertiary: Colors.green,
-        onTertiary: Colors.white,
-        brightness: Brightness.light,
-        primary: const Color.fromARGB(255, 255, 240, 124),
-        onPrimary: Colors.white,
-        secondary: const Color.fromARGB(255, 93, 115, 126),
-        onSecondary: const Color.fromARGB(255, 0, 0, 0),
-        error: const Color.fromARGB(255, 251, 110, 110),
-        onError: Colors.white,
-        surface: const Color.fromARGB(255, 255, 255, 255),
-        onSurface: Theme.of(context).colorScheme.primary);
-  }
-
   @override
   void initState() {
     super.initState();
@@ -83,26 +56,245 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
 
     Provider.of<DirectoryStructureManagerProvider>(context, listen: false)
         .resetStructure();
+
+    context.read<ThemeProvider>().setThemeMode(
+        MediaQuery.of(context).platformBrightness == Brightness.dark
+            ? ThemeMode.dark
+            : ThemeMode.light);
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(colorScheme: colorScheme()),
-      darkTheme: ThemeData(colorScheme: darkColorScheme()),
+      theme: themeLight,
+      darkTheme: themeDark,
       themeMode: Provider.of<ThemeProvider>(context).currentTheme,
       home: Scaffold(
-        appBar: const PreferredSize(
-            preferredSize: Size.fromHeight(120), child: Customtopappbar()),
+        // appBar: const PreferredSize(
+        //     preferredSize: Size.fromHeight(120), child: Customtopappbar()),
         body: PageView(
           controller: context.read<Pagecontrollerprovider>().getPageController,
           onPageChanged: whenPageSwiped,
           children: const [
             Homepage(),
             FolderAndDocumentListPage(),
+            SettingsPage()//changed
           ],
         ),
+        floatingActionButton:
+            Provider.of<Pagecontrollerprovider>(context).getPageIndex == 1
+                ? Builder(builder: (context) {
+                    return setFloatingButton(context);
+                  })
+                : null,
         bottomNavigationBar: const FloatingBottomNav(),
+      ),
+    );
+  }
+
+  FloatingActionButton setFloatingButton(BuildContext context) {
+    return FloatingActionButton(
+      elevation: 20,
+      focusColor: Colors.transparent,
+      onPressed: () {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) =>
+                createFolderOrDocumentDialog(context));
+      },
+      child: const Icon(
+        Icons.add,
+      ),
+    );
+  }
+
+  Widget createFolderOrDocumentDialog(BuildContext context) {
+    return Dialog(
+      child: SizedBox(
+          height: 230,
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            child: DefaultTabController(
+                length: 2,
+                child: Column(children: [
+                  TabBar(
+                    labelStyle: TextStyle(
+                        color: Theme.of(context).colorScheme.secondary),
+                    dividerColor: Theme.of(context).colorScheme.secondary,
+                    indicatorColor: Theme.of(context).colorScheme.secondary,
+                    labelColor: Theme.of(context).colorScheme.secondary,
+                    unselectedLabelColor:
+                        Theme.of(context).colorScheme.onPrimary,
+                    tabs: const [
+                      Tab(
+                        text: "Folder",
+                        icon: Icon(Icons.folder),
+                      ),
+                      Tab(text: "Document", icon: Icon(Icons.edit_document))
+                    ],
+                  ),
+                  Expanded(
+                      child: TabBarView(children: [
+                    createFolderTab(context),
+                    createDocumentTab(context)
+                  ]))
+                ])),
+          )),
+    );
+  }
+
+  Widget createDocumentTab(BuildContext context) {
+    TextEditingController textEditingController = TextEditingController();
+
+    Future<void> doneClicked() async {
+      if (textEditingController.text.length > 1) {
+        showDialog(
+            barrierDismissible: false,
+            context: context,
+            builder: (context) => const LoadingWidget());
+
+        await context
+            .read<DirectoryStructureManagerProvider>()
+            .addDocument(textEditingController.text);
+
+        if (context.mounted) {
+          Navigator.pop(context);
+
+          Navigator.pop(context);
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Make sure you enter at least one letter")));
+      }
+    }
+
+    return Column(
+      children: [
+        Expanded(
+          child: TextField(
+            controller: textEditingController,
+            decoration: InputDecoration(
+                border: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.secondary)),
+                enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.secondary)),
+                hintText: "Chemistry...",
+                hintStyle:
+                    TextStyle(color: Theme.of(context).colorScheme.secondary)),
+          ),
+        ),
+        Row(
+          children: [
+            Expanded(
+                child: TextButton(
+                    style: ButtonStyle(
+                        backgroundColor: WidgetStatePropertyAll(
+                            Theme.of(context).colorScheme.tertiary)),
+                    onPressed: doneClicked,
+                    child: const Text(
+                      "Done",
+                    ))),
+            Expanded(
+                child: TextButton(
+                    style: ButtonStyle(
+                        backgroundColor: WidgetStatePropertyAll(
+                            Theme.of(context).colorScheme.error)),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.onError),
+                        "Cancel"))),
+          ],
+        )
+      ],
+    );
+  }
+
+  Widget createFolderTab(BuildContext context) {
+    TextEditingController folderNameInputText = TextEditingController();
+
+    Future<void> yesClicked() async {
+      if (folderNameInputText.text.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text(
+          "Please Enter A Name For Your Folder",
+          style: TextStyle(color: Colors.white),
+        )));
+      } else {
+        final folderAndNoteProvider =
+            context.read<DirectoryStructureManagerProvider>();
+        showDialog(
+            barrierDismissible: false,
+            context: context,
+            builder: (context) => const LoadingWidget());
+        await folderAndNoteProvider.addFolder(folderNameInputText.text);
+        if (context.mounted) {
+          Navigator.pop(context);
+        }
+      }
+
+      if (context.mounted) {
+        Navigator.pop(context);
+      }
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        children: [
+          Column(
+            children: [
+              TextField(
+                controller: folderNameInputText,
+                decoration: InputDecoration(
+                    focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.onSecondary)),
+                    border: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.secondary)),
+                    enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.secondary)),
+                    hintText: "Folder Name",
+                    hintStyle: TextStyle(
+                        color: Theme.of(context).colorScheme.secondary)),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                      child: TextButton(
+                          onPressed: yesClicked,
+                          style: ButtonStyle(
+                              backgroundColor: WidgetStatePropertyAll(
+                                  Theme.of(context).colorScheme.tertiary)),
+                          child: const Text(
+                            "Done",
+                          ))),
+                  Expanded(
+                      child: TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    style: ButtonStyle(
+                        backgroundColor: WidgetStatePropertyAll(
+                            Theme.of(context).colorScheme.error)),
+                    child: Text(
+                      "Cancel",
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.onError),
+                    ),
+                  ))
+                ],
+              )
+            ],
+          )
+        ],
       ),
     );
   }

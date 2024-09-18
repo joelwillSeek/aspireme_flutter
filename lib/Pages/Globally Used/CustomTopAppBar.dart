@@ -1,8 +1,10 @@
 import 'package:aspireme_flutter/BackEnd/Database/SqlDatabase.dart';
 import 'package:aspireme_flutter/Pages/Settings/settings_page.dart';
+import 'package:aspireme_flutter/Providers/DirectoryStrucutreManagerProvider.dart';
 import 'package:aspireme_flutter/Providers/PageControllerProvider.dart';
 import 'package:aspireme_flutter/Providers/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class Customtopappbar extends StatefulWidget {
@@ -30,7 +32,67 @@ class _CustomtopappbarState extends State<Customtopappbar> {
               children: [
                 Expanded(
                   child: IconButton(
-                      onPressed: null,
+                      onPressed: () async {
+                        if (!(widget.showSettingsButton)) {
+                          Navigator.pop(context);
+                          return;
+                        }
+
+                        if (context
+                                .read<Pagecontrollerprovider>()
+                                .getPageIndex ==
+                            1) {
+                          final closedTheFolder = await context
+                              .read<DirectoryStructureManagerProvider>()
+                              .closedFolder(context);
+
+                          if (!closedTheFolder && context.mounted) {
+                            context
+                                .read<Pagecontrollerprovider>()
+                                .changePage(0, context);
+                          }
+
+                          return;
+                        }
+
+                        if (context
+                                .read<Pagecontrollerprovider>()
+                                .getPageIndex ==
+                            0) {
+                          showDialog(
+                            barrierDismissible: true,
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text('Exit App?'),
+                              content:
+                                  const Text('Do you want to exit the app?'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.of(context).pop(false),
+                                  child: Text(
+                                    'No',
+                                    style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary),
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () => SystemNavigator.pop(),
+                                  child: Text(
+                                    'Yes',
+                                    style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                      },
                       icon: Image.asset(
                         Provider.of<ThemeProvider>(context).isDarkMode(context)
                             ? "asset/button/back.png"
@@ -48,49 +110,22 @@ class _CustomtopappbarState extends State<Customtopappbar> {
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         decoration: TextDecoration.none,
-                        fontSize:
-                            context.read<ThemeProvider>().getHeadingFontSize,
-                        color: Theme.of(context).colorScheme.primary),
+                        fontSize: Theme.of(context)
+                            .textTheme
+                            .headlineMedium
+                            ?.fontSize,
+                        color: Theme.of(context).colorScheme.onSurface),
                   ),
                 ),
-                Expanded(
-                    child: widget.showSettingsButton
-                        ? IconButton(
-                            onPressed: () async {
-                              print("Folder table");
-                              await Sqldatabse.getFoldersWithCustomQuery();
-                              print("Note table");
-                              await Sqldatabse.getNotesWithCustomQuery();
-                              debugPrint("Document table");
-                              await Sqldatabse.getDocumentsWithCustomQuery();
-                              //await Sqldatabse.resetDatabase();
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => const SettingsPage()));
-                            },
-                            icon: Image.asset(
-                              Provider.of<ThemeProvider>(context)
-                                      .isDarkMode(context)
-                                  ? "asset/button/settings.png"
-                                  : "asset/button/settings_black.png",
-                              scale: Provider.of<ThemeProvider>(context)
-                                      .isDarkMode(context)
-                                  ? context.read<ThemeProvider>().getIconScale
-                                  : context.read<ThemeProvider>().getIconScale -
-                                      0.7,
-                            ))
-                        : const Placeholder(
-                            fallbackHeight: 90,
-                            color: Colors.transparent,
-                          ))
+                const Expanded(
+                  child: Placeholder(
+                    fallbackHeight: 2,
+                    fallbackWidth: 10,
+                    color: Colors.transparent,
+                  ),
+                )
               ],
             )),
-        Align(
-          alignment: Alignment.topCenter,
-          child: Container(
-            color: Theme.of(context).colorScheme.primary,
-            height: 3.0,
-          ),
-        ),
       ],
     );
   }
@@ -98,9 +133,10 @@ class _CustomtopappbarState extends State<Customtopappbar> {
   String whatToDisplayText() {
     if (widget.documentEditingPage == true) return "Document";
 
-    if (widget.showSettingsButton) {
+    if (widget.showSettingsButton == false) {
       return "Setting";
     }
+
     return Provider.of<Pagecontrollerprovider>(context).getCurrentPageName;
   }
 }

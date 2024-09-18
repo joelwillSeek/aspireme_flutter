@@ -1,4 +1,3 @@
-import 'package:aspireme_flutter/Pages/Globally%20Used/CustomTopAppBar.dart';
 import 'package:aspireme_flutter/Pages/Globally%20Used/FloatingBottomNav.dart';
 import 'package:aspireme_flutter/Pages/Folder%20And%20Document%20View/FolderAndDocumentListPage.dart';
 import 'package:aspireme_flutter/Pages/Globally%20Used/LoadingWidget.dart';
@@ -11,6 +10,7 @@ import 'package:aspireme_flutter/Providers/DirectoryStrucutreManagerProvider.dar
 import 'package:aspireme_flutter/Providers/PageControllerProvider.dart';
 import 'package:aspireme_flutter/Providers/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -70,24 +70,103 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
       darkTheme: themeDark,
       themeMode: Provider.of<ThemeProvider>(context).currentTheme,
       home: Scaffold(
+        appBar: appBarWidget(),
         // appBar: const PreferredSize(
         //     preferredSize: Size.fromHeight(120), child: Customtopappbar()),
-        body: PageView(
-          controller: context.read<Pagecontrollerprovider>().getPageController,
-          onPageChanged: whenPageSwiped,
-          children: const [
-            Homepage(),
-            FolderAndDocumentListPage(),
-            SettingsPage()//changed
-          ],
-        ),
-        floatingActionButton:
-            Provider.of<Pagecontrollerprovider>(context).getPageIndex == 1
-                ? Builder(builder: (context) {
-                    return setFloatingButton(context);
-                  })
-                : null,
+        body: pageViewWidget(context),
+        floatingActionButton: showFAB(context),
         bottomNavigationBar: const FloatingBottomNav(),
+      ),
+    );
+  }
+
+  Builder? showFAB(BuildContext context) {
+    return Provider.of<Pagecontrollerprovider>(context).getPageIndex == 1
+        ? Builder(builder: (context) {
+            return setFloatingButton(context);
+          })
+        : null;
+  }
+
+  PageView pageViewWidget(BuildContext context) {
+    return PageView(
+      controller: context.read<Pagecontrollerprovider>().getPageController,
+      onPageChanged: whenPageSwiped,
+      children: const [Homepage(), FolderAndDocumentListPage(), SettingsPage()],
+    );
+  }
+
+  Future<void> backButtonAppBarClick() async {
+    final pageProvider = context.read<Pagecontrollerprovider>();
+
+    if (pageProvider.getPageIndex != 0 &&
+        pageProvider.getPageIndex != 1 &&
+        context.mounted) {
+      pageProvider.goBackPage(pageProvider.getPageIndex - 1, context);
+    }
+
+    if (pageProvider.getPageIndex == 1) {
+      final closedTheFolder = await context
+          .read<DirectoryStructureManagerProvider>()
+          .closedFolder(context);
+
+      if (!closedTheFolder && context.mounted) {
+        pageProvider.goBackPage(pageProvider.getPageIndex - 1, context);
+      }
+
+      return;
+    }
+
+    if (pageProvider.getPageIndex == 0) {
+      dialogExitingApp(context);
+    }
+  }
+
+  AppBar appBarWidget() {
+    return AppBar(
+      centerTitle: true,
+      leading: IconButton(
+          onPressed: backButtonAppBarClick,
+          icon: const Icon(Icons.arrow_back_ios)),
+      title:
+          Text(Provider.of<Pagecontrollerprovider>(context).getCurrentPageName),
+      actions: [
+        Builder(
+            builder: (context) => IconButton(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text("Sync Comming soon"),
+                    duration: Durations.medium4,
+                  ));
+                },
+                icon: const Icon(Icons.loop)))
+      ],
+    );
+  }
+
+  void dialogExitingApp(BuildContext context) {
+    showDialog(
+      barrierDismissible: true,
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Exit App?'),
+        content: const Text('Do you want to exit the app?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(
+              'No',
+              style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+            ),
+          ),
+          TextButton(
+            onPressed: () => SystemNavigator.pop(),
+            child: Text(
+              'Yes',
+              style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+            ),
+          ),
+        ],
       ),
     );
   }

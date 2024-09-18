@@ -59,7 +59,7 @@ class FolderWidget extends StatelessWidget {
 
     void folderClicked() {
       context.read<DirectoryStructureManagerProvider>().openFolder = folder;
-      context.read<Pagecontrollerprovider>().changePage(1, context);
+      context.read<Pagecontrollerprovider>().goNextPage(1, context);
     }
 
     Widget folderWidget() {

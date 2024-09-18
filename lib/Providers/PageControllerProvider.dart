@@ -9,16 +9,12 @@ class Pagecontrollerprovider extends ChangeNotifier {
 
   PageController get getPageController => pageController;
 
-  String get getCurrentPageName {
-    print("page indes $pageIndex");
-    return _pagesNamesThatExist[pageIndex];
-  }
+  String get getCurrentPageName => _pagesNamesThatExist[pageIndex];
 
-  List get getExitingPages => _pagesNamesThatExist;
+  List get getAllPagesNames => _pagesNamesThatExist;
 
   set setPageIndex(int value) {
     pageIndex = value;
-
     notifyListeners();
   }
 
@@ -27,7 +23,13 @@ class Pagecontrollerprovider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void changePage(int index, BuildContext context) {
+  void goBackPage(int index, BuildContext context) {
+    pageController.previousPage(
+        duration: const Duration(milliseconds: 300), curve: Curves.linear);
+    setPageIndex = index;
+  }
+
+  void goNextPage(int index, BuildContext context) {
     pageController.animateToPage(index,
         duration: const Duration(milliseconds: 300), curve: Curves.linear);
 

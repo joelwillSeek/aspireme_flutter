@@ -23,12 +23,12 @@ class DocumentEditingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: const PreferredSize(
-          preferredSize: Size.fromHeight(120),
-          child: Customtopappbar(
-            documentEditingPage: true,
-          ),
-        ),
+        // appBar: const PreferredSize(
+        //   preferredSize: Size.fromHeight(120),
+        //   child: Customtopappbar(
+        //     documentEditingPage: true,
+        //   ),
+        // ),
         body: Container(
             decoration: const BoxDecoration(color: Colors.white),
             margin: const EdgeInsets.all(0),

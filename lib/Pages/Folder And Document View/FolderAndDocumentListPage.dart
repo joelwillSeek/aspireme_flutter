@@ -27,7 +27,7 @@ class _FolderAndDocumentListPageState extends State<FolderAndDocumentListPage> {
               .closedFolder(context);
 
           if (!closedTheFolder && context.mounted) {
-            context.read<Pagecontrollerprovider>().changePage(0, context);
+            context.read<Pagecontrollerprovider>().goNextPage(0, context);
           }
         },
         canPop: false,

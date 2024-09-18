@@ -19,9 +19,9 @@ class _FloatingBottomNavState extends State<FloatingBottomNav> {
     return BottomNavigationBar(
         currentIndex: indexNavBar,
         onTap: (index) async {
-          setState(() {
-            context.read<Pagecontrollerprovider>().setPageIndex = index;
-          });
+          // setState(() {
+          //   context.read<Pagecontrollerprovider>().setPageIndex = index;
+          // });
 
           print("Folder table");
           await Sqldatabse.getFoldersWithCustomQuery();
@@ -30,7 +30,7 @@ class _FloatingBottomNavState extends State<FloatingBottomNav> {
           debugPrint("Document table");
           await Sqldatabse.getDocumentsWithCustomQuery();
 
-          context.read<Pagecontrollerprovider>().changePage(index, context);
+          context.read<Pagecontrollerprovider>().goNextPage(index, context);
         },
         items: const [
           BottomNavigationBarItem(

@@ -268,13 +268,41 @@ class Sqlfolderfunction {
       final allFoldersInJson = await database.query(Sqldatabse.nameFolderTable);
 
       if (allFoldersInJson.isEmpty) return null;
-      final allFolders = allFoldersInJson
-          .map((element) => Folder.fromJsonToFolder(element))
-          .toList();
+
+      final allFolders = await getAllFolderInList(allFoldersInJson);
+
       return allFolders;
     } catch (e) {
       debugPrint("Get all folders : $e");
     }
     return null;
+  }
+
+  static getAllFolderInList(List jsonFoldersList) async {
+    try {
+      List<Folder> allFolders = [];
+
+      for (var jsonFolder in jsonFoldersList) {
+        final subFolders = await foldersIdJsonToList(
+            jsonDecode(jsonFolder["subFoldersId"] as String));
+
+        final subDocuments = await documentIdJsonToList(
+            jsonDecode(jsonFolder["subDocumentId"] as String));
+
+        final newJson = {
+          "id": jsonFolder["id"],
+          "name": jsonFolder["name"],
+          "subDocumentId": subDocuments,
+          "subFoldersId": subFolders,
+          "parentId": jsonFolder["parentId"],
+        };
+
+        allFolders.add(Folder.fromJsonToFolder(newJson));
+      }
+
+      return allFolders;
+    } catch (e) {
+      debugPrint("Get all folder in list : $e");
+    }
   }
 }

@@ -1,5 +1,4 @@
 import 'package:aspireme_flutter/BackEnd/Database/SqlDocumentFunciton.dart';
-import 'package:aspireme_flutter/BackEnd/Database/SqlFolderFunction.dart';
 import 'package:aspireme_flutter/BackEnd/Models/DocumentModel.dart';
 import 'package:aspireme_flutter/BackEnd/Models/Folder.dart';
 import 'package:aspireme_flutter/Pages/Document%20Editing%20View/DocumentEditingPage.dart';
@@ -9,11 +8,16 @@ import 'package:aspireme_flutter/Providers/DocumentEditingPageProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class DocumentWidget extends StatelessWidget {
+class DocumentWidget extends StatefulWidget {
   final DocumentModel documentModel;
 
   const DocumentWidget({required this.documentModel, super.key});
 
+  @override
+  State<DocumentWidget> createState() => _DocumentWidgetState();
+}
+
+class _DocumentWidgetState extends State<DocumentWidget> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -24,7 +28,7 @@ class DocumentWidget extends StatelessWidget {
           doucmentWidgetTapped(context);
         },
         child: Draggable(
-            data: documentModel,
+            data: widget.documentModel,
             childWhenDragging: const DragedDocumentWidget(
               staying: true,
             ),
@@ -37,7 +41,7 @@ class DocumentWidget extends StatelessWidget {
       showDialog(context: context, builder: (context) => const LoadingWidget());
 
       final updatedDocument =
-          await Sqldocumentfunciton.getDocument(documentModel.getId);
+          await Sqldocumentfunciton.getDocument(widget.documentModel.getId);
 
       if (context.mounted) {
         context.read<DocumentEditingPageProvider>().setBeingViewedDocument =
@@ -101,49 +105,57 @@ class DocumentWidget extends StatelessWidget {
   Future<void> moveOptionTapped(BuildContext context) async {
     final allFolders =
         await context.read<DirectoryStructureManagerProvider>().getAllFolders();
-    List<Folder?>? shown = [];
+    List<Folder?> shown = allFolders ?? [];
 
     if (context.mounted) {
       showDialog(
           context: context,
-          builder: (context) {
-            return Dialog(
-              child: Column(
-                children: [
-                  SearchBar(
-                    hintText: "Search ...",
-                    onChanged: (query) {
-                      if (query.isEmpty) {
-                        shown = allFolders;
-                      } else {
-                        shown = allFolders
-                            ?.where((element) =>
-                                element.name?.toLowerCase() ==
-                                query.toLowerCase())
-                            .toList();
-                      }
-                    },
-                  ),
-                  SizedBox(
-                    height: 100.0,
-                    child: ListView.builder(
-                      itemCount: shown?.length,
-                      itemBuilder: (context, index) =>
-                          folderMoveIcon(shown, index),
+          builder: (context) => Dialog(
+                child: Column(
+                  children: [
+                    SearchBar(
+                      hintText: "Search ...",
+                      onChanged: (query) {
+                        shown = searchBoxQueryChanged(query, shown, allFolders);
+                      },
                     ),
-                  )
-                ],
-              ),
-            );
-          });
+                    SizedBox(
+                      height: 400.0,
+                      child: ListView.builder(
+                        itemCount: shown.length,
+                        itemBuilder: (context, index) =>
+                            folderMoveIcon(shown, index),
+                      ),
+                    )
+                  ],
+                ),
+              ));
     }
   }
 
-  Row folderMoveIcon(List<Folder?>? shown, int index) {
+  List<Folder?> searchBoxQueryChanged(
+      String query, List<Folder?> shown, List<Folder>? allFolders) {
+    if (query.isEmpty) {
+      setState(() {
+        shown = allFolders ?? [];
+      });
+    } else {
+      setState(() {
+        shown = allFolders
+                ?.where((element) =>
+                    element.name?.toLowerCase() == query.toLowerCase())
+                .toList() ??
+            [];
+      });
+    }
+    return shown;
+  }
+
+  Row folderMoveIcon(List<Folder?> shown, int index) {
     return Row(
       children: [
         const Icon(Icons.folder),
-        Text(shown?[index]?.name ?? "Error"),
+        Text(shown[index]?.name ?? "Error"),
         TextButton(
             onPressed: () {
               print("move");
@@ -157,7 +169,7 @@ class DocumentWidget extends StatelessWidget {
     showDialog(context: context, builder: (context) => const LoadingWidget());
     await context
         .read<DirectoryStructureManagerProvider>()
-        .deleteDocument(documentModel);
+        .deleteDocument(widget.documentModel);
 
     if (context.mounted) Navigator.pop(context);
   }
@@ -185,7 +197,7 @@ class DocumentWidget extends StatelessWidget {
         children: [
           Image.asset("asset/Icons/document_icon.png"),
           Text(
-            documentModel.getName,
+            widget.documentModel.getName,
             textAlign: TextAlign.center,
           )
         ],

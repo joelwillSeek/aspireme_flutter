@@ -76,9 +76,12 @@ class _DocumentWidgetState extends State<DocumentWidget> {
                 color: Colors.red,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Text(
+              child: Text(
                 'Delete',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onError),
               ),
             ),
           ),
@@ -93,9 +96,12 @@ class _DocumentWidgetState extends State<DocumentWidget> {
                 color: const Color.fromARGB(255, 0, 134, 243),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Text(
+              child: Text(
                 'Move',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onSecondary),
               ),
             ),
           ),
@@ -116,7 +122,7 @@ class _DocumentWidgetState extends State<DocumentWidget> {
                     SearchBar(
                       hintText: "Search ...",
                       onChanged: (query) {
-                        shown = searchBoxQueryChanged(query, shown, allFolders);
+                        searchBoxQueryChanged(query, shown, allFolders);
                       },
                     ),
                     SizedBox(
@@ -133,7 +139,7 @@ class _DocumentWidgetState extends State<DocumentWidget> {
     }
   }
 
-  List<Folder?> searchBoxQueryChanged(
+  void searchBoxQueryChanged(
       String query, List<Folder?> shown, List<Folder>? allFolders) {
     if (query.isEmpty) {
       setState(() {
@@ -148,19 +154,44 @@ class _DocumentWidgetState extends State<DocumentWidget> {
             [];
       });
     }
-    return shown;
   }
 
   Row folderMoveIcon(List<Folder?> shown, int index) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         const Icon(Icons.folder),
         Text(shown[index]?.name ?? "Error"),
         TextButton(
-            onPressed: () {
-              print("move");
+            style: ButtonStyle(
+                backgroundColor: WidgetStatePropertyAll(
+                    Theme.of(context).colorScheme.secondary)),
+            onPressed: () async {
+              try {
+                showDialog(
+                    context: context,
+                    builder: (context) => const LoadingWidget());
+
+                await context
+                    .read<DirectoryStructureManagerProvider>()
+                    .shiftDocumentFolderToFolder(
+                        widget.documentModel, shown[index]?.id ?? 0);
+
+                print("go there");
+              } catch (e) {
+                debugPrint("Document widget move to new folder: $e");
+              } finally {
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                }
+              }
             },
-            child: const Text("move"))
+            child: Text(
+              "move",
+              style:
+                  TextStyle(color: Theme.of(context).colorScheme.onSecondary),
+            ))
       ],
     );
   }

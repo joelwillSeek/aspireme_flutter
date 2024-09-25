@@ -183,7 +183,7 @@ class DirectoryStructureManagerProvider extends ChangeNotifier {
 
 //document functions
 
-  Future<void> ShiftDocumentFolderToFolder(
+  Future<void> shiftDocumentFolderToFolder(
       DocumentModel documentModel, int newParentId) async {
     try {
       await makeSureRootFolderIsRoot();

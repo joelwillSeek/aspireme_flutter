@@ -1,5 +1,4 @@
 import 'package:aspireme_flutter/BackEnd/Database/SqlDatabase.dart';
-import 'package:aspireme_flutter/Pages/Globally%20Used/CustomTopAppBar.dart';
 import 'package:aspireme_flutter/Pages/Globally%20Used/LoadingWidget.dart';
 import 'package:aspireme_flutter/Providers/theme_provider.dart';
 import 'package:flutter/material.dart';
@@ -69,8 +68,6 @@ class _SwitchDarkModeState extends State<SwitchDarkMode> {
   Widget build(BuildContext context) {
     return Switch(
         activeColor: Theme.of(context).colorScheme.secondary,
-        thumbColor:
-            WidgetStatePropertyAll(Theme.of(context).colorScheme.onSecondary),
         value: checker,
         onChanged: (didChecked) {
           setState(() {

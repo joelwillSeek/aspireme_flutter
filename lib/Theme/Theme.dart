@@ -16,7 +16,7 @@ final themeLight = ThemeData(
       primary: Color.fromARGB(255, 220, 220, 220),
       onPrimary: Colors.black,
       secondary: Color.fromARGB(255, 10, 94, 163),
-      onSecondary: Colors.black,
+      onSecondary: Colors.white,
       error: Colors.red,
       onError: Colors.white,
       surface: Colors.white,

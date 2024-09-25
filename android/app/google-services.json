@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1022812638978",
+    "project_id": "aspireme-818a3",
+    "storage_bucket": "aspireme-818a3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1022812638978:android:da38ff8bdb353bdf43fc1b",
+        "android_client_info": {
+          "package_name": "com.BigPanda.aspireme"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJmBhoIBM5nmvZVIKR2ZQARGgF_bCML-Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1022812638978:android:a3cc460c027b638943fc1b",
+        "android_client_info": {
+          "package_name": "com.example.aspireme"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJmBhoIBM5nmvZVIKR2ZQARGgF_bCML-Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

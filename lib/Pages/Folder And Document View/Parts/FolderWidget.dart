@@ -119,7 +119,7 @@ class FolderWidget extends StatelessWidget {
       if (data is DocumentModel) {
         await context
             .read<DirectoryStructureManagerProvider>()
-            .ShiftDocumentFolderToFolder(data, folder.id!);
+            .shiftDocumentFolderToFolder(data, folder.id!);
         return;
       }
     } catch (e) {

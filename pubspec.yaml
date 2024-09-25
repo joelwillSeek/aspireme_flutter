@@ -18,6 +18,7 @@ dependencies:
   flutter_launcher_icons: ^0.13.1
   path: any
   tutorial_coach_mark: ^1.2.11
+  firebase_core: ^3.5.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

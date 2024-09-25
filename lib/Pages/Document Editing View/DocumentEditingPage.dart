@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:aspireme_flutter/BackEnd/Models/Note.dart';
-import 'package:aspireme_flutter/Pages/Globally%20Used/CustomTopAppBar.dart';
 import 'package:aspireme_flutter/Pages/Globally%20Used/LoadingWidget.dart';
 import 'package:aspireme_flutter/Providers/DocumentEditingPageProvider.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +8,16 @@ import 'package:provider/provider.dart';
 
 class DocumentEditingPage extends StatelessWidget {
   const DocumentEditingPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: appBarWidget(context),
+        body: Container(
+            decoration: const BoxDecoration(color: Colors.white),
+            margin: const EdgeInsets.all(0),
+            child: listBuilder(context)));
+  }
 
   Widget listBuilder(BuildContext context) {
     List<Note?> listOfNotes =
@@ -20,13 +29,43 @@ class DocumentEditingPage extends StatelessWidget {
             NoteWidgetView(note: listOfNotes[index], index: index));
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        body: Container(
-            decoration: const BoxDecoration(color: Colors.white),
-            margin: const EdgeInsets.all(0),
-            child: listBuilder(context)));
+  void dialogExitingApp(BuildContext context) {
+    showDialog(
+      barrierDismissible: true,
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Exit App?'),
+        content: const Text('Do you want to exit the app?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(
+              'No',
+              style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+            ),
+          ),
+          TextButton(
+            onPressed: () => SystemNavigator.pop(),
+            child: Text(
+              'Yes',
+              style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  AppBar appBarWidget(BuildContext context) {
+    return AppBar(
+      centerTitle: true,
+      leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(Icons.arrow_back_ios)),
+      title: const Text("Document Editing"),
+    );
   }
 }
 

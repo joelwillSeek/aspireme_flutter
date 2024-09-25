@@ -15,14 +15,19 @@ dependencies:
   sqflite: ^2.3.3+1
   path_provider: ^2.1.4
   flutter_spinkit: ^5.2.1
+  google_sign_in: ^6.2.1
   flutter_launcher_icons: ^0.13.1
   path: any
   tutorial_coach_mark: ^1.2.11
   firebase_core: ^3.5.0
+  rename: ^3.0.2
+  firebase_auth: ^5.3.0
+  cloud_firestore: ^5.4.2
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
+  
 
 flutter:
   uses-material-design: true

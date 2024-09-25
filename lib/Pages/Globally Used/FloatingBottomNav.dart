@@ -1,5 +1,5 @@
 import 'package:aspireme_flutter/BackEnd/Database/SqlDatabase.dart';
-import 'package:aspireme_flutter/Providers/PageControllerProvider.dart';
+import 'package:aspireme_flutter/Providers/UI/PageControllerProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

@@ -3,15 +3,23 @@ import 'package:flutter/material.dart';
 class Pagecontrollerprovider extends ChangeNotifier {
   PageController pageController = PageController();
   int pageIndex = 0;
-  final List _pagesNamesThatExist = ["Home", "Folders", "Notes"];
+
+  final Map _pagesNamesThatExist = {"Home": 0, "Folders": 1, "Settings": 2};
 
   int get getPageIndex => pageIndex;
 
   PageController get getPageController => pageController;
 
-  String get getCurrentPageName => _pagesNamesThatExist[pageIndex];
+  String get getCurrentPageName {
+    String name = "";
 
-  List get getAllPagesNames => _pagesNamesThatExist;
+    _pagesNamesThatExist
+        .forEach((key, value) => key == getPageIndex ? name = value : null);
+
+    return name;
+  }
+
+  Map get getAllPagesNames => _pagesNamesThatExist;
 
   set setPageIndex(int value) {
     pageIndex = value;

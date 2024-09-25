@@ -1,4 +1,4 @@
-package com.example.aspireme_flutter
+package com.BigPanda.aspireme
 
 import io.flutter.embedding.android.FlutterActivity
 

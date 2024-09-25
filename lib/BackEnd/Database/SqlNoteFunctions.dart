@@ -6,6 +6,18 @@ import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 
 class Sqlnotefunctions {
+  static Future<List> getAllRawNotes() async {
+    try {
+      final database = await Sqldatabse.getDatabase();
+
+      return await database.query(Sqldatabse.nameNoteTable);
+    } catch (e) {
+      debugPrint("getAllRawNotes : $e");
+    }
+
+    throw ("Not Supposed to throw null at end");
+  }
+
   static Future<Note?> createANote(Note note) async {
     try {
       final database = await Sqldatabse.getDatabase();

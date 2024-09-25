@@ -11,6 +11,18 @@ import 'package:aspireme_flutter/BackEnd/Database/SqlNoteFunctions.dart';
 import 'package:flutter/material.dart';
 
 class Sqldocumentfunciton {
+  static Future<List> getRawDocumentModels() async {
+    try {
+      final database = await Sqldatabse.getDatabase();
+
+      return await database.query(Sqldatabse.nameDocumentTable);
+    } catch (e) {
+      debugPrint("getRawDocumentModels : $e");
+    }
+
+    throw ("Not Supposed to throw null at end");
+  }
+
   static Future<List<Note?>> NotesIdJsonToList(List decodedIds) async {
     List<Note?> tempNotesHolder = [];
     if (decodedIds.isEmpty) return tempNotesHolder;

@@ -269,7 +269,7 @@ class Sqlfolderfunction {
 
       if (allFoldersInJson.isEmpty) return null;
 
-      final allFolders = await getAllFolderInList(allFoldersInJson);
+      final allFolders = await foldersList(allFoldersInJson);
 
       return allFolders;
     } catch (e) {
@@ -278,7 +278,19 @@ class Sqlfolderfunction {
     return null;
   }
 
-  static getAllFolderInList(List jsonFoldersList) async {
+  static Future<List<Map>> getAllRawFolders() async {
+    try {
+      final database = await Sqldatabse.getDatabase();
+
+      return await database.query(Sqldatabse.nameFolderTable);
+    } catch (e) {
+      debugPrint("getAllRawFolders : $e");
+    }
+
+    throw ("Not Supposed to throw null at end");
+  }
+
+  static foldersList(List jsonFoldersList) async {
     try {
       List<Folder> allFolders = [];
 

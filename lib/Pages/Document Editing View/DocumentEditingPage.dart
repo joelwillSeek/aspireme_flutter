@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:aspireme_flutter/BackEnd/Models/Note.dart';
 import 'package:aspireme_flutter/Pages/Globally%20Used/LoadingWidget.dart';
-import 'package:aspireme_flutter/Providers/DocumentEditingPageProvider.dart';
+import 'package:aspireme_flutter/Providers/UI/DocumentEditingPageProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';

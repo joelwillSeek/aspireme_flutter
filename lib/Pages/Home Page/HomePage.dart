@@ -1,6 +1,6 @@
 import 'package:aspireme_flutter/Pages/Home%20Page/Parts/FlashCard.dart';
-import 'package:aspireme_flutter/Providers/DirectoryStrucutreManagerProvider.dart';
-import 'package:aspireme_flutter/Providers/FlashCardProvider.dart';
+import 'package:aspireme_flutter/Providers/Datastructure/DirectoryStrucutreManagerProvider.dart';
+import 'package:aspireme_flutter/Providers/UI/FlashCardProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';

@@ -1,6 +1,6 @@
 import 'package:aspireme_flutter/BackEnd/Models/Note.dart';
-import 'package:aspireme_flutter/Providers/FlashCardProvider.dart';
-import 'package:aspireme_flutter/Providers/theme_provider.dart';
+import 'package:aspireme_flutter/Providers/UI/FlashCardProvider.dart';
+import 'package:aspireme_flutter/Providers/UI/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

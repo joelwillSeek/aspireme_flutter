@@ -3,24 +3,24 @@ import 'package:aspireme_flutter/Pages/Folder%20And%20Document%20View/FolderAndD
 import 'package:aspireme_flutter/Pages/Globally%20Used/LoadingWidget.dart';
 import 'package:aspireme_flutter/Pages/Home%20Page/HomePage.dart';
 import 'package:aspireme_flutter/Pages/Settings/settings_page.dart';
+import 'package:aspireme_flutter/Providers/BackEnd/Firebase.dart';
 import 'package:aspireme_flutter/Theme/Theme.dart';
-import 'package:aspireme_flutter/Providers/DocumentEditingPageProvider.dart';
-import 'package:aspireme_flutter/Providers/FlashCardProvider.dart';
-import 'package:aspireme_flutter/Providers/DirectoryStrucutreManagerProvider.dart';
-import 'package:aspireme_flutter/Providers/PageControllerProvider.dart';
-import 'package:aspireme_flutter/Providers/theme_provider.dart';
+import 'package:aspireme_flutter/Providers/UI/DocumentEditingPageProvider.dart';
+import 'package:aspireme_flutter/Providers/UI/FlashCardProvider.dart';
+import 'package:aspireme_flutter/Providers/Datastructure/DirectoryStrucutreManagerProvider.dart';
+import 'package:aspireme_flutter/Providers/UI/PageControllerProvider.dart';
+import 'package:aspireme_flutter/Providers/UI/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
-
 Future<void> main() async {
-
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
-);
+  );
 
   runApp(
     MultiProvider(
@@ -28,6 +28,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
         ChangeNotifierProvider(create: (context) => FlashCardProvider()),
         ChangeNotifierProvider(create: (context) => Pagecontrollerprovider()),
+        ChangeNotifierProvider(create: (context) => UserProfile()),
         ChangeNotifierProvider(
             create: (context) => DocumentEditingPageProvider()),
         ChangeNotifierProvider(
@@ -138,17 +139,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
           icon: const Icon(Icons.arrow_back_ios)),
       title:
           Text(Provider.of<Pagecontrollerprovider>(context).getCurrentPageName),
-      actions: [
-        Builder(
-            builder: (context) => IconButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text("Sync Comming soon"),
-                    duration: Durations.medium4,
-                  ));
-                },
-                icon: const Icon(Icons.loop)))
-      ],
+      actions: const [SyncButton()],
     );
   }
 
@@ -187,201 +178,10 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         showDialog(
             context: context,
             builder: (BuildContext context) =>
-                createFolderOrDocumentDialog(context));
+                const DialogCreateDocumentAndFolder());
       },
       child: const Icon(
         Icons.add,
-      ),
-    );
-  }
-
-  Widget createFolderOrDocumentDialog(BuildContext context) {
-    return Dialog(
-      child: SizedBox(
-          height: 230,
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            child: DefaultTabController(
-                length: 2,
-                child: Column(children: [
-                  TabBar(
-                    labelStyle: TextStyle(
-                        color: Theme.of(context).colorScheme.secondary),
-                    dividerColor: Theme.of(context).colorScheme.secondary,
-                    indicatorColor: Theme.of(context).colorScheme.secondary,
-                    labelColor: Theme.of(context).colorScheme.secondary,
-                    unselectedLabelColor:
-                        Theme.of(context).colorScheme.onPrimary,
-                    tabs: const [
-                      Tab(
-                        text: "Folder",
-                        icon: Icon(Icons.folder),
-                      ),
-                      Tab(text: "Document", icon: Icon(Icons.edit_document))
-                    ],
-                  ),
-                  Expanded(
-                      child: TabBarView(children: [
-                    createFolderTab(context),
-                    createDocumentTab(context)
-                  ]))
-                ])),
-          )),
-    );
-  }
-
-  Widget createDocumentTab(BuildContext context) {
-    TextEditingController textEditingController = TextEditingController();
-
-    Future<void> doneClicked() async {
-      if (textEditingController.text.length > 1) {
-        showDialog(
-            barrierDismissible: false,
-            context: context,
-            builder: (context) => const LoadingWidget());
-
-        await context
-            .read<DirectoryStructureManagerProvider>()
-            .addDocument(textEditingController.text);
-
-        if (context.mounted) {
-          Navigator.pop(context);
-
-          Navigator.pop(context);
-        }
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text("Make sure you enter at least one letter")));
-      }
-    }
-
-    return Column(
-      children: [
-        Expanded(
-          child: TextField(
-            controller: textEditingController,
-            decoration: InputDecoration(
-                border: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Theme.of(context).colorScheme.secondary)),
-                enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Theme.of(context).colorScheme.secondary)),
-                hintText: "Chemistry...",
-                hintStyle:
-                    TextStyle(color: Theme.of(context).colorScheme.secondary)),
-          ),
-        ),
-        Row(
-          children: [
-            Expanded(
-                child: TextButton(
-                    style: ButtonStyle(
-                        backgroundColor: WidgetStatePropertyAll(
-                            Theme.of(context).colorScheme.tertiary)),
-                    onPressed: doneClicked,
-                    child: const Text(
-                      "Done",
-                    ))),
-            Expanded(
-                child: TextButton(
-                    style: ButtonStyle(
-                        backgroundColor: WidgetStatePropertyAll(
-                            Theme.of(context).colorScheme.error)),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text(
-                        style: TextStyle(
-                            color: Theme.of(context).colorScheme.onError),
-                        "Cancel"))),
-          ],
-        )
-      ],
-    );
-  }
-
-  Widget createFolderTab(BuildContext context) {
-    TextEditingController folderNameInputText = TextEditingController();
-
-    Future<void> yesClicked() async {
-      if (folderNameInputText.text.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text(
-          "Please Enter A Name For Your Folder",
-          style: TextStyle(color: Colors.white),
-        )));
-      } else {
-        final folderAndNoteProvider =
-            context.read<DirectoryStructureManagerProvider>();
-        showDialog(
-            barrierDismissible: false,
-            context: context,
-            builder: (context) => const LoadingWidget());
-        await folderAndNoteProvider.addFolder(folderNameInputText.text);
-        if (context.mounted) {
-          Navigator.pop(context);
-        }
-      }
-
-      if (context.mounted) {
-        Navigator.pop(context);
-      }
-    }
-
-    return Padding(
-      padding: const EdgeInsets.all(10),
-      child: Column(
-        children: [
-          Column(
-            children: [
-              TextField(
-                controller: folderNameInputText,
-                decoration: InputDecoration(
-                    focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.onSecondary)),
-                    border: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.secondary)),
-                    enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.secondary)),
-                    hintText: "Folder Name",
-                    hintStyle: TextStyle(
-                        color: Theme.of(context).colorScheme.secondary)),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                      child: TextButton(
-                          onPressed: yesClicked,
-                          style: ButtonStyle(
-                              backgroundColor: WidgetStatePropertyAll(
-                                  Theme.of(context).colorScheme.tertiary)),
-                          child: const Text(
-                            "Done",
-                          ))),
-                  Expanded(
-                      child: TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    style: ButtonStyle(
-                        backgroundColor: WidgetStatePropertyAll(
-                            Theme.of(context).colorScheme.error)),
-                    child: Text(
-                      "Cancel",
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.onError),
-                    ),
-                  ))
-                ],
-              )
-            ],
-          )
-        ],
       ),
     );
   }
@@ -392,5 +192,258 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
 
       pageControllerProvider.setPageIndex = index;
     });
+  }
+}
+
+class DialogCreateDocumentAndFolder extends StatelessWidget {
+  const DialogCreateDocumentAndFolder({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      child: SizedBox(
+          height: 230,
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            child: DefaultTabController(
+                length: 2,
+                child: Column(children: [
+                  tabBar(context),
+                  Expanded(
+                      child: TabBarView(children: [
+                    createFolderTab(context),
+                    createDocumentTab(context)
+                  ]))
+                ])),
+          )),
+    );
+  }
+
+  TabBar tabBar(BuildContext context) {
+    return TabBar(
+      labelStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
+      dividerColor: Theme.of(context).colorScheme.secondary,
+      indicatorColor: Theme.of(context).colorScheme.secondary,
+      labelColor: Theme.of(context).colorScheme.secondary,
+      unselectedLabelColor: Theme.of(context).colorScheme.onPrimary,
+      tabs: const [
+        Tab(
+          text: "Folder",
+          icon: Icon(Icons.folder),
+        ),
+        Tab(text: "Document", icon: Icon(Icons.edit_document))
+      ],
+    );
+  }
+
+  Future<void> doneClicked(
+      BuildContext context, TextEditingController textEditingController) async {
+    if (textEditingController.text.length > 1) {
+      showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (context) => const LoadingWidget());
+
+      await context
+          .read<DirectoryStructureManagerProvider>()
+          .addDocument(textEditingController.text);
+
+      if (context.mounted) {
+        Navigator.pop(context);
+
+        Navigator.pop(context);
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Make sure you enter at least one letter")));
+    }
+  }
+
+  Future<void> yesClicked(
+      BuildContext context, TextEditingController folderNameInputText) async {
+    if (folderNameInputText.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text(
+        "Please Enter A Name For Your Folder",
+        style: TextStyle(color: Colors.white),
+      )));
+    } else {
+      final folderAndNoteProvider =
+          context.read<DirectoryStructureManagerProvider>();
+      showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (context) => const LoadingWidget());
+      await folderAndNoteProvider.addFolder(folderNameInputText.text);
+      if (context.mounted) {
+        Navigator.pop(context);
+      }
+    }
+
+    if (context.mounted) {
+      Navigator.pop(context);
+    }
+  }
+
+  Widget createDocumentTab(BuildContext context) {
+    TextEditingController textEditingController = TextEditingController();
+
+    return Column(
+      children: [
+        documentNameTextEditor(textEditingController, context),
+        doneOrCancelButton(context, textEditingController)
+      ],
+    );
+  }
+
+  Row doneOrCancelButton(
+      BuildContext context, TextEditingController textEditingController) {
+    return Row(
+      children: [
+        Expanded(
+            child: TextButton(
+                style: ButtonStyle(
+                    backgroundColor: WidgetStatePropertyAll(
+                        Theme.of(context).colorScheme.tertiary)),
+                onPressed: () {
+                  doneClicked(context, textEditingController);
+                },
+                child: const Text(
+                  "Done",
+                ))),
+        Expanded(
+            child: TextButton(
+                style: ButtonStyle(
+                    backgroundColor: WidgetStatePropertyAll(
+                        Theme.of(context).colorScheme.error)),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text(
+                    style:
+                        TextStyle(color: Theme.of(context).colorScheme.onError),
+                    "Cancel"))),
+      ],
+    );
+  }
+
+  Expanded documentNameTextEditor(
+      TextEditingController textEditingController, BuildContext context) {
+    return Expanded(
+      child: TextField(
+        controller: textEditingController,
+        decoration: InputDecoration(
+            border: UnderlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.secondary)),
+            enabledBorder: UnderlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.secondary)),
+            hintText: "Chemistry...",
+            hintStyle:
+                TextStyle(color: Theme.of(context).colorScheme.secondary)),
+      ),
+    );
+  }
+
+  Widget createFolderTab(BuildContext context) {
+    TextEditingController folderNameInputText = TextEditingController();
+
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        children: [
+          Column(
+            children: [
+              labelForFolderName(folderNameInputText, context),
+              doneOrCaneclButtons(context, folderNameInputText)
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Row doneOrCaneclButtons(
+      BuildContext context, TextEditingController folderNameInputText) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Expanded(
+            child: TextButton(
+                onPressed: () {
+                  yesClicked(context, folderNameInputText);
+                },
+                style: ButtonStyle(
+                    backgroundColor: WidgetStatePropertyAll(
+                        Theme.of(context).colorScheme.tertiary)),
+                child: const Text(
+                  "Done",
+                ))),
+        Expanded(
+            child: TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          style: ButtonStyle(
+              backgroundColor:
+                  WidgetStatePropertyAll(Theme.of(context).colorScheme.error)),
+          child: Text(
+            "Cancel",
+            style: TextStyle(color: Theme.of(context).colorScheme.onError),
+          ),
+        ))
+      ],
+    );
+  }
+
+  TextField labelForFolderName(
+      TextEditingController folderNameInputText, BuildContext context) {
+    return TextField(
+      controller: folderNameInputText,
+      decoration: InputDecoration(
+          focusedBorder: UnderlineInputBorder(
+              borderSide:
+                  BorderSide(color: Theme.of(context).colorScheme.onSecondary)),
+          border: UnderlineInputBorder(
+              borderSide:
+                  BorderSide(color: Theme.of(context).colorScheme.secondary)),
+          enabledBorder: UnderlineInputBorder(
+              borderSide:
+                  BorderSide(color: Theme.of(context).colorScheme.secondary)),
+          hintText: "Folder Name",
+          hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary)),
+    );
+  }
+}
+
+class SyncButton extends StatelessWidget {
+  const SyncButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Builder(
+        builder: (context) => IconButton(
+            onPressed: () {
+              syncClicked(context);
+            },
+            icon: const Icon(Icons.loop)));
+  }
+
+  void syncClicked(BuildContext context) {
+    final firebaseProvider = context.read<UserProfile>();
+
+    if (firebaseProvider.getUser == null) {
+      final pageControlerProvider = context.read<Pagecontrollerprovider>();
+      pageControlerProvider.goNextPage(
+          pageControlerProvider.getAllPagesNames["Settings"], context);
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("Sign In")));
+
+      return;
+    }
+
+    firebaseProvider.syncDatabase(context);
   }
 }

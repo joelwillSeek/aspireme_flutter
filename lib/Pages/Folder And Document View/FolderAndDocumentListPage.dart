@@ -1,8 +1,8 @@
 import 'package:aspireme_flutter/BackEnd/Models/Folder.dart';
 import 'package:aspireme_flutter/Pages/Folder%20And%20Document%20View/Parts/DocumentWidget.dart';
 import 'package:aspireme_flutter/Pages/Folder%20And%20Document%20View/Parts/FolderWidget.dart';
-import 'package:aspireme_flutter/Providers/DirectoryStrucutreManagerProvider.dart';
-import 'package:aspireme_flutter/Providers/PageControllerProvider.dart';
+import 'package:aspireme_flutter/Providers/Datastructure/DirectoryStrucutreManagerProvider.dart';
+import 'package:aspireme_flutter/Providers/UI/PageControllerProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

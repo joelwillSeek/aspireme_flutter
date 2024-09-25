@@ -7,12 +7,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1022812638978:android:da38ff8bdb353bdf43fc1b",
+        "mobilesdk_app_id": "1:1022812638978:android:01ca788a5060c13b43fc1b",
         "android_client_info": {
           "package_name": "com.BigPanda.aspireme"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1022812638978-f0iec1hhdkpsk2booj3he5dngtilg529.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAJmBhoIBM5nmvZVIKR2ZQARGgF_bCML-Q"
@@ -20,26 +25,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:1022812638978:android:a3cc460c027b638943fc1b",
-        "android_client_info": {
-          "package_name": "com.example.aspireme"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAJmBhoIBM5nmvZVIKR2ZQARGgF_bCML-Q"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1022812638978-f0iec1hhdkpsk2booj3he5dngtilg529.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

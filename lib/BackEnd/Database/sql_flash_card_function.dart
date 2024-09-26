@@ -1,5 +1,5 @@
 import 'package:aspireme_flutter/BackEnd/Models/Note.dart';
-import 'package:aspireme_flutter/BackEnd/Database/SqlNoteFunctions.dart';
+import 'package:aspireme_flutter/BackEnd/Database/sql_note_functions.dart';
 
 class Sqlflashcardfunction {
 // Flashcard Functionally

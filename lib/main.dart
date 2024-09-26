@@ -1,5 +1,5 @@
-import 'package:aspireme_flutter/Pages/Globally%20Used/FloatingBottomNav.dart';
-import 'package:aspireme_flutter/Pages/Folder%20And%20Document%20View/FolderAndDocumentListPage.dart';
+import 'package:aspireme_flutter/Pages/Globally%20Used/floating_bottom_nav.dart';
+import 'package:aspireme_flutter/Pages/Folder%20And%20Document%20View/folder_and_document_list_page.dart';
 import 'package:aspireme_flutter/Pages/Globally%20Used/LoadingWidget.dart';
 import 'package:aspireme_flutter/Pages/Home%20Page/HomePage.dart';
 import 'package:aspireme_flutter/Pages/Settings/settings_page.dart';

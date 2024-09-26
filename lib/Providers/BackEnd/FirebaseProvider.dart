@@ -1,6 +1,6 @@
-import 'package:aspireme_flutter/BackEnd/Database/SqlDocumentFunciton.dart';
-import 'package:aspireme_flutter/BackEnd/Database/SqlFolderFunction.dart';
-import 'package:aspireme_flutter/BackEnd/Database/SqlNoteFunctions.dart';
+import 'package:aspireme_flutter/BackEnd/Database/sql_document_funciton.dart';
+import 'package:aspireme_flutter/BackEnd/Database/sql_folder_function.dart';
+import 'package:aspireme_flutter/BackEnd/Database/sql_note_functions.dart';
 import 'package:aspireme_flutter/Pages/Globally%20Used/LoadingWidget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';

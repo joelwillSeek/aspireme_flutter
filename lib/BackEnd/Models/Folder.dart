@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:aspireme_flutter/BackEnd/Models/DocumentModel.dart';
+import 'package:aspireme_flutter/BackEnd/Models/document_model.dart';
 
 class Folder {
   int? id;

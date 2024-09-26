@@ -1,4 +1,4 @@
-import 'package:aspireme_flutter/BackEnd/Database/SqlDatabase.dart';
+import 'package:aspireme_flutter/BackEnd/Database/sql_database.dart';
 import 'package:aspireme_flutter/Pages/Globally%20Used/LoadingWidget.dart';
 import 'package:aspireme_flutter/Providers/BackEnd/FirebaseProvider.dart';
 import 'package:aspireme_flutter/Providers/UI/theme_provider.dart';

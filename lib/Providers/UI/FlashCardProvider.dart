@@ -1,6 +1,6 @@
 import 'package:aspireme_flutter/BackEnd/Models/Note.dart';
-import 'package:aspireme_flutter/BackEnd/Database/SqlFlashCardFunction.dart';
-import 'package:aspireme_flutter/BackEnd/Database/SqlNoteFunctions.dart';
+import 'package:aspireme_flutter/BackEnd/Database/sql_flash_card_function.dart';
+import 'package:aspireme_flutter/BackEnd/Database/sql_note_functions.dart';
 import 'package:flutter/material.dart';
 
 class FlashCardProvider extends ChangeNotifier {

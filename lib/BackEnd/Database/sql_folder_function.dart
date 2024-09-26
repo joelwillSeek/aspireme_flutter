@@ -2,10 +2,10 @@
 
 import 'dart:convert';
 
-import 'package:aspireme_flutter/BackEnd/Models/DocumentModel.dart';
+import 'package:aspireme_flutter/BackEnd/Models/document_model.dart';
 import 'package:aspireme_flutter/BackEnd/Models/Folder.dart';
-import 'package:aspireme_flutter/BackEnd/Database/SqlDatabase.dart';
-import 'package:aspireme_flutter/BackEnd/Database/SqlDocumentFunciton.dart';
+import 'package:aspireme_flutter/BackEnd/Database/sql_database.dart';
+import 'package:aspireme_flutter/BackEnd/Database/sql_document_funciton.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 

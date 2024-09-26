@@ -1,7 +1,7 @@
-import 'package:aspireme_flutter/BackEnd/Database/SqlDocumentFunciton.dart';
-import 'package:aspireme_flutter/BackEnd/Models/DocumentModel.dart';
+import 'package:aspireme_flutter/BackEnd/Database/sql_document_funciton.dart';
+import 'package:aspireme_flutter/BackEnd/Models/document_model.dart';
 import 'package:aspireme_flutter/BackEnd/Models/Folder.dart';
-import 'package:aspireme_flutter/Pages/Document%20Editing%20View/DocumentEditingPage.dart';
+import 'package:aspireme_flutter/Pages/Document%20Editing%20View/document_editing_page.dart';
 import 'package:aspireme_flutter/Pages/Globally%20Used/LoadingWidget.dart';
 import 'package:aspireme_flutter/Providers/Datastructure/DirectoryStrucutreManagerProvider.dart';
 import 'package:aspireme_flutter/Providers/UI/DocumentEditingPageProvider.dart';

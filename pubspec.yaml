@@ -19,7 +19,7 @@ dependencies:
   flutter_launcher_icons: ^0.13.1
   path: any
   tutorial_coach_mark: ^1.2.11
-  firebase_core: ^3.5.0
+  firebase_core: ^3.5.0 
   rename: ^3.0.2
   firebase_auth: ^5.3.0
   cloud_firestore: ^5.4.2

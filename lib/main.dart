@@ -3,7 +3,7 @@ import 'package:aspireme_flutter/Pages/Folder%20And%20Document%20View/FolderAndD
 import 'package:aspireme_flutter/Pages/Globally%20Used/LoadingWidget.dart';
 import 'package:aspireme_flutter/Pages/Home%20Page/HomePage.dart';
 import 'package:aspireme_flutter/Pages/Settings/settings_page.dart';
-import 'package:aspireme_flutter/Providers/BackEnd/Firebase.dart';
+import 'package:aspireme_flutter/Providers/BackEnd/FirebaseProvider.dart';
 import 'package:aspireme_flutter/Theme/Theme.dart';
 import 'package:aspireme_flutter/Providers/UI/DocumentEditingPageProvider.dart';
 import 'package:aspireme_flutter/Providers/UI/FlashCardProvider.dart';
@@ -433,16 +433,16 @@ class SyncButton extends StatelessWidget {
   void syncClicked(BuildContext context) {
     final firebaseProvider = context.read<UserProfile>();
 
-    if (firebaseProvider.getUser == null) {
-      final pageControlerProvider = context.read<Pagecontrollerprovider>();
-      pageControlerProvider.goNextPage(
-          pageControlerProvider.getAllPagesNames["Settings"], context);
+    // if (firebaseProvider.getUser == null) {
+    //   final pageControlerProvider = context.read<Pagecontrollerprovider>();
+    //   pageControlerProvider.goNextPage(
+    //       pageControlerProvider.getAllPagesNames["Settings"], context);
 
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("Sign In")));
+    //   ScaffoldMessenger.of(context)
+    //       .showSnackBar(const SnackBar(content: Text("Sign In")));
 
-      return;
-    }
+    //   return;
+    // }
 
     firebaseProvider.syncDatabase(context);
   }

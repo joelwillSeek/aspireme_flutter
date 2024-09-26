@@ -1,9 +1,9 @@
 import 'package:aspireme_flutter/BackEnd/Database/SqlDatabase.dart';
 import 'package:aspireme_flutter/Pages/Globally%20Used/LoadingWidget.dart';
-import 'package:aspireme_flutter/Providers/BackEnd/Firebase.dart';
+import 'package:aspireme_flutter/Providers/BackEnd/FirebaseProvider.dart';
 import 'package:aspireme_flutter/Providers/UI/theme_provider.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -52,11 +52,16 @@ class SignInButton extends StatelessWidget {
             onPressed: () {
               signinClick(context);
             },
-            child: const Text("Sign In")),
+            child: Text(signedInOrNot(context))),
         const Icon(Icons.person)
       ],
     );
   }
+
+  String signedInOrNot(BuildContext buildContext) =>
+      buildContext.read<UserProfile>().getUser == null
+          ? "Sign In"
+          : "You are signed in.";
 
   Future<void> signinClick(BuildContext context) async {
     final firebaseProvider = context.read<UserProfile>();

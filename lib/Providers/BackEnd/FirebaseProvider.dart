@@ -46,19 +46,28 @@ class UserProfile extends ChangeNotifier {
     if (getUser == null) {
       await signIn();
     }
+
     try {
-      // if (_auth.currentUser == null) throw Exception("current user null");
-      // final usersReference = await firebaseDatabase
-      //     .collection("users")
-      //     .doc("${_auth.currentUser?.uid}")
-      //     .collection("database")
-      //     .get();
+      if (_auth.currentUser == null) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(const SnackBar(content: Text("Could Not Sign in")));
+        }
+        return;
+      }
 
-      // if (usersReference.size == 0) {
-      //   createDatabase();
-      // }
+      // } throw Exception("current user null");
 
-      createDatabase();
+      final usersReference = await firebaseDatabase
+          .collection("users")
+          .doc("${_auth.currentUser?.uid}")
+          .get();
+
+      if (usersReference.exists) {
+        await updateDatabase();
+      } else {
+        await createDatabase();
+      }
     } catch (e) {
       debugPrint("Firebase syncDatabase : $e");
     } finally {
@@ -84,6 +93,17 @@ class UserProfile extends ChangeNotifier {
       });
     } catch (e) {
       debugPrint("createDatabase : $e");
+    }
+  }
+
+  Future<void> updateDatabase() async {
+    //TODO: doesnt actually update it drops the document then creates new maybe find a way to update each documents
+    try {
+      if (getUser?.uid == null) throw Exception("uid is null");
+      await firebaseDatabase.collection("users").doc(getUser!.uid).delete();
+      await createDatabase();
+    } catch (e) {
+      debugPrint("updateDatabase : $e");
     }
   }
 }

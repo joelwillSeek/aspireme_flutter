@@ -220,13 +220,15 @@ class _DocumentWidgetState extends State<DocumentWidget> {
 
   Widget documentCard() {
     return Card(
-      elevation: 0.0,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset("asset/Icons/document_icon.png"),
+          Image.asset(
+            "asset/Icons/document_icon.png",
+            scale: 1.4,
+          ),
           Text(
             widget.documentModel.getName,
             textAlign: TextAlign.center,

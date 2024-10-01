@@ -63,7 +63,8 @@ class FolderWidget extends StatelessWidget {
     }
 
     Widget folderWidget() {
-      return Column(
+      return Card(
+          child: Column(
         children: [
           IconButton(
               onPressed: null,
@@ -71,7 +72,7 @@ class FolderWidget extends StatelessWidget {
               icon: Image.asset("asset/Icons/folder_icon.png")),
           SizedBox(
               width: 100.0,
-              height: 40.0,
+              height: 30.0,
               child: Text(
                 folder.name ?? "Empty",
                 overflow: TextOverflow.ellipsis,
@@ -79,7 +80,7 @@ class FolderWidget extends StatelessWidget {
                 softWrap: false,
               )),
         ],
-      );
+      ));
     }
 
     return Draggable(

@@ -13,10 +13,24 @@ class UserProfile extends ChangeNotifier {
 
   //TODO: when starting a new app download users data if sync
 
+  UserProfile();
+
   final FirebaseFirestore firebaseDatabase = FirebaseFirestore.instance;
 
   Future<void> signIn() async {
     try {
+      // _auth.authStateChanges().listen((User? user) async {
+      //   if (user != null) {
+      //     // User is signed in
+      //     debugPrint("User is signed in: ${user.uid}");
+
+      //     // Optionally: Call syncDatabase or any other setup
+      //   } else {
+      //     // User is signed out
+      //     debugPrint("User is signed out");
+      //   }
+      // });
+
       await _signInWithGoogle();
     } catch (e) {
       debugPrint("sign in User profile : $e");
@@ -43,11 +57,12 @@ class UserProfile extends ChangeNotifier {
 
   Future<void> syncDatabase(BuildContext context) async {
     showDialog(context: context, builder: (context) => const LoadingWidget());
-    if (getUser == null) {
-      await signIn();
-    }
 
     try {
+      if (getUser == null) {
+        await signIn();
+      }
+
       if (_auth.currentUser == null) {
         if (context.mounted) {
           ScaffoldMessenger.of(context)
@@ -55,8 +70,6 @@ class UserProfile extends ChangeNotifier {
         }
         return;
       }
-
-      // } throw Exception("current user null");
 
       final usersReference = await firebaseDatabase
           .collection("users")

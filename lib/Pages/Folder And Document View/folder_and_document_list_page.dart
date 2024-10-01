@@ -1,10 +1,12 @@
 import 'package:aspireme_flutter/BackEnd/Models/Folder.dart';
 import 'package:aspireme_flutter/Pages/Folder%20And%20Document%20View/Parts/DocumentWidget.dart';
 import 'package:aspireme_flutter/Pages/Folder%20And%20Document%20View/Parts/FolderWidget.dart';
-import 'package:aspireme_flutter/Providers/Datastructure/DirectoryStrucutreManagerProvider.dart';
+import 'package:aspireme_flutter/Providers/Datastructure/directory_strucutre_provider.dart';
+import 'package:aspireme_flutter/Providers/Tutorial/tutorial_provider.dart';
 import 'package:aspireme_flutter/Providers/UI/PageControllerProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FolderAndDocumentListPage extends StatefulWidget {
   const FolderAndDocumentListPage({super.key});
@@ -18,48 +20,22 @@ class _FolderAndDocumentListPageState extends State<FolderAndDocumentListPage> {
   String? currentDropDownValue = "alpha";
 
   @override
+  void initState() {
+    super.initState();
+
+    doOrNotTutorial();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return PopScope(
         onPopInvoked: (didPop) async {
           if (didPop) return;
-          final closedTheFolder = await context
-              .read<DirectoryStructureManagerProvider>()
-              .closedFolder(context);
-
-          if (!closedTheFolder && context.mounted) {
-            context.read<Pagecontrollerprovider>().goNextPage(0, context);
-          }
+          await onPopClicked(context);
         },
         canPop: false,
         child: ListView(scrollDirection: Axis.vertical, children: [
-          Align(
-              alignment: Alignment.topRight,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text("Order Mode"),
-                    DropdownButton(
-                        value: currentDropDownValue,
-                        items: const [
-                          DropdownMenuItem(
-                            value: "alpha",
-                            child: Text("a...z"),
-                          ),
-                          DropdownMenuItem(
-                            value: "type",
-                            child: Text("Type"),
-                          )
-                        ],
-                        onChanged: (newValue) {
-                          setState(() {
-                            currentDropDownValue = newValue;
-                          });
-                        })
-                  ],
-                ),
-              )),
+          orderSortingDropDown(context),
           Align(
               child: Container(
             decoration:
@@ -70,6 +46,49 @@ class _FolderAndDocumentListPageState extends State<FolderAndDocumentListPage> {
             ),
           ))
         ]));
+  }
+
+  Align orderSortingDropDown(BuildContext context) {
+    return Align(
+        alignment: Alignment.topRight,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            key: context.read<TutorialProvider>().typeButtonKey,
+            children: [
+              const Text("Order Mode"),
+              DropdownButton(
+                  value: currentDropDownValue,
+                  items: const [
+                    DropdownMenuItem(
+                      value: "alpha",
+                      child: Text("a...z"),
+                    ),
+                    DropdownMenuItem(
+                      value: "type",
+                      child: Text("Type"),
+                    )
+                  ],
+                  onChanged: (newValue) {
+                    setState(() {
+                      currentDropDownValue = newValue;
+                    });
+                  })
+            ],
+          ),
+        ));
+  }
+
+  Future<void> onPopClicked(BuildContext context) async {
+    // if (didPop) return;
+    final closedTheFolder = await context
+        .read<DirectoryStructureManagerProvider>()
+        .closedFolder(context);
+
+    if (!closedTheFolder && context.mounted) {
+      context.read<Pagecontrollerprovider>().goNextPage(0, context);
+    }
   }
 
   Widget documentAndFolderFutureBuilder(
@@ -95,7 +114,7 @@ class _FolderAndDocumentListPageState extends State<FolderAndDocumentListPage> {
     }
 
     final mixedTypes = snapShot.data;
-    // final subDocuments = snapShot.data![1];
+
     return SizedBox(
       height: MediaQuery.of(context).size.height,
       child: GridViewOfFolderAndDocument(
@@ -113,6 +132,20 @@ class _FolderAndDocumentListPageState extends State<FolderAndDocumentListPage> {
           .getBothFoldersAndDocumentsByType;
     }
     return null;
+  }
+
+  Future<void> doOrNotTutorial() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final folderTutorial = prefs.getBool("showFolderTutorial");
+
+    if ((folderTutorial == null || folderTutorial == true) && context.mounted) {
+      print("in here");
+      final tutorialProvider = context.read<TutorialProvider>();
+      tutorialProvider.createTutorialFolder(context);
+      tutorialProvider.showTutorial(context);
+    }
+
+    print("out here");
   }
 }
 

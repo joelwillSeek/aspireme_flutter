@@ -1,5 +1,5 @@
 import 'package:aspireme_flutter/BackEnd/Database/sql_folder_function.dart';
-import 'package:aspireme_flutter/Providers/Datastructure/DirectoryStrucutreManagerProvider.dart';
+import 'package:aspireme_flutter/Providers/Datastructure/directory_strucutre_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:provider/provider.dart';

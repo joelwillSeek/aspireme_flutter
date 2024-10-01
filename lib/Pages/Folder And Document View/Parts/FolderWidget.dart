@@ -1,6 +1,6 @@
 import 'package:aspireme_flutter/BackEnd/Models/document_model.dart';
 import 'package:aspireme_flutter/BackEnd/Models/Folder.dart';
-import 'package:aspireme_flutter/Providers/Datastructure/DirectoryStrucutreManagerProvider.dart';
+import 'package:aspireme_flutter/Providers/Datastructure/directory_strucutre_provider.dart';
 //import 'package:aspireme_flutter/Providers/FolderAndNoteProvider.dart';
 import 'package:aspireme_flutter/Providers/UI/PageControllerProvider.dart';
 import 'package:flutter/material.dart';

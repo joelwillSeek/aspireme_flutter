@@ -1,19 +1,27 @@
+import 'dart:io';
+import 'package:aspireme_flutter/BackEnd/Database/sql_database.dart';
 import 'package:aspireme_flutter/Pages/Globally%20Used/floating_bottom_nav.dart';
 import 'package:aspireme_flutter/Pages/Folder%20And%20Document%20View/folder_and_document_list_page.dart';
 import 'package:aspireme_flutter/Pages/Globally%20Used/LoadingWidget.dart';
 import 'package:aspireme_flutter/Pages/Home%20Page/HomePage.dart';
 import 'package:aspireme_flutter/Pages/Settings/settings_page.dart';
 import 'package:aspireme_flutter/Providers/BackEnd/FirebaseProvider.dart';
+import 'package:aspireme_flutter/Providers/Tutorial/tutorial_provider.dart';
 import 'package:aspireme_flutter/Theme/Theme.dart';
 import 'package:aspireme_flutter/Providers/UI/DocumentEditingPageProvider.dart';
 import 'package:aspireme_flutter/Providers/UI/FlashCardProvider.dart';
-import 'package:aspireme_flutter/Providers/Datastructure/DirectoryStrucutreManagerProvider.dart';
+import 'package:aspireme_flutter/Providers/Datastructure/directory_strucutre_provider.dart';
 import 'package:aspireme_flutter/Providers/UI/PageControllerProvider.dart';
 import 'package:aspireme_flutter/Providers/UI/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:easy_folder_picker/FolderPicker.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:path/path.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:sqflite/sqflite.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -28,6 +36,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
         ChangeNotifierProvider(create: (context) => FlashCardProvider()),
         ChangeNotifierProvider(create: (context) => Pagecontrollerprovider()),
+        ChangeNotifierProvider(create: (context) => TutorialProvider()),
         ChangeNotifierProvider(create: (context) => UserProfile()),
         ChangeNotifierProvider(
             create: (context) => DocumentEditingPageProvider()),
@@ -47,6 +56,7 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
+  late BuildContext buildContextMy;
   @override
   void initState() {
     super.initState();
@@ -63,23 +73,27 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
 
-    Provider.of<DirectoryStructureManagerProvider>(context, listen: false)
+    if (!(buildContextMy.mounted)) return;
+
+    Provider.of<DirectoryStructureManagerProvider>(buildContextMy,
+            listen: false)
         .resetStructure();
 
-    context.read<ThemeProvider>().setThemeMode(
-        MediaQuery.of(context).platformBrightness == Brightness.dark
+    buildContextMy.read<ThemeProvider>().setThemeMode(
+        MediaQuery.of(buildContextMy).platformBrightness == Brightness.dark
             ? ThemeMode.dark
             : ThemeMode.light);
   }
 
   @override
   Widget build(BuildContext context) {
+    buildContextMy = context;
     return MaterialApp(
       theme: themeLight,
       darkTheme: themeDark,
       themeMode: Provider.of<ThemeProvider>(context).currentTheme,
       home: Scaffold(
-        appBar: appBarWidget(),
+        appBar: appBarWidget(context),
         // appBar: const PreferredSize(
         //     preferredSize: Size.fromHeight(120), child: Customtopappbar()),
         body: pageViewWidget(context),
@@ -100,12 +114,14 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
   PageView pageViewWidget(BuildContext context) {
     return PageView(
       controller: context.read<Pagecontrollerprovider>().getPageController,
-      onPageChanged: whenPageSwiped,
+      onPageChanged: (index) {
+        whenPageSwiped(index, context);
+      },
       children: const [Homepage(), FolderAndDocumentListPage(), SettingsPage()],
     );
   }
 
-  Future<void> backButtonAppBarClick() async {
+  Future<void> backButtonAppBarClick(BuildContext context) async {
     final pageProvider = context.read<Pagecontrollerprovider>();
 
     if (pageProvider.getPageIndex != 0 &&
@@ -131,11 +147,14 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
     }
   }
 
-  AppBar appBarWidget() {
+  AppBar appBarWidget(BuildContext context) {
     return AppBar(
       centerTitle: true,
       leading: IconButton(
-          onPressed: backButtonAppBarClick,
+          key: context.read<TutorialProvider>().backNavButton,
+          onPressed: () {
+            backButtonAppBarClick(context);
+          },
           icon: const Icon(Icons.arrow_back_ios)),
       title:
           Text(Provider.of<Pagecontrollerprovider>(context).getCurrentPageName),
@@ -172,6 +191,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
 
   FloatingActionButton setFloatingButton(BuildContext context) {
     return FloatingActionButton(
+      key: context.read<TutorialProvider>().addFloadingActionButton,
       elevation: 20,
       focusColor: Colors.transparent,
       onPressed: () {
@@ -186,7 +206,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
     );
   }
 
-  void whenPageSwiped(int index) {
+  void whenPageSwiped(int index, BuildContext context) {
     setState(() {
       final pageControllerProvider = context.read<Pagecontrollerprovider>();
 
@@ -424,26 +444,109 @@ class SyncButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Builder(
         builder: (context) => IconButton(
+            key: context.read<TutorialProvider>().syncNavButton,
             onPressed: () {
               syncClicked(context);
             },
             icon: const Icon(Icons.loop)));
   }
 
-  void syncClicked(BuildContext context) {
+  Future<void> _pickDirectory(BuildContext context) async {
+    Directory directory = Directory(FolderPicker.rootPath);
+
+    Directory? newDirectory = await FolderPicker.pick(
+        allowFolderCreation: true,
+        context: context,
+        rootDirectory: directory,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10))));
+
+    try {
+      if (context.mounted) {
+        showDialog(
+            context: context, builder: (context) => const LoadingWidget());
+      }
+
+      String dbPath = join(await getDatabasesPath(), Sqldatabse.databaseName);
+
+      if (newDirectory == null) throw ("New Directory in Main.dart is null");
+
+      String externalDbPath = join(newDirectory.path, "mydatabase.db");
+
+      File dbFile = File(dbPath);
+
+      await dbFile.copy(externalDbPath);
+
+      debugPrint('Database exported to: $externalDbPath');
+    } catch (e) {
+      debugPrint("_pick diectory : $e");
+    } finally {
+      if (context.mounted) Navigator.pop(context);
+    }
+  }
+
+  Future<void> syncClicked(BuildContext context) async {
     final firebaseProvider = context.read<UserProfile>();
 
-    // if (firebaseProvider.getUser == null) {
-    //   final pageControlerProvider = context.read<Pagecontrollerprovider>();
-    //   pageControlerProvider.goNextPage(
-    //       pageControlerProvider.getAllPagesNames["Settings"], context);
+    showDialog(
+        context: context,
+        builder: (context) => SimpleDialog(
+              title: const Text(
+                "Choose Sync Options",
+                textAlign: TextAlign.center,
+              ),
+              children: [
+                TextButton.icon(
+                    onPressed: () async {
+                      await firebaseProvider.syncDatabase(context);
+                    },
+                    icon: SvgPicture.asset("asset/Icons/firebase.svg"),
+                    label: Text(
+                      "Firebase",
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.secondary),
+                    )),
+                TextButton.icon(
+                    onPressed: () async {
+                      await exportAsDbClicked(context);
+                    },
+                    icon: Image.asset("asset/Icons/icons8-sql-64.png"),
+                    label: Text(
+                      "Export as .db format",
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.secondary),
+                    ))
+              ],
+            ));
+  }
 
-    //   ScaffoldMessenger.of(context)
-    //       .showSnackBar(const SnackBar(content: Text("Sign In")));
+  Future<void> exportAsDbClicked(BuildContext context) async {
+    if (await Permission.storage.request().isGranted) {
+      if (context.mounted) {
+        await _pickDirectory(context);
+      }
+    } else {
+      if (context.mounted) {
+        requestPermission(context);
+      }
+    }
+  }
 
-    //   return;
-    // }
+  Future<void> requestPermission(BuildContext context) async {
+    // Request permission
+    var status = await Permission.manageExternalStorage.request();
+    if (status.isGranted) {
+      await _pickDirectory(context);
+    } else if (status.isDenied || status.isPermanentlyDenied) {
+      // Handle denied permissions
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Please allow storage permission to proceed'),
+      ));
 
-    firebaseProvider.syncDatabase(context);
+      // Optionally open app settings if permanently denied
+      if (status.isPermanentlyDenied) {
+        await openAppSettings();
+      }
+    }
   }
 }

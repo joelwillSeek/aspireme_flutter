@@ -3,7 +3,7 @@ import 'package:aspireme_flutter/BackEnd/Models/document_model.dart';
 import 'package:aspireme_flutter/BackEnd/Models/Folder.dart';
 import 'package:aspireme_flutter/Pages/Document%20Editing%20View/document_editing_page.dart';
 import 'package:aspireme_flutter/Pages/Globally%20Used/LoadingWidget.dart';
-import 'package:aspireme_flutter/Providers/Datastructure/DirectoryStrucutreManagerProvider.dart';
+import 'package:aspireme_flutter/Providers/Datastructure/directory_strucutre_provider.dart';
 import 'package:aspireme_flutter/Providers/UI/DocumentEditingPageProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

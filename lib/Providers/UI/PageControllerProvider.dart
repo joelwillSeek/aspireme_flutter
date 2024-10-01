@@ -14,7 +14,9 @@ class Pagecontrollerprovider extends ChangeNotifier {
     String name = "";
 
     _pagesNamesThatExist
-        .forEach((key, value) => key == getPageIndex ? name = value : null);
+        .forEach((key, value) => value == getPageIndex ? name = key : null);
+
+    print("name $name");
 
     return name;
   }

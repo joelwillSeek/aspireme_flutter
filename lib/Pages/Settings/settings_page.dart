@@ -2,8 +2,8 @@ import 'package:aspireme_flutter/BackEnd/Database/sql_database.dart';
 import 'package:aspireme_flutter/Pages/Globally%20Used/LoadingWidget.dart';
 import 'package:aspireme_flutter/Providers/BackEnd/FirebaseProvider.dart';
 import 'package:aspireme_flutter/Providers/UI/theme_provider.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -14,28 +14,30 @@ class SettingsPage extends StatelessWidget {
     return ListView(
       children: [
         const SwitchDarkMode(),
+        const SignInButton(),
         deleteAllDataButton(context),
-        const SignInButton()
       ],
     );
   }
 
-  ListTile deleteAllDataButton(BuildContext context) {
-    return ListTile(
-      onTap: () async {
-        showDialog(
-            context: context, builder: (context) => const LoadingWidget());
-        await Sqldatabse.resetDatabase(context);
+  Widget deleteAllDataButton(BuildContext context) {
+    return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 5.0),
+        child: ListTile(
+          onTap: () async {
+            showDialog(
+                context: context, builder: (context) => const LoadingWidget());
+            await Sqldatabse.resetDatabase(context);
 
-        if (context.mounted) {
-          Navigator.pop(context);
-        }
-      },
-      title: const Text(
-        "Delete All Data",
-        style: TextStyle(color: Colors.red),
-      ),
-    );
+            if (context.mounted) {
+              Navigator.pop(context);
+            }
+          },
+          title: const Text(
+            "Delete All Data",
+            style: TextStyle(color: Colors.red),
+          ),
+        ));
   }
 }
 
@@ -46,22 +48,34 @@ class SignInButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        TextButton(
-            onPressed: () {
-              signinClick(context);
-            },
-            child: Text(signedInOrNot(context))),
-        const Icon(Icons.person)
-      ],
-    );
+    return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 5.0),
+        child: Row(
+          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            TextButton(
+                onPressed: () {
+                  signinClick(context);
+                },
+                child: Text(
+                  signedInOrNot(context),
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.secondary,
+                      fontSize: 15),
+                )),
+            SvgPicture.asset(
+              "asset/Icons/google.svg",
+              width: 40.0,
+              height: 40.0,
+            )
+          ],
+        ));
   }
 
   String signedInOrNot(BuildContext buildContext) =>
       buildContext.read<UserProfile>().getUser == null
-          ? "Sign In"
-          : "You are signed in.";
+          ? "Not signed In"
+          : "You are already signed";
 
   Future<void> signinClick(BuildContext context) async {
     final firebaseProvider = context.read<UserProfile>();
@@ -114,7 +128,10 @@ class _SwitchDarkModeState extends State<SwitchDarkMode> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text("Dark Theme"),
+          const Text(
+            "Dark Theme",
+            style: TextStyle(fontSize: 20),
+          ),
           Switch(
               activeColor: Theme.of(context).colorScheme.secondary,
               value: checker,

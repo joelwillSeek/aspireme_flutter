@@ -1,5 +1,6 @@
 import 'package:aspireme_flutter/BackEnd/Database/sql_database.dart';
 import 'package:aspireme_flutter/Providers/UI/PageControllerProvider.dart';
+import 'package:aspireme_flutter/Providers/Tutorial/tutorial_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -17,6 +18,7 @@ class _FloatingBottomNavState extends State<FloatingBottomNav> {
     int indexNavBar = Provider.of<Pagecontrollerprovider>(context).getPageIndex;
 
     return BottomNavigationBar(
+        key: context.read<TutorialProvider>().bottomNavBar,
         currentIndex: indexNavBar,
         onTap: (index) async {
           // setState(() {

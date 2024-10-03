@@ -19,7 +19,11 @@ class UserProfile extends ChangeNotifier {
     //TODO: when tring to sign it says some sort of network error
     try {
       FirebaseAuth.instance.setLanguageCode("en");
-      await _signInWithGoogle();
+      if (getUser == null) {
+        await _signInWithGoogle();
+      } else {
+        await _signInWithGoogle(reSignIn: true);
+      }
 
       if (context.mounted) checkIfSignedIn(context);
     } catch (e) {
@@ -29,7 +33,7 @@ class UserProfile extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<OAuthCredential?> _signInWithGoogle({bool reSignIn = false}) async {
+  Future<void> _signInWithGoogle({bool reSignIn = false}) async {
     // Trigger the authentication flow
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
@@ -44,12 +48,11 @@ class UserProfile extends ChangeNotifier {
     );
 
     if (reSignIn) {
-      return credential;
+      await _auth.currentUser?.reauthenticateWithCredential(credential);
+    } else {
+      // Once signed in, return the UserCredential
+      await _auth.signInWithCredential(credential);
     }
-    // Once signed in, return the UserCredential
-    await _auth.signInWithCredential(credential);
-
-    return null;
   }
 
   bool checkIfSignedIn(BuildContext context) {
@@ -109,8 +112,7 @@ class UserProfile extends ChangeNotifier {
             context: context, builder: (context) => const LoadingWidget());
       }
 
-      _auth.currentUser?.reauthenticateWithCredential(
-          (await _signInWithGoogle(reSignIn: true))!);
+      await _signInWithGoogle(reSignIn: true);
 
       await firebaseDatabase
           .collection("users")

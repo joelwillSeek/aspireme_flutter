@@ -1,7 +1,4 @@
-//Folder functionally
-
 import 'dart:convert';
-
 import 'package:aspireme_flutter/BackEnd/Models/document_model.dart';
 import 'package:aspireme_flutter/BackEnd/Models/Folder.dart';
 import 'package:aspireme_flutter/BackEnd/Database/sql_database.dart';
@@ -15,18 +12,6 @@ class Sqlfolderfunction {
       Folder? rootFolder = await getFolder(1);
 
       if (rootFolder == null) {
-        final database = await Sqldatabse.getDatabase();
-
-        // final doesRootExist = await database.query(Sqldatabse.nameFolderTable,
-        //     where: "name = ?", whereArgs: ["root"]);
-
-        // print("passed");
-
-        // if (doesRootExist.isNotEmpty) {
-        //   throw Exception(
-        //       "root exists but cant get the folder ${rootFolder?.fromFolderToJson()}, the data fetched ${doesRootExist.first}");
-        // }
-
         Folder innerRootFolder = Folder(
             name: "root",
             parentId: null,

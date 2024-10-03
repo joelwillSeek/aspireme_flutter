@@ -61,11 +61,7 @@ class SignInButton extends StatelessWidget {
 
   Future<void> signinClick(BuildContext context) async {
     final firebaseProvider = context.read<UserProfile>();
-    if (firebaseProvider.getUser != null) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("Already Signed In")));
-      return;
-    }
+
     showDialog(context: context, builder: (context) => const LoadingWidget());
     await firebaseProvider.signIn(context);
     if (context.mounted) {

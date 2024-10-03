@@ -13,13 +13,14 @@ dependencies:
   provider: ^6.1.2
   shared_preferences: ^2.3.2
   pulsator: ^1.0.0
-  flutter_svg: ^2.0.10+1
+  flutter_automation: ^2.0.0
+  flutter_svg: ^2.0.9
   sqflite: ^2.3.3+1
   permission_handler: ^11.3.1
   path_provider: ^2.1.4
   flutter_spinkit: ^5.2.1
   google_sign_in: ^6.2.1
-  flutter_launcher_icons: ^0.13.1
+  flutter_launcher_icons: ^0.14.1
   path: any
   tutorial_coach_mark: ^1.2.11
   firebase_core: ^3.5.0
@@ -30,7 +31,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.0
+  flutter_lints: ^4.0.0
   
 
 flutter:
@@ -42,6 +43,5 @@ flutter:
     
 flutter_launcher_icons:
   android: "launcher_icon"
-  
-  image_path: "asset/app_icon.png"
+  image_path: "asset/app_icon.jpg"
   min_sdk_android: 21 # android min sdk min:16, default 21

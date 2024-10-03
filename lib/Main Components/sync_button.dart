@@ -73,7 +73,8 @@ class SyncButton extends StatelessWidget {
               children: [
                 TextButton.icon(
                     onPressed: () async {
-                      await firebaseProvider.syncDatabase(context);
+                      await firebaseProvider.firebaseSync(context);
+                      // await firebaseSync();
                     },
                     icon: SvgPicture.asset("asset/Icons/firebase.svg"),
                     label: Text(
@@ -125,4 +126,17 @@ class SyncButton extends StatelessWidget {
       }
     }
   }
+
+  // Future<void> firebaseSync() async {
+  //   // Implement your Firebase sync logic here
+  //    if (await Permission.) {
+  //     if (context.mounted) {
+  //       await _pickDirectory(context);
+  //     }
+  //   } else {
+  //     if (context.mounted) {
+  //       requestPermission(context);
+  //     }
+  //   }
+  // }
 }

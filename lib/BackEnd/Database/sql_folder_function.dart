@@ -17,17 +17,22 @@ class Sqlfolderfunction {
       if (rootFolder == null) {
         final database = await Sqldatabse.getDatabase();
 
-        final doesRootExist = await database.query(Sqldatabse.nameFolderTable,
-            where: "name = ?", whereArgs: ["root"]);
+        // final doesRootExist = await database.query(Sqldatabse.nameFolderTable,
+        //     where: "name = ?", whereArgs: ["root"]);
 
-        print("passed");
+        // print("passed");
 
-        if (doesRootExist.isNotEmpty) {
-          throw Exception(
-              "root exists but cant get the folder ${rootFolder?.fromFolderToJson()}, the data fetched ${doesRootExist.first}");
-        }
+        // if (doesRootExist.isNotEmpty) {
+        //   throw Exception(
+        //       "root exists but cant get the folder ${rootFolder?.fromFolderToJson()}, the data fetched ${doesRootExist.first}");
+        // }
 
-        Folder innerRootFolder = Folder(name: "root", parentId: null);
+        Folder innerRootFolder = Folder(
+            name: "root",
+            parentId: null,
+            id: 1,
+            subDocumentModel: [],
+            subFoldersValue: []);
 
         return await createAFolder(innerRootFolder);
       } else {

@@ -13,31 +13,23 @@ class UserProfile extends ChangeNotifier {
 
   //TODO: when starting a new app download users data if sync
 
-  UserProfile();
-
   final FirebaseFirestore firebaseDatabase = FirebaseFirestore.instance;
 
-  Future<void> signIn() async {
+  Future<void> signIn(BuildContext context) async {
+    //TODO: when tring to sign it says some sort of network error
     try {
-      // _auth.authStateChanges().listen((User? user) async {
-      //   if (user != null) {
-      //     // User is signed in
-      //     debugPrint("User is signed in: ${user.uid}");
-
-      //     // Optionally: Call syncDatabase or any other setup
-      //   } else {
-      //     // User is signed out
-      //     debugPrint("User is signed out");
-      //   }
-      // });
-
+      FirebaseAuth.instance.setLanguageCode("en");
       await _signInWithGoogle();
+
+      if (context.mounted) checkIfSignedIn(context);
     } catch (e) {
       debugPrint("sign in User profile : $e");
     }
+
+    notifyListeners();
   }
 
-  Future<void> _signInWithGoogle() async {
+  Future<OAuthCredential?> _signInWithGoogle({bool reSignIn = false}) async {
     // Trigger the authentication flow
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
@@ -51,29 +43,49 @@ class UserProfile extends ChangeNotifier {
       idToken: googleAuth?.idToken,
     );
 
+    if (reSignIn) {
+      return credential;
+    }
     // Once signed in, return the UserCredential
     await _auth.signInWithCredential(credential);
+
+    return null;
   }
 
-  Future<void> syncDatabase(BuildContext context) async {
-    showDialog(context: context, builder: (context) => const LoadingWidget());
+  bool checkIfSignedIn(BuildContext context) {
+    final String info;
+    final bool isSignedIn;
 
+    if (getUser != null) {
+      info = "Signed In";
+      isSignedIn = true;
+    } else {
+      info = "Not Signed In";
+      isSignedIn = false;
+    }
+
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(info)));
+    }
+
+    return isSignedIn;
+  }
+
+  Future<void> firebaseSync(BuildContext context) async {
     try {
-      if (getUser == null) {
-        await signIn();
-      }
-
-      if (_auth.currentUser == null) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(const SnackBar(content: Text("Could Not Sign in")));
+      if (context.mounted) {
+        showDialog(
+            context: context, builder: (context) => const LoadingWidget());
+        if (getUser == null) {
+          await signIn(context);
         }
-        return;
+        // ignore: use_build_context_synchronously
+        if (checkIfSignedIn(context) == false) return;
       }
 
       final usersReference = await firebaseDatabase
           .collection("users")
-          .doc("${_auth.currentUser?.uid}")
+          .doc("${getUser?.uid}")
           .get();
 
       if (usersReference.exists) {
@@ -84,8 +96,35 @@ class UserProfile extends ChangeNotifier {
     } catch (e) {
       debugPrint("Firebase syncDatabase : $e");
     } finally {
+      if (context.mounted) {
+        Navigator.pop(context);
+      }
+    }
+  }
+
+  Future<void> deleteAccount(BuildContext context) async {
+    try {
+      if (context.mounted) {
+        showDialog(
+            context: context, builder: (context) => const LoadingWidget());
+      }
+
+      _auth.currentUser?.reauthenticateWithCredential(
+          (await _signInWithGoogle(reSignIn: true))!);
+
+      await firebaseDatabase
+          .collection("users")
+          .doc("${getUser?.uid}")
+          .delete();
+
+      await getUser!.delete();
+    } catch (e) {
+      debugPrint("Delete Account : $e");
+    } finally {
       if (context.mounted) Navigator.pop(context);
     }
+
+    notifyListeners();
   }
 
   User? get getUser => _auth.currentUser;
@@ -114,6 +153,7 @@ class UserProfile extends ChangeNotifier {
     try {
       if (getUser?.uid == null) throw Exception("uid is null");
       await firebaseDatabase.collection("users").doc(getUser!.uid).delete();
+
       await createDatabase();
     } catch (e) {
       debugPrint("updateDatabase : $e");

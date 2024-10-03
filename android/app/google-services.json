@@ -7,12 +7,20 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1022812638978:android:01ca788a5060c13b43fc1b",
+        "mobilesdk_app_id": "1:1022812638978:android:0f6e90ffdb5bcdc343fc1b",
         "android_client_info": {
           "package_name": "com.BigPanda.aspireme"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "1022812638978-ss8k87sqj4c94gg51vb157oi10nicl8k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.BigPanda.aspireme",
+            "certificate_hash": "ddfd3840ab883d3657884deb2769a6263fa4e08a"
+          }
+        },
         {
           "client_id": "1022812638978-f0iec1hhdkpsk2booj3he5dngtilg529.apps.googleusercontent.com",
           "client_type": 3

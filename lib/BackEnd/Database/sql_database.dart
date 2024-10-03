@@ -37,6 +37,7 @@ class Sqldatabse {
     await database.execute("drop table if exists $nameFolderTable");
     await database.execute("drop table if exists $nameNoteTable");
     await database.execute("drop table if exists $nameDocumentTable");
+
     //create the table
     await database.execute(queryFolderTable);
     await database.execute(queryNoteTable);

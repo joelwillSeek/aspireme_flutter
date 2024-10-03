@@ -15,7 +15,7 @@ class LoadingWidget extends StatelessWidget {
           child: Container(
               width: double.infinity,
               height: double.infinity,
-              color: Colors.black.withOpacity(0.5),
+              color: Colors.black.withOpacity(0.2),
               child: Center(
                 child: SpinKitFadingFour(
                     color: Theme.of(context).colorScheme.secondary),

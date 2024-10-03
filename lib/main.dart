@@ -5,7 +5,7 @@ import 'package:aspireme_flutter/Providers/UI/FlashCardProvider.dart';
 import 'package:aspireme_flutter/Providers/Datastructure/directory_strucutre_provider.dart';
 import 'package:aspireme_flutter/Providers/UI/PageControllerProvider.dart';
 import 'package:aspireme_flutter/Providers/UI/theme_provider.dart';
-import 'package:aspireme_flutter/main_app.dart';
+import 'package:aspireme_flutter/Main%20Components/main_app.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';

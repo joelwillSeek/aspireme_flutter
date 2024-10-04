@@ -55,7 +55,7 @@ class SignInButton extends StatelessWidget {
   }
 
   String signedInOrNot(BuildContext buildContext) =>
-      buildContext.read<UserProfile>().getUser == null
+      Provider.of<UserProfile>(buildContext).getUser == null
           ? "Not signed In"
           : "You are already signed";
 

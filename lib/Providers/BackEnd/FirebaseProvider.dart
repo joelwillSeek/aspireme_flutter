@@ -3,6 +3,7 @@ import 'package:aspireme_flutter/BackEnd/Database/sql_folder_function.dart';
 import 'package:aspireme_flutter/BackEnd/Database/sql_note_functions.dart';
 import 'package:aspireme_flutter/Pages/Globally%20Used/LoadingWidget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -20,9 +21,9 @@ class UserProfile extends ChangeNotifier {
     try {
       FirebaseAuth.instance.setLanguageCode("en");
       if (getUser == null) {
-        await _signInWithGoogle();
+        await _signInWithGoogle(context);
       } else {
-        await _signInWithGoogle(reSignIn: true);
+        await _signInWithGoogle(context, reSignIn: true);
       }
 
       if (context.mounted) checkIfSignedIn(context);
@@ -33,7 +34,16 @@ class UserProfile extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> _signInWithGoogle({bool reSignIn = false}) async {
+  Future<void> _signInWithGoogle(BuildContext context,
+      {bool reSignIn = false}) async {
+    final resultOfNetwork = await isThereInternet();
+    if (!resultOfNetwork) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Cant connected to internet")));
+      }
+      return;
+    }
     // Trigger the authentication flow
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
@@ -112,7 +122,7 @@ class UserProfile extends ChangeNotifier {
             context: context, builder: (context) => const LoadingWidget());
       }
 
-      await _signInWithGoogle(reSignIn: true);
+      await _signInWithGoogle(context, reSignIn: true);
 
       await firebaseDatabase
           .collection("users")
@@ -159,6 +169,18 @@ class UserProfile extends ChangeNotifier {
       await createDatabase();
     } catch (e) {
       debugPrint("updateDatabase : $e");
+    }
+  }
+
+  Future<bool> isThereInternet() async {
+    final List<ConnectivityResult> connectivityResult =
+        await (Connectivity().checkConnectivity());
+
+    if (connectivityResult.contains(ConnectivityResult.mobile) ||
+        connectivityResult.contains(ConnectivityResult.wifi)) {
+      return true;
+    } else {
+      return false;
     }
   }
 }

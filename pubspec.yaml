@@ -13,6 +13,7 @@ dependencies:
   provider: ^6.1.2
   shared_preferences: ^2.3.2
   pulsator: ^1.0.0
+  connectivity_plus: ^6.0.5
   flutter_automation: ^2.0.0
   flutter_svg: ^2.0.9
   sqflite: ^2.3.3+1
@@ -43,5 +44,5 @@ flutter:
     
 flutter_launcher_icons:
   android: "launcher_icon"
-  image_path: "asset/app_icon.jpg"
+  image_path: "asset/app_icon_crop.jpg"
   min_sdk_android: 21 # android min sdk min:16, default 21

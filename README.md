@@ -16,26 +16,26 @@ I always had this thing where I believed that if I made studying or just working
 <h1> How? </h1>
 <ul>
   <li> 
-    <h5>Create a folder( use the Second Brain System ) </h5> 
-    <p>This helps the user organize notes and to know which notes to focus on to remember </p> 
+    <h5>Create a folder </h5> 
   </li>
   
   <li> 
-    <h5>Create A note with a title/question</h5> 
-    <p>Helps the user question themselves using the title or questions and check if they were right.</p>
+    <h5>Create A Document</h5> 
+    <p>Has a list of notes that seem like one page</p>
+  </li>
+
+  <li> 
+    <h5>Create A Note</h5> 
+    <p>Is in the document that seems like one page but is not</p>
   </li>
   
   <li>
     <h5>Based on the note make a quick flashcard</h5> 
-    <p> To help the user to remember the app will automatically and randomly pick the notes that need to be memorized based on if you were correct last time and how long it has been.</p> 
+    <p> To help the user to remember the app will pick the notes that need to be memorized based on if you were correct last time and how long it has been.</p> 
   </li>
   
-  <li> <h5>  Then if the flashcard is answered then increase the duration </h5>
-  <p> In research I found that one of the ways to remember is to use a thing called spaced repetition which means to repeat something in an increasingly spaced timeline if I answer a question today then I will ask myself the next week then if I do answer again then after a one month in will ask myself</p>
-  </li>
-  
-  <li><h5>When creating notes upload them to Google Drive with your account</h5>
-  <p>To be able to use your notes at any time and on any devices</p>
+  <li><h5>Can sync with firebase</h5>
+  <p>To back up data</p>
   </li>
   
 </ul>

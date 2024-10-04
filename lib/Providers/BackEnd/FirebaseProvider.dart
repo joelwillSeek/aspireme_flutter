@@ -1,8 +1,9 @@
-import 'package:aspireme_flutter/BackEnd/Database/SqlDocumentFunciton.dart';
-import 'package:aspireme_flutter/BackEnd/Database/SqlFolderFunction.dart';
-import 'package:aspireme_flutter/BackEnd/Database/SqlNoteFunctions.dart';
+import 'package:aspireme_flutter/BackEnd/Database/sql_document_funciton.dart';
+import 'package:aspireme_flutter/BackEnd/Database/sql_folder_function.dart';
+import 'package:aspireme_flutter/BackEnd/Database/sql_note_functions.dart';
 import 'package:aspireme_flutter/Pages/Globally%20Used/LoadingWidget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -15,15 +16,34 @@ class UserProfile extends ChangeNotifier {
 
   final FirebaseFirestore firebaseDatabase = FirebaseFirestore.instance;
 
-  Future<void> signIn() async {
+  Future<void> signIn(BuildContext context) async {
+    //TODO: when tring to sign it says some sort of network error
     try {
-      await _signInWithGoogle();
+      FirebaseAuth.instance.setLanguageCode("en");
+      if (getUser == null) {
+        await _signInWithGoogle(context);
+      } else {
+        await _signInWithGoogle(context, reSignIn: true);
+      }
+
+      if (context.mounted) checkIfSignedIn(context);
     } catch (e) {
       debugPrint("sign in User profile : $e");
     }
+
+    notifyListeners();
   }
 
-  Future<void> _signInWithGoogle() async {
+  Future<void> _signInWithGoogle(BuildContext context,
+      {bool reSignIn = false}) async {
+    final resultOfNetwork = await isThereInternet();
+    if (!resultOfNetwork) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Cant connected to internet")));
+      }
+      return;
+    }
     // Trigger the authentication flow
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
@@ -37,30 +57,48 @@ class UserProfile extends ChangeNotifier {
       idToken: googleAuth?.idToken,
     );
 
-    // Once signed in, return the UserCredential
-    await _auth.signInWithCredential(credential);
+    if (reSignIn) {
+      await _auth.currentUser?.reauthenticateWithCredential(credential);
+    } else {
+      // Once signed in, return the UserCredential
+      await _auth.signInWithCredential(credential);
+    }
   }
 
-  Future<void> syncDatabase(BuildContext context) async {
-    showDialog(context: context, builder: (context) => const LoadingWidget());
-    if (getUser == null) {
-      await signIn();
+  bool checkIfSignedIn(BuildContext context) {
+    final String info;
+    final bool isSignedIn;
+
+    if (getUser != null) {
+      info = "Signed In";
+      isSignedIn = true;
+    } else {
+      info = "Not Signed In";
+      isSignedIn = false;
     }
 
-    try {
-      if (_auth.currentUser == null) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(const SnackBar(content: Text("Could Not Sign in")));
-        }
-        return;
-      }
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(info)));
+    }
 
-      // } throw Exception("current user null");
+    return isSignedIn;
+  }
+
+  Future<void> firebaseSync(BuildContext context) async {
+    try {
+      if (context.mounted) {
+        showDialog(
+            context: context, builder: (context) => const LoadingWidget());
+        if (getUser == null) {
+          await signIn(context);
+        }
+        // ignore: use_build_context_synchronously
+        if (checkIfSignedIn(context) == false) return;
+      }
 
       final usersReference = await firebaseDatabase
           .collection("users")
-          .doc("${_auth.currentUser?.uid}")
+          .doc("${getUser?.uid}")
           .get();
 
       if (usersReference.exists) {
@@ -71,8 +109,34 @@ class UserProfile extends ChangeNotifier {
     } catch (e) {
       debugPrint("Firebase syncDatabase : $e");
     } finally {
+      if (context.mounted) {
+        Navigator.pop(context);
+      }
+    }
+  }
+
+  Future<void> deleteAccount(BuildContext context) async {
+    try {
+      if (context.mounted) {
+        showDialog(
+            context: context, builder: (context) => const LoadingWidget());
+      }
+
+      await _signInWithGoogle(context, reSignIn: true);
+
+      await firebaseDatabase
+          .collection("users")
+          .doc("${getUser?.uid}")
+          .delete();
+
+      await getUser!.delete();
+    } catch (e) {
+      debugPrint("Delete Account : $e");
+    } finally {
       if (context.mounted) Navigator.pop(context);
     }
+
+    notifyListeners();
   }
 
   User? get getUser => _auth.currentUser;
@@ -101,9 +165,22 @@ class UserProfile extends ChangeNotifier {
     try {
       if (getUser?.uid == null) throw Exception("uid is null");
       await firebaseDatabase.collection("users").doc(getUser!.uid).delete();
+
       await createDatabase();
     } catch (e) {
       debugPrint("updateDatabase : $e");
+    }
+  }
+
+  Future<bool> isThereInternet() async {
+    final List<ConnectivityResult> connectivityResult =
+        await (Connectivity().checkConnectivity());
+
+    if (connectivityResult.contains(ConnectivityResult.mobile) ||
+        connectivityResult.contains(ConnectivityResult.wifi)) {
+      return true;
+    } else {
+      return false;
     }
   }
 }

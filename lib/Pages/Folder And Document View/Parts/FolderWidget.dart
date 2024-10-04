@@ -1,6 +1,6 @@
-import 'package:aspireme_flutter/BackEnd/Models/DocumentModel.dart';
+import 'package:aspireme_flutter/BackEnd/Models/document_model.dart';
 import 'package:aspireme_flutter/BackEnd/Models/Folder.dart';
-import 'package:aspireme_flutter/Providers/Datastructure/DirectoryStrucutreManagerProvider.dart';
+import 'package:aspireme_flutter/Providers/Datastructure/directory_strucutre_provider.dart';
 //import 'package:aspireme_flutter/Providers/FolderAndNoteProvider.dart';
 import 'package:aspireme_flutter/Providers/UI/PageControllerProvider.dart';
 import 'package:flutter/material.dart';
@@ -63,7 +63,8 @@ class FolderWidget extends StatelessWidget {
     }
 
     Widget folderWidget() {
-      return Column(
+      return Card(
+          child: Column(
         children: [
           IconButton(
               onPressed: null,
@@ -71,7 +72,7 @@ class FolderWidget extends StatelessWidget {
               icon: Image.asset("asset/Icons/folder_icon.png")),
           SizedBox(
               width: 100.0,
-              height: 40.0,
+              height: 30.0,
               child: Text(
                 folder.name ?? "Empty",
                 overflow: TextOverflow.ellipsis,
@@ -79,7 +80,7 @@ class FolderWidget extends StatelessWidget {
                 softWrap: false,
               )),
         ],
-      );
+      ));
     }
 
     return Draggable(

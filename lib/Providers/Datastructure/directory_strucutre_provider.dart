@@ -1,9 +1,9 @@
-import 'package:aspireme_flutter/BackEnd/Models/DocumentModel.dart';
+import 'package:aspireme_flutter/BackEnd/Models/document_model.dart';
 import 'package:aspireme_flutter/BackEnd/Models/Folder.dart';
 import 'package:aspireme_flutter/BackEnd/Models/Note.dart';
-import 'package:aspireme_flutter/BackEnd/Database/SqlDocumentFunciton.dart';
-import 'package:aspireme_flutter/BackEnd/Database/SqlFolderFunction.dart';
-import 'package:aspireme_flutter/BackEnd/Database/SqlNoteFunctions.dart';
+import 'package:aspireme_flutter/BackEnd/Database/sql_document_funciton.dart';
+import 'package:aspireme_flutter/BackEnd/Database/sql_folder_function.dart';
+import 'package:aspireme_flutter/BackEnd/Database/sql_note_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 

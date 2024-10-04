@@ -1,9 +1,9 @@
-import 'package:aspireme_flutter/BackEnd/Database/SqlDocumentFunciton.dart';
-import 'package:aspireme_flutter/BackEnd/Models/DocumentModel.dart';
+import 'package:aspireme_flutter/BackEnd/Database/sql_document_funciton.dart';
+import 'package:aspireme_flutter/BackEnd/Models/document_model.dart';
 import 'package:aspireme_flutter/BackEnd/Models/Folder.dart';
-import 'package:aspireme_flutter/Pages/Document%20Editing%20View/DocumentEditingPage.dart';
+import 'package:aspireme_flutter/Pages/Document%20Editing%20View/document_editing_page.dart';
 import 'package:aspireme_flutter/Pages/Globally%20Used/LoadingWidget.dart';
-import 'package:aspireme_flutter/Providers/Datastructure/DirectoryStrucutreManagerProvider.dart';
+import 'package:aspireme_flutter/Providers/Datastructure/directory_strucutre_provider.dart';
 import 'package:aspireme_flutter/Providers/UI/DocumentEditingPageProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -220,13 +220,15 @@ class _DocumentWidgetState extends State<DocumentWidget> {
 
   Widget documentCard() {
     return Card(
-      elevation: 0.0,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset("asset/Icons/document_icon.png"),
+          Image.asset(
+            "asset/Icons/document_icon.png",
+            scale: 1.4,
+          ),
           Text(
             widget.documentModel.getName,
             textAlign: TextAlign.center,

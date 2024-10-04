@@ -16,10 +16,33 @@ class DocumentEditingPage extends StatelessWidget {
         body: Container(
             decoration: const BoxDecoration(color: Colors.white),
             margin: const EdgeInsets.all(0),
-            child: listBuilder(context)));
+            child: Column(
+              children: [quickToolTip(), Expanded(child: listBuilder(context))],
+            )));
   }
 
-  Widget listBuilder(BuildContext context) {
+  Widget quickToolTip() {
+    return Card(
+      margin: const EdgeInsets.all(10.0),
+      color: Colors.blue[100],
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.info,
+              color: Colors.blue[500],
+            ),
+            const Text("Double tap enter in answer box to save")
+          ],
+        ),
+      ),
+    );
+  }
+
+  ListView listBuilder(BuildContext context) {
     List<Note?> listOfNotes =
         Provider.of<DocumentEditingPageProvider>(context).getListOfNotes;
 
@@ -108,21 +131,38 @@ class _NoteWidgetViewState extends State<NoteWidgetView> {
       color: Colors.transparent,
       child: Column(
         children: [
-          Row(
-            children: [
-              labelForEditText("Question"),
-              Text(
-                saved ? "Saved" : "Not Saved",
-                style: TextStyle(color: saved ? Colors.green : Colors.red),
-              )
-            ],
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [labelForEditText("Question"), savedOrNotSavedOrNone()],
+            ),
           ),
           editableTextWidget(widget.note!.title, "How to ...."),
-          labelForEditText("Answer"),
+          Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: labelForEditText("Answer")),
           editableTextWidget(widget.note!.description, "Step 1) ....",
               answer: true),
         ],
       ),
+    );
+  }
+
+  Text savedOrNotSavedOrNone() {
+    final String stringTOShow;
+
+    if (widget.note!.title.trim().isNotEmpty &&
+        widget.note!.description.trim().isNotEmpty) {
+      stringTOShow = saved ? "Saved" : "Not Saved";
+    } else {
+      stringTOShow = "";
+    }
+
+    return Text(
+      stringTOShow,
+      style: TextStyle(color: saved ? Colors.green : Colors.red),
     );
   }
 

@@ -1,5 +1,5 @@
-import 'package:aspireme_flutter/BackEnd/Database/SqlFolderFunction.dart';
-import 'package:aspireme_flutter/Providers/Datastructure/DirectoryStrucutreManagerProvider.dart';
+import 'package:aspireme_flutter/BackEnd/Database/sql_folder_function.dart';
+import 'package:aspireme_flutter/Providers/Datastructure/directory_strucutre_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:provider/provider.dart';
@@ -37,6 +37,7 @@ class Sqldatabse {
     await database.execute("drop table if exists $nameFolderTable");
     await database.execute("drop table if exists $nameNoteTable");
     await database.execute("drop table if exists $nameDocumentTable");
+
     //create the table
     await database.execute(queryFolderTable);
     await database.execute(queryNoteTable);

@@ -71,17 +71,17 @@ class SyncButton extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               children: [
-                TextButton.icon(
-                    onPressed: () async {
-                      await firebaseProvider.firebaseSync(context);
-                      // await firebaseSync();
-                    },
-                    icon: SvgPicture.asset("asset/Icons/firebase.svg"),
-                    label: Text(
-                      "Firebase",
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.secondary),
-                    )),
+                // TextButton.icon(
+                //     onPressed: () async {
+                //       await firebaseProvider.firebaseSync(context);
+                //       // await firebaseSync();
+                //     },
+                //     icon: SvgPicture.asset("asset/Icons/firebase.svg"),
+                //     label: Text(
+                //       "Firebase",
+                //       style: TextStyle(
+                //           color: Theme.of(context).colorScheme.secondary),
+                //     )),
                 TextButton.icon(
                     onPressed: () async {
                       await exportAsDbClicked(context);

@@ -17,15 +17,12 @@ class FlashCardProvider extends ChangeNotifier {
   get getShowDescription => showDescription;
 
   Future<void> getAllWrongNotes(BuildContext context) async {
-    if (_wrongNotes.isNotEmpty) return;
     _wrongNotes.clear();
 
     final receivedWrongNotes = await Sqlflashcardfunction.getWrongCard();
 
     if (receivedWrongNotes != null) {
       _wrongNotes = receivedWrongNotes;
-
-      print("wornt $_wrongNotes");
 
       return;
     }
@@ -40,8 +37,6 @@ class FlashCardProvider extends ChangeNotifier {
     if (_wrongNotes.isEmpty) {
       return null;
     }
-
-    print("got you ${_wrongNotes.last?.title}");
 
     //have a condition where after seeing all the wrong notes we can say either that it or see more other notes
     return _wrongNotes.last;

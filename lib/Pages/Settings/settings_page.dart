@@ -14,61 +14,61 @@ class SettingsPage extends StatelessWidget {
     return ListView(
       children: const [
         SwitchDarkMode(),
-        SignInButton(),
+        // SignInButton(),
         DeleteAllDataButton(),
-        DeleteAccountData()
+        // DeleteAccountData()
       ],
     );
   }
 }
 
-class SignInButton extends StatelessWidget {
-  const SignInButton({
-    super.key,
-  });
+// class SignInButton extends StatelessWidget {
+//   const SignInButton({
+//     super.key,
+//   });
 
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        child: GestureDetector(
-          onTap: () {
-            signinClick(context);
-          },
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              SvgPicture.asset(
-                "asset/Icons/google.svg",
-                width: 40.0,
-                height: 40.0,
-              ),
-              Text(
-                signedInOrNot(context),
-                style: TextStyle(
-                    color: Theme.of(context).colorScheme.secondary,
-                    fontSize: 15),
-              ),
-            ],
-          ),
-        ));
-  }
+//   @override
+//   Widget build(BuildContext context) {
+//     return Padding(
+//         padding: const EdgeInsets.symmetric(horizontal: 20.0),
+//         child: GestureDetector(
+//           onTap: () {
+//             signinClick(context);
+//           },
+//           child: Row(
+//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//             children: [
+//               SvgPicture.asset(
+//                 "asset/Icons/google.svg",
+//                 width: 40.0,
+//                 height: 40.0,
+//               ),
+//               Text(
+//                 signedInOrNot(context),
+//                 style: TextStyle(
+//                     color: Theme.of(context).colorScheme.secondary,
+//                     fontSize: 15),
+//               ),
+//             ],
+//           ),
+//         ));
+//   }
 
-  String signedInOrNot(BuildContext buildContext) =>
-      Provider.of<UserProfile>(buildContext).getUser == null
-          ? "Not signed In"
-          : "You are already signed";
+//   String signedInOrNot(BuildContext buildContext) =>
+//       Provider.of<UserProfile>(buildContext).getUser == null
+//           ? "Not signed In"
+//           : "You are already signed";
 
-  Future<void> signinClick(BuildContext context) async {
-    final firebaseProvider = context.read<UserProfile>();
+//   Future<void> signinClick(BuildContext context) async {
+//     final firebaseProvider = context.read<UserProfile>();
 
-    showDialog(context: context, builder: (context) => const LoadingWidget());
-    await firebaseProvider.signIn(context);
-    if (context.mounted) {
-      Navigator.pop(context);
-    }
-  }
-}
+//     showDialog(context: context, builder: (context) => const LoadingWidget());
+//     await firebaseProvider.signIn(context);
+//     if (context.mounted) {
+//       Navigator.pop(context);
+//     }
+//   }
+// }
 
 class SwitchDarkMode extends StatefulWidget {
   const SwitchDarkMode({super.key});
@@ -78,7 +78,8 @@ class SwitchDarkMode extends StatefulWidget {
 }
 
 class _SwitchDarkModeState extends State<SwitchDarkMode> {
-  late bool checker = ThemeMode.system == ThemeMode.dark;
+  late bool checker =
+      MediaQuery.platformBrightnessOf(context) == Brightness.dark;
   bool initalized = false;
 
   BuildContext? buildContext;
@@ -118,8 +119,7 @@ class _SwitchDarkModeState extends State<SwitchDarkMode> {
                   checker = didChecked;
                 });
 
-                final themeProvider =
-                    Provider.of<ThemeProvider>(context, listen: false);
+                final themeProvider = context.read<ThemeProvider>();
                 if (checker) {
                   themeProvider.setThemeMode(ThemeMode.dark);
                 } else {
@@ -218,95 +218,95 @@ class DeleteAllDataButton extends StatelessWidget {
   }
 }
 
-class DeleteAccountData extends StatelessWidget {
-  const DeleteAccountData({super.key});
+// class DeleteAccountData extends StatelessWidget {
+//   const DeleteAccountData({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 5.0),
-        child: ListTile(
-          onTap: () async {
-            dialogFordeleteMyAccount(context);
-          },
-          title: const Text(
-            "Delete Account Data",
-            style: TextStyle(color: Colors.red),
-          ),
-        ));
-  }
+//   @override
+//   Widget build(BuildContext context) {
+//     return Padding(
+//         padding: const EdgeInsets.symmetric(horizontal: 5.0),
+//         child: ListTile(
+//           onTap: () async {
+//             dialogFordeleteMyAccount(context);
+//           },
+//           title: const Text(
+//             "Delete Account Data",
+//             style: TextStyle(color: Colors.red),
+//           ),
+//         ));
+//   }
 
-  void dialogFordeleteMyAccount(BuildContext context) {
-    showDialog(
-        barrierDismissible: true,
-        context: context,
-        builder: (context) => SimpleDialog(
-              title: const Text(
-                "Are You Sure?",
-                textAlign: TextAlign.center,
-              ),
-              children: [
-                Column(
-                  children: [
-                    const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Text(
-                            "This will delete all your user data and login data.")),
-                    const SizedBox(height: 10.0),
-                    const Text(
-                      "This action cannot be undone.",
-                      style: TextStyle(color: Colors.red),
-                    ),
-                    const SizedBox(height: 10.0),
-                    deleteButton(context),
-                  ],
-                )
-              ],
-            ));
-  }
+//   void dialogFordeleteMyAccount(BuildContext context) {
+//     showDialog(
+//         barrierDismissible: true,
+//         context: context,
+//         builder: (context) => SimpleDialog(
+//               title: const Text(
+//                 "Are You Sure?",
+//                 textAlign: TextAlign.center,
+//               ),
+//               children: [
+//                 Column(
+//                   children: [
+//                     const Padding(
+//                         padding: EdgeInsets.symmetric(horizontal: 10.0),
+//                         child: Text(
+//                             "This will delete all your user data and login data.")),
+//                     const SizedBox(height: 10.0),
+//                     const Text(
+//                       "This action cannot be undone.",
+//                       style: TextStyle(color: Colors.red),
+//                     ),
+//                     const SizedBox(height: 10.0),
+//                     deleteButton(context),
+//                   ],
+//                 )
+//               ],
+//             ));
+//   }
 
-  ElevatedButton deleteButton(BuildContext context) {
-    return ElevatedButton(
-      style: ButtonStyle(
-          backgroundColor:
-              WidgetStatePropertyAll(Theme.of(context).colorScheme.secondary)),
-      onPressed: () async {
-        await deleteButtonClicked(context);
-      },
-      child: Text("Delete",
-          style: TextStyle(color: Theme.of(context).colorScheme.onSecondary)),
-    );
-  }
+//   ElevatedButton deleteButton(BuildContext context) {
+//     return ElevatedButton(
+//       style: ButtonStyle(
+//           backgroundColor:
+//               WidgetStatePropertyAll(Theme.of(context).colorScheme.secondary)),
+//       onPressed: () async {
+//         await deleteButtonClicked(context);
+//       },
+//       child: Text("Delete",
+//           style: TextStyle(color: Theme.of(context).colorScheme.onSecondary)),
+//     );
+//   }
 
-  Future<void> deleteButtonClicked(BuildContext context) async {
-    try {
-      if (context.mounted) {
-        // ignore: use_build_context_synchronously
-        await deleteDatabaseData(context);
-        // ignore: use_build_context_synchronously
-        await context.read<UserProfile>().firebaseSync(context);
+//   Future<void> deleteButtonClicked(BuildContext context) async {
+//     try {
+//       if (context.mounted) {
+//         // ignore: use_build_context_synchronously
+//         await deleteDatabaseData(context);
+//         // ignore: use_build_context_synchronously
+//         await context.read<UserProfile>().firebaseSync(context);
 
-        await context.read<UserProfile>().deleteAccount(context);
-      }
-    } catch (e) {
-      debugPrint("deleteButtonClicked : $e");
-    } finally {
-      if (context.mounted) {
-        Navigator.pop(context);
-      }
-    }
-  }
+//         await context.read<UserProfile>().deleteAccount(context);
+//       }
+//     } catch (e) {
+//       debugPrint("deleteButtonClicked : $e");
+//     } finally {
+//       if (context.mounted) {
+//         Navigator.pop(context);
+//       }
+//     }
+//   }
 
-  Future<void> deleteDatabaseData(BuildContext context) async {
-    try {
-      showDialog(context: context, builder: (context) => const LoadingWidget());
-      await Sqldatabse.resetDatabase(context);
-    } catch (e) {
-      debugPrint("deleteDatabaseData : $e");
-    } finally {
-      if (context.mounted) {
-        Navigator.pop(context);
-      }
-    }
-  }
-}
+//   Future<void> deleteDatabaseData(BuildContext context) async {
+//     try {
+//       showDialog(context: context, builder: (context) => const LoadingWidget());
+//       await Sqldatabse.resetDatabase(context);
+//     } catch (e) {
+//       debugPrint("deleteDatabaseData : $e");
+//     } finally {
+//       if (context.mounted) {
+//         Navigator.pop(context);
+//       }
+//     }
+//   }
+// }

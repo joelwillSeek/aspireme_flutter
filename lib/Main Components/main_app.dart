@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:aspireme_flutter/Main%20Components/dialog_create_document_and_folder.dart';
 import 'package:aspireme_flutter/Main%20Components/sync_button.dart';
 import 'package:aspireme_flutter/Pages/Folder%20And%20Document%20View/folder_and_document_list_page.dart';
@@ -22,11 +24,6 @@ class MainApp extends StatefulWidget {
 
 class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
   late BuildContext buildContextMy;
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-  }
 
   @override
   void dispose() {
@@ -38,27 +35,19 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
 
-    if (!(buildContextMy.mounted)) return;
-
-    Provider.of<DirectoryStructureManagerProvider>(buildContextMy,
-            listen: false)
-        .resetStructure();
-
-    buildContextMy.read<ThemeProvider>().setThemeMode(
-        MediaQuery.of(buildContextMy).platformBrightness == Brightness.dark
-            ? ThemeMode.dark
-            : ThemeMode.light);
+    context.read<DirectoryStructureManagerProvider>().resetStructure();
   }
 
   @override
   Widget build(BuildContext context) {
     buildContextMy = context;
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: themeLight,
       darkTheme: themeDark,
       themeMode: Provider.of<ThemeProvider>(context).currentTheme,
       home: Scaffold(
-        appBar: appBarWidget(context),
+        appBar: appBarWidget(),
         // appBar: const PreferredSize(
         //     preferredSize: Size.fromHeight(120), child: Customtopappbar()),
         body: pageViewWidget(context),
@@ -86,7 +75,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
     );
   }
 
-  Future<void> backButtonAppBarClick(BuildContext context) async {
+  Future<void> backButtonAppBarClick() async {
     final pageProvider = context.read<Pagecontrollerprovider>();
 
     if (pageProvider.getPageIndex != 0 &&
@@ -108,17 +97,17 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
     }
 
     if (pageProvider.getPageIndex == 0) {
-      dialogExitingApp(context);
+      dialogExitingApp();
     }
   }
 
-  AppBar appBarWidget(BuildContext context) {
+  AppBar appBarWidget() {
     return AppBar(
       centerTitle: true,
       leading: IconButton(
           key: context.read<TutorialProvider>().backNavButton,
           onPressed: () {
-            backButtonAppBarClick(context);
+            backButtonAppBarClick();
           },
           icon: const Icon(Icons.arrow_back_ios)),
       title:
@@ -127,7 +116,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
     );
   }
 
-  void dialogExitingApp(BuildContext context) {
+  void dialogExitingApp() {
     showDialog(
       barrierDismissible: true,
       context: context,
@@ -143,7 +132,16 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
             ),
           ),
           TextButton(
-            onPressed: () => SystemNavigator.pop(),
+            onPressed: () {
+              if (Platform.isAndroid) {
+                SystemNavigator.pop(); // Close app on Android
+              } else if (Platform.isIOS ||
+                  Platform.isLinux ||
+                  Platform.isMacOS ||
+                  Platform.isWindows) {
+                exit(0); // Close app on other platforms
+              }
+            },
             child: Text(
               'Yes',
               style: TextStyle(color: Theme.of(context).colorScheme.secondary),

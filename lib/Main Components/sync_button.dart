@@ -6,7 +6,6 @@ import 'package:aspireme_flutter/Providers/BackEnd/FirebaseProvider.dart';
 import 'package:aspireme_flutter/Providers/Tutorial/tutorial_provider.dart';
 import 'package:easy_folder_picker/FolderPicker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:path/path.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -61,7 +60,9 @@ class SyncButton extends StatelessWidget {
   }
 
   Future<void> syncClicked(BuildContext context) async {
-    final firebaseProvider = context.read<UserProfile>();
+    // final firebaseProvider = context.read<UserProfile>();
+
+    await Sqldatabse.getFoldersWithCustomQuery();
 
     showDialog(
         context: context,
@@ -90,7 +91,7 @@ class SyncButton extends StatelessWidget {
                     label: Text(
                       "Export as .db format",
                       style: TextStyle(
-                          color: Theme.of(context).colorScheme.secondary),
+                          color: Theme.of(context).colorScheme.onSecondary),
                     ))
               ],
             ));

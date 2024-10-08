@@ -35,7 +35,10 @@ class DocumentEditingPage extends StatelessWidget {
               Icons.info,
               color: Colors.blue[500],
             ),
-            const Text("Double tap enter in answer box to save")
+            const Text(
+              "Double tap enter in answer box to save",
+              style: TextStyle(color: Colors.black),
+            )
           ],
         ),
       ),
@@ -124,8 +127,6 @@ class _NoteWidgetViewState extends State<NoteWidgetView> {
 
   @override
   Widget build(BuildContext context) {
-    //parent id 0 means its an empty note
-
     return Card(
       shadowColor: Colors.transparent,
       color: Colors.transparent,
@@ -145,6 +146,8 @@ class _NoteWidgetViewState extends State<NoteWidgetView> {
               child: labelForEditText("Answer")),
           editableTextWidget(widget.note!.description, "Step 1) ....",
               answer: true),
+          widget.note!.title.trim().isEmpty &&
+              widget.note!.description.trim().isEmpty
         ],
       ),
     );
@@ -264,8 +267,9 @@ class _NoteWidgetViewState extends State<NoteWidgetView> {
               saved = false;
             });
           },
-          style:
-              const TextStyle(backgroundColor: Color.fromARGB(0, 41, 37, 37)),
+          style: const TextStyle(
+              backgroundColor: Color.fromARGB(0, 41, 37, 37),
+              color: Colors.black),
           controller:
               answer ? answerEditingController : questionEditingController,
           focusNode: answer ? toAnswerFocuse : null,

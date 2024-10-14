@@ -200,5 +200,5 @@ yes
   flutter build
   ```
 
-<li>Get the app <a href="#">Comming Soon</a></li>
+<li>Get the app <a href="https://github.com/joelwillSeek/aspireme_flutter/releases">Here</a></li>
 </ul>

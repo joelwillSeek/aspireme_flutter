@@ -183,7 +183,7 @@ yes
   git clone git@github.com:joelwillSeek/aspireme_flutter.git
   ```  
 
-  <li>Npm</li>
+  <li>Get packages</li>
     
   ```sh
   flutter pub get

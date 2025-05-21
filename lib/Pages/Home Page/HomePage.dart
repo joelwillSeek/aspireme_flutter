@@ -98,6 +98,7 @@ class FlashCardFAB extends StatelessWidget {
 
       if (context.mounted) {
         context.read<FlashCardProvider>().setShowDescription = false;
+
         flashcard(context);
       }
     } catch (e) {

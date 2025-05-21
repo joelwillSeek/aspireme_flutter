@@ -2,11 +2,10 @@ import 'dart:io';
 
 import 'package:aspireme_flutter/BackEnd/Database/sql_database.dart';
 import 'package:aspireme_flutter/Pages/Globally%20Used/LoadingWidget.dart';
-import 'package:aspireme_flutter/Providers/BackEnd/FirebaseProvider.dart';
 import 'package:aspireme_flutter/Providers/Tutorial/tutorial_provider.dart';
 import 'package:easy_folder_picker/FolderPicker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:path/path.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -44,8 +43,6 @@ class SyncButton extends StatelessWidget {
 
       String dbPath = join(await getDatabasesPath(), Sqldatabse.databaseName);
 
-      if (newDirectory == null) throw ("New Directory in Main.dart is null");
-
       String externalDbPath = join(newDirectory.path, "mydatabase.db");
 
       File dbFile = File(dbPath);
@@ -61,7 +58,11 @@ class SyncButton extends StatelessWidget {
   }
 
   Future<void> syncClicked(BuildContext context) async {
-    final firebaseProvider = context.read<UserProfile>();
+    // final firebaseProvider = context.read<UserProfile>();
+
+    await Sqldatabse.getFoldersWithCustomQuery();
+    await Sqldatabse.getNotesWithCustomQuery();
+    await Sqldatabse.getDocumentsWithCustomQuery();
 
     showDialog(
         context: context,
@@ -90,7 +91,7 @@ class SyncButton extends StatelessWidget {
                     label: Text(
                       "Export as .db format",
                       style: TextStyle(
-                          color: Theme.of(context).colorScheme.secondary),
+                          color: Theme.of(context).colorScheme.onPrimary),
                     ))
               ],
             ));

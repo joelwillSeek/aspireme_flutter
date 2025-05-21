@@ -12,7 +12,7 @@ class Note {
       this.id,
       required this.parentId,
       int? wrongAnswerInner})
-      : _wrongAnswer = wrongAnswerInner ?? 0;
+      : _wrongAnswer = wrongAnswerInner ?? 1;
 
   factory Note.FromJsonToNote(Map<String, dynamic> json) => Note(
         id: json["id"],

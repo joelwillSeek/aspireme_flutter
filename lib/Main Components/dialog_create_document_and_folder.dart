@@ -29,10 +29,10 @@ class DialogCreateDocumentAndFolder extends StatelessWidget {
 
   TabBar tabBar(BuildContext context) {
     return TabBar(
-      labelStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
-      dividerColor: Theme.of(context).colorScheme.secondary,
+      labelStyle: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
+      dividerColor: Theme.of(context).colorScheme.onSecondary,
       indicatorColor: Theme.of(context).colorScheme.secondary,
-      labelColor: Theme.of(context).colorScheme.secondary,
+      labelColor: Theme.of(context).colorScheme.onSecondary,
       unselectedLabelColor: Theme.of(context).colorScheme.onPrimary,
       tabs: const [
         Tab(
@@ -46,7 +46,7 @@ class DialogCreateDocumentAndFolder extends StatelessWidget {
 
   Future<void> doneClicked(
       BuildContext context, TextEditingController textEditingController) async {
-    if (textEditingController.text.length > 1) {
+    if (textEditingController.text.isNotEmpty) {
       showDialog(
           barrierDismissible: false,
           context: context,
@@ -116,8 +116,10 @@ class DialogCreateDocumentAndFolder extends StatelessWidget {
                 onPressed: () {
                   doneClicked(context, textEditingController);
                 },
-                child: const Text(
+                child: Text(
                   "Done",
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSecondary),
                 ))),
         Expanded(
             child: TextButton(
@@ -141,15 +143,18 @@ class DialogCreateDocumentAndFolder extends StatelessWidget {
       child: TextField(
         controller: textEditingController,
         decoration: InputDecoration(
+            focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.onSecondary)),
             border: UnderlineInputBorder(
-                borderSide:
-                    BorderSide(color: Theme.of(context).colorScheme.secondary)),
+                borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.onSecondary)),
             enabledBorder: UnderlineInputBorder(
-                borderSide:
-                    BorderSide(color: Theme.of(context).colorScheme.secondary)),
+                borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.onSecondary)),
             hintText: "Chemistry...",
             hintStyle:
-                TextStyle(color: Theme.of(context).colorScheme.secondary)),
+                TextStyle(color: Theme.of(context).colorScheme.onSecondary)),
       ),
     );
   }
@@ -185,8 +190,10 @@ class DialogCreateDocumentAndFolder extends StatelessWidget {
                 style: ButtonStyle(
                     backgroundColor: WidgetStatePropertyAll(
                         Theme.of(context).colorScheme.tertiary)),
-                child: const Text(
+                child: Text(
                   "Done",
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSecondary),
                 ))),
         Expanded(
             child: TextButton(
@@ -215,12 +222,13 @@ class DialogCreateDocumentAndFolder extends StatelessWidget {
                   BorderSide(color: Theme.of(context).colorScheme.onSecondary)),
           border: UnderlineInputBorder(
               borderSide:
-                  BorderSide(color: Theme.of(context).colorScheme.secondary)),
+                  BorderSide(color: Theme.of(context).colorScheme.onSecondary)),
           enabledBorder: UnderlineInputBorder(
               borderSide:
-                  BorderSide(color: Theme.of(context).colorScheme.secondary)),
+                  BorderSide(color: Theme.of(context).colorScheme.onSecondary)),
           hintText: "Folder Name",
-          hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary)),
+          hintStyle:
+              TextStyle(color: Theme.of(context).colorScheme.onSecondary)),
     );
   }
 }

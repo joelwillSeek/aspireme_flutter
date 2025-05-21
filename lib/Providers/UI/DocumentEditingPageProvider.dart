@@ -52,10 +52,9 @@ class DocumentEditingPageProvider extends ChangeNotifier {
     return _listOfNotes.length;
   }
 
-  Future<void> addNote(
-      String title, String description, bool isQuestion) async {
+  Future<void> addNote(String title, String description) async {
     try {
-      _listOfNotes.removeLast();
+      _listOfNotes.remove(emptyNote);
       final addNoteWithOutId = Note(
           title: title,
           description: description,
@@ -110,8 +109,8 @@ class DocumentEditingPageProvider extends ChangeNotifier {
 
   Future<void> deleteNote(Note? note) async {
     try {
+      _listOfNotes.removeWhere((value) => note?.id == value?.id);
       await Sqlnotefunctions.removeNote(note!);
-      _listOfNotes.removeWhere((value) => value?.id == note.id);
     } catch (e) {
       debugPrint("Docuemtn editing delete note : $e");
     }

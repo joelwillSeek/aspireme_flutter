@@ -49,10 +49,19 @@ class DocumentEditingPage extends StatelessWidget {
     List<Note?> listOfNotes =
         Provider.of<DocumentEditingPageProvider>(context).getListOfNotes;
 
+    print("start");
+
+    listOfNotes.forEach((vlaue) => print("noterer ${vlaue?.FromNoteToJson()}"));
+
+    print("end");
+
     return ListView.builder(
         itemCount: listOfNotes.length,
-        itemBuilder: (context, index) =>
-            NoteWidgetView(note: listOfNotes[index], index: index));
+        itemBuilder: (context, index) => NoteWidgetView(
+              note: listOfNotes[index],
+              index: index,
+              length: listOfNotes.length,
+            ));
   }
 
   void dialogExitingApp(BuildContext context) {
@@ -98,8 +107,13 @@ class DocumentEditingPage extends StatelessWidget {
 class NoteWidgetView extends StatefulWidget {
   final Note? note;
   final int index;
+  final int length;
 
-  const NoteWidgetView({required this.index, required this.note, super.key});
+  const NoteWidgetView(
+      {required this.index,
+      required this.note,
+      required this.length,
+      super.key});
 
   @override
   State<NoteWidgetView> createState() => _NoteWidgetViewState();
@@ -116,6 +130,7 @@ class _NoteWidgetViewState extends State<NoteWidgetView> {
   Timer? enterKeyTimer;
   bool waitingForSecondPress = false;
   final int doubleTapThreshold = 300;
+  bool firstTimeSeeingEditing = false;
 
   @override
   void dispose() {
@@ -147,7 +162,11 @@ class _NoteWidgetViewState extends State<NoteWidgetView> {
           editableTextWidget(widget.note!.description, "Step 1) ....",
               answer: true),
           widget.note!.title.trim().isEmpty &&
-              widget.note!.description.trim().isEmpty
+                  widget.note!.description.trim().isEmpty
+              ? const Placeholder(
+                  color: Colors.transparent,
+                )
+              : deleteNoteButton(),
         ],
       ),
     );
@@ -180,11 +199,17 @@ class _NoteWidgetViewState extends State<NoteWidgetView> {
     );
   }
 
-  Future<void> updateTheNote(int? noteId, {bool isQuestion = false}) async {
+  Future<void> updateTheNote(int? noteId) async {
     if (widget.note?.parentId == 0) {
+      context
+          .read<DocumentEditingPageProvider>()
+          .getListOfNotes
+          .forEach((value) => print("note list ${value?.FromNoteToJson()}"));
       await Provider.of<DocumentEditingPageProvider>(context, listen: false)
-          .addNote(questionEditingController.text, answerEditingController.text,
-              isQuestion);
+          .addNote(
+        questionEditingController.text,
+        answerEditingController.text,
+      );
     } else {
       await context.read<DocumentEditingPageProvider>().updateNote(
           noteId,
@@ -280,6 +305,27 @@ class _NoteWidgetViewState extends State<NoteWidgetView> {
             fillColor: Colors.transparent,
             hintText: hint,
           ),
+        ));
+  }
+
+  Widget deleteNoteButton() {
+    return TextButton(
+        style: const ButtonStyle(
+            backgroundColor: WidgetStatePropertyAll(Colors.red)),
+        onPressed: () {
+          showDialog(
+              barrierDismissible: false,
+              context: context,
+              builder: (context) => const LoadingWidget());
+          context.read<DocumentEditingPageProvider>().deleteNote(widget.note);
+          answerEditingController.clear();
+          questionEditingController.clear();
+
+          Navigator.pop(context);
+        },
+        child: const Text(
+          "Delete",
+          style: TextStyle(color: Colors.white),
         ));
   }
 }

@@ -3,7 +3,6 @@ import 'package:aspireme_flutter/Pages/Globally%20Used/LoadingWidget.dart';
 import 'package:aspireme_flutter/Providers/BackEnd/FirebaseProvider.dart';
 import 'package:aspireme_flutter/Providers/UI/theme_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 class SettingsPage extends StatelessWidget {
